@@ -60,14 +60,15 @@ const STAGES = [
     name: '출하 준비',
     msg: '굴취까지 끝났습니다. 이제 제값에 팔 차례입니다.',
     svg: `<svg viewBox="0 0 200 220" aria-hidden="true">
-      <ellipse cx="100" cy="206" rx="56" ry="10" fill="#5C4227" opacity=".35"/>
+      <ellipse cx="100" cy="214" rx="44" ry="6" fill="#5C4227" opacity=".3"/>
+      <rect x="90" y="120" width="20" height="66" rx="7" fill="#7A5533"/>
       <path d="M100 16l34 52H66z" fill="#256C42"/>
       <path d="M100 46l44 54H56z" fill="#2F7D4E"/>
       <path d="M100 80l54 56H46z" fill="#3E8F5C"/>
       <path d="M100 114l62 54H38z" fill="#4EA36B"/>
-      <rect x="90" y="120" width="20" height="46" rx="7" fill="#7A5533"/>
-      <path d="M72 166h56l-11 34H83z" fill="#A08054"/>
-      <path d="M74 176h52M78 188h44" stroke="#6B4B2E" stroke-width="3.5" stroke-linecap="round"/>
+      <path d="M70 184c0-4 3-6 7-6h46c4 0 7 2 7 6 0 17-12 30-30 30S70 201 70 184z" fill="#B99465"/>
+      <path d="M72 193c12 5 44 5 56 0M77 204c10 4 36 4 46 0" stroke="#8C6A42" stroke-width="2.8" stroke-linecap="round" fill="none"/>
+      <path d="M85 180c3 14 7 26 15 34M115 180c-3 14-7 26-15 34" stroke="#8C6A42" stroke-width="2.4" stroke-linecap="round" fill="none"/>
     </svg>`,
   },
 ];
