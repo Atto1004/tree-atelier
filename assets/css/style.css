@@ -852,22 +852,24 @@ html.intro-on .intro {
   border-radius: 50%; background: radial-gradient(circle at 35% 35%, #FFE9A8, #FFC94D);
   box-shadow: 0 0 70px rgba(255,196,64,.55); z-index: 1;
 }
+/* 땅의 높이 = 하단 조작부가 들어가는 흙 띠. 나무는 그 위에 서고, 문구·버튼은 흙 위에 놓입니다. */
+html.intro-on .intro { --intro-ground: calc(172px + env(safe-area-inset-bottom)); --intro-copy: calc(300px + env(safe-area-inset-bottom)); }
 .intro-hill {
-  position: absolute; left: -8%; right: -8%; bottom: 0; height: 26%;
+  position: absolute; left: -8%; right: -8%; bottom: calc(var(--intro-ground) - 40px); height: 22vh;
   background: linear-gradient(180deg, #7FBF8C, #4E9A66);
   border-radius: 50% 50% 0 0 / 46% 46% 0 0; z-index: 1;
 }
-.intro-hill.back { bottom: 11%; height: 20%; opacity: .45; filter: blur(2px); }
+.intro-hill.back { bottom: calc(var(--intro-ground) + 4vh); height: 18vh; opacity: .45; filter: blur(2px); }
 .intro-soil {
-  position: absolute; left: 0; right: 0; bottom: 0; height: 11%;
+  position: absolute; left: 0; right: 0; bottom: 0; height: var(--intro-ground);
   background: linear-gradient(180deg, #8A6440, #6B4B2E); z-index: 1;
 }
 
 .intro-tree {
-  position: absolute; left: 50%; bottom: 10%;
-  transform: translateX(-50%);
+  position: absolute; left: 50%; bottom: calc(var(--intro-ground) - 6px);
+  transform: translateX(-50%); transform-origin: 50% 100%;
   width: min(64vw, 320px); z-index: 3;
-  transition: transform 1.15s var(--ease), filter 1.15s var(--ease);
+  transition: transform 1.15s var(--ease), filter 1.15s var(--ease), bottom 1.15s var(--ease);
 }
 .intro-tree svg { width: 100%; height: auto; overflow: visible; }
 
@@ -949,8 +951,10 @@ html.intro-on .intro {
 .intro.is-finale .intro-rays { opacity: 1; }
 @keyframes intro-spin { to { transform: translateX(-50%) rotate(360deg); } }
 
+/* 수확 연출 — 나무를 카피 위로 올려서 글자와 겹치지 않게 */
 .intro.is-finale .intro-tree {
-  transform: translateX(-50%) translateY(-13vh) scale(1.32);
+  bottom: var(--intro-copy);
+  transform: translateX(-50%) scale(1.08);
   filter: drop-shadow(0 0 36px rgba(255,214,110,.9));
 }
 
@@ -987,6 +991,12 @@ html.intro-on .intro {
 }
 .intro-down span { font-size: 20px; animation: bounceY 1.7s infinite; }
 @keyframes bounceY { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(8px); } }
+
+/* 폰에서는 하단 탭바 위로 카피를 올립니다 */
+@media (max-width: 760px) {
+  html.intro-on .intro.is-finale { --intro-copy: calc(356px + env(safe-area-inset-bottom)); }
+  .intro-finale { padding-bottom: calc(74px + env(safe-area-inset-bottom)); }
+}
 
 @media (prefers-reduced-motion: reduce) {
   .intro-rays { animation: none; }
