@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="ko" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>데스크탑 · 모바일 프리뷰 · Tree Atelier</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<style>
+  :root { --bg: #0F1512; --panel: #182019; --line: #2A342D; --ink: #E8EDE9; --muted: #92A096; --green: #2E7D4F; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: "Pretendard Variable", Pretendard, system-ui, sans-serif; }
+  .bar { display: flex; flex-wrap: wrap; gap: 10px 16px; align-items: center; padding: 12px 20px; border-bottom: 1px solid var(--line); background: var(--panel); position: sticky; top: 0; z-index: 2; }
+  .bar b { font-size: 15px; }
+  .bar .sp { flex: 1; }
+  select, button, a.btn { font: inherit; font-size: 13.5px; border-radius: 8px; border: 1px solid var(--line); background: #0F1512; color: var(--ink); padding: 7px 10px; text-decoration: none; cursor: pointer; }
+  button[aria-pressed="true"] { background: var(--green); border-color: var(--green); color: #fff; }
+  .stage { display: grid; grid-template-columns: 1fr auto; gap: 28px; padding: 24px 20px 40px; align-items: start; }
+  .stage.mobile-only { grid-template-columns: auto; justify-content: center; }
+  .stage.desktop-only { grid-template-columns: 1fr; }
+  .frame-d { border: 1px solid var(--line); border-radius: 14px; overflow: hidden; background: #fff; box-shadow: 0 20px 60px rgba(0,0,0,.45); }
+  .frame-d .chrome { height: 36px; background: #E9ECEA; display: flex; align-items: center; gap: 8px; padding: 0 14px; }
+  .frame-d .dot { width: 11px; height: 11px; border-radius: 50%; background: #C9CFCB; }
+  .frame-d .url { flex: 1; margin-left: 10px; height: 22px; border-radius: 6px; background: #fff; font-size: 12px; color: #667; display: flex; align-items: center; padding: 0 10px; font-family: ui-monospace, monospace; }
+  .frame-d iframe { display: block; width: 100%; height: calc(100vh - 150px); min-height: 700px; border: 0; }
+  .phone { width: 412px; padding: 11px; padding-top: 40px; border-radius: 48px; background: #141816; border: 1px solid #333; box-shadow: 0 30px 70px rgba(0,0,0,.55), inset 0 0 0 2px #0b0d0c; position: relative; }
+  .phone::before { content: ""; position: absolute; top: 12px; left: 50%; transform: translateX(-50%); width: 96px; height: 20px; border-radius: 14px; background: #0b0d0c; z-index: 1; }
+  .phone iframe { display: block; width: 390px; height: 820px; border: 0; border-radius: 0 0 38px 38px; background: #fff; }
+  .cap { color: var(--muted); font-size: 12.5px; margin-top: 10px; text-align: center; }
+  .note { color: var(--muted); font-size: 13px; padding: 0 20px 24px; max-width: 70ch; }
+  @media (max-width: 1100px) { .stage { grid-template-columns: 1fr; } .phone { margin: 0 auto; } }
+</style>
+</head>
+<body>
+<div class="bar">
+  <b>Tree Atelier 프리뷰</b>
+  <label>페이지
+    <select id="pg">
+      <option value="index.html">홈</option>
+      <option value="farm.html">농장 배치도 (항공뷰)</option>
+      <option value="farm.html#A-H-1">배치도 · A-H-1 선택</option>
+      <option value="tree.html?code=A-H-1">개체 조회 · A-H-1</option>
+      <option value="inquiry.html?code=A-H-1">구매 문의 (A-H-1 첨부)</option>
+      <option value="inquiry.html">구매 문의 (조건)</option>
+      <option value="listings.html">나무 찾기</option>
+      <option value="market.html">실거래 시세</option>
+      <option value="sell.html">농원 등록</option>
+      <option value="guide.html">규격 안내</option>
+      <option value="movers.html">굴취·운반</option>
+      <option value="community.html">커뮤니티</option>
+      <option value="mypage.html">마이페이지</option>
+    </select>
+  </label>
+  <span role="group" aria-label="보기">
+    <button type="button" data-mode="both" aria-pressed="true">둘 다</button>
+    <button type="button" data-mode="desktop-only">데스크탑</button>
+    <button type="button" data-mode="mobile-only">모바일</button>
+  </span>
+  <span class="sp"></span>
+  <a class="btn" id="open" href="index.html" target="_blank" rel="noopener">새 탭에서 열기 ↗</a>
+</div>
+
+<div class="stage" id="stage">
+  <div>
+    <div class="frame-d">
+      <div class="chrome"><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="url" id="urlD">index.html</span></div>
+      <iframe id="fD" src="index.html" title="데스크탑 화면"></iframe>
+    </div>
+    <div class="cap">데스크탑 · 창 너비에 맞춰 반응</div>
+  </div>
+  <div>
+    <div class="phone"><iframe id="fM" src="index.html" title="모바일 화면"></iframe></div>
+    <div class="cap">모바일 웹 · 390 × 844 (하단 탭바 · 서랍 메뉴 · 시트형 상세)</div>
+  </div>
+</div>
+<p class="note">두 화면은 같은 사이트를 폭만 달리해 보여줍니다. 실제 휴대폰에서는 주소를 그대로 열면 모바일 레이아웃이 적용됩니다.</p>
+
+<script>
+const pg = document.getElementById('pg'), fD = document.getElementById('fD'), fM = document.getElementById('fM');
+function go(v) {
+  fD.src = v; fM.src = v;
+  document.getElementById('urlD').textContent = v;
+  document.getElementById('open').href = v;
+  history.replaceState(null, '', '#' + encodeURIComponent(v));
+}
+pg.addEventListener('change', () => go(pg.value));
+document.querySelectorAll('[data-mode]').forEach(b => b.addEventListener('click', () => {
+  document.querySelectorAll('[data-mode]').forEach(x => x.setAttribute('aria-pressed', x === b ? 'true' : 'false'));
+  document.getElementById('stage').className = 'stage' + (b.dataset.mode === 'both' ? '' : ' ' + b.dataset.mode);
+}));
+const init = decodeURIComponent(location.hash.slice(1));
+if (init) { pg.value = [...pg.options].some(o => o.value === init) ? init : pg.value; go(init); }
+</script>
+</body>
+</html>

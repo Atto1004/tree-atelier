@@ -1,0 +1,697 @@
+<!doctype html>
+<html lang="ko" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>농원 등록 · Tree Atelier</title>
+<meta name="description" content="수종과 규격만 입력하면 내 나무의 현재 시세를 바로 알려드립니다.">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<link rel="stylesheet" href="assets/css/style.css">
+<style>
+  .sell-layout { display: grid; grid-template-columns: 1fr 330px; gap: var(--sp-6); align-items: start; }
+  .sell-side { position: sticky; top: calc(var(--header-h) + 16px); }
+  .drop-zone {
+    border: 2px dashed var(--line); border-radius: var(--r-lg); padding: var(--sp-6) var(--sp-4);
+    text-align: center; background: var(--bg-soft); cursor: pointer;
+    transition: border-color .16s var(--ease), background-color .16s var(--ease);
+  }
+  .drop-zone:hover, .drop-zone.is-over { border-color: var(--green-600); background: var(--green-50); }
+  @media (max-width: 940px) {
+    .sell-layout { grid-template-columns: 1fr; }
+    .sell-side { position: static; }
+  }
+</style>
+</head>
+<body>
+
+<div id="site-header"></div>
+
+<main id="main">
+  <div class="wrap">
+    <nav class="breadcrumb" aria-label="현재 위치">
+      <a href="index.html">홈</a><span aria-hidden="true">›</span><span>농원 등록</span>
+    </nav>
+
+    <header class="mb5">
+      <h1 class="h1">내 농원 등록하기</h1>
+      <p class="lead mt2">
+        수종과 규격만 넣으면 <b class="accent">지금 시세를 바로 보여드립니다.</b>
+        값을 정하기 전에 확인하세요.
+      </p>
+    </header>
+
+    <ol class="progress-steps" aria-label="등록 진행 단계">
+      <li class="pstep now"><span>기본 정보</span></li>
+      <li class="pstep"><span>사진 등록</span></li>
+      <li class="pstep"><span>가격 설정</span></li>
+      <li class="pstep"><span>검토·게시</span></li>
+    </ol>
+
+    <div class="sell-layout">
+
+      <form class="stack g6" id="sellForm" novalidate>
+
+        <!-- 1. 기본 정보 -->
+        <section class="card card-pad stack g4">
+          <h2 class="h2">1. 어떤 나무인가요?</h2>
+
+          <div class="grid grid-2">
+            <div class="field">
+              <label class="label" for="species">수종 <span class="req" aria-hidden="true">*</span></label>
+              <select class="select" id="species" required>
+                <option value="">선택해 주세요</option>
+              </select>
+            </div>
+
+            <div class="field">
+              <label class="label" for="qty">수량 (주) <span class="req" aria-hidden="true">*</span></label>
+              <input class="input" id="qty" type="number" inputmode="numeric" min="1" value="120" required>
+              <p class="hint">등록하면 주마다 <b>개체 코드</b>가 자동 발급됩니다. 구매자는 코드로 한 그루씩 확인합니다.</p>
+            </div>
+          </div>
+
+          <div class="field">
+            <label class="label" for="title">매물 제목 <span class="req" aria-hidden="true">*</span></label>
+            <input class="input" id="title" type="text" maxlength="60"
+                   placeholder="예) 20년생 조경용 적송 · 근원경 R15 균일주" required>
+            <p class="hint">수령·용도·규격이 들어가면 클릭률이 높습니다. <span id="titleCount" class="num">0</span>/60자</p>
+          </div>
+
+          <fieldset style="border:0;padding:0;margin:0" id="specSet">
+            <legend class="label mb2">규격 <span class="req" aria-hidden="true">*</span></legend>
+
+            <div class="notice notice-green mb4" id="ruleBox"> <div>
+                <p id="ruleText"></p>
+                <p class="small mt1" id="ruleWhy"></p>
+                <p class="small mt2"><a class="accent strong" href="guide.html#howto">재는 방법이 헷갈리시면 규격 안내를 보세요 →</a></p>
+              </div>
+            </div>
+
+            <div class="grid grid-4">
+              <div class="field has-suffix" data-spec="H">
+                <label class="label small" for="specH">수고 H <span class="req" hidden aria-hidden="true">*</span></label>
+                <div class="input-group"><input class="input" id="specH" type="number" inputmode="decimal" min="0" step="0.1" value="4.2"><span class="input-suffix">m</span></div>
+                <p class="hint">지표면 ~ 수관 정상부</p>
+              </div>
+              <div class="field has-suffix" data-spec="W">
+                <label class="label small" for="specW">수관폭 W <span class="req" hidden aria-hidden="true">*</span></label>
+                <div class="input-group"><input class="input" id="specW" type="number" inputmode="decimal" min="0" step="0.1" value="2.4"><span class="input-suffix">m</span></div>
+                <p class="hint">수관의 최대 폭</p>
+              </div>
+              <div class="field has-suffix" data-spec="B">
+                <label class="label small" for="specB">흉고직경 B <span class="req" hidden aria-hidden="true">*</span></label>
+                <div class="input-group"><input class="input" id="specB" type="number" inputmode="decimal" min="0" step="0.5"><span class="input-suffix">cm</span></div>
+                <p class="hint">지표면 1.2m 높이 줄기</p>
+              </div>
+              <div class="field has-suffix" data-spec="R">
+                <label class="label small" for="specR">근원직경 R <span class="req" hidden aria-hidden="true">*</span></label>
+                <div class="input-group"><input class="input" id="specR" type="number" inputmode="decimal" min="0" step="0.5" value="15"><span class="input-suffix">cm</span></div>
+                <p class="hint">지표면에 닿는 줄기</p>
+              </div>
+            </div>
+
+            <!-- 표준 표기 · 뿌리분 · 장비 자동 산출 -->
+            <div class="card card-pad mt4" style="background:var(--bg-soft)">
+              <div class="row between wrapf g3 mb3">
+                <div>
+                  <div class="stat-k">표준 규격 표기</div>
+                  <div class="stat-v num" id="notation" style="font-size:22px">—</div>
+                </div>
+                <button class="btn btn-secondary btn-sm" type="button" id="applyTitle">이 표기로 제목 채우기</button>
+              </div>
+              <div class="grid grid-2 g4" id="derived"></div>
+              <p class="hint mt3">
+                뿌리분 지름 = 24 + (근원직경 − 3) × 상수(활엽수 4 · 침엽수 5) — 조경 실무 관용식입니다.
+                굴취·운반 비용 구간은 참고값이며, <b>실제 시공 기준은 조경공사 표준시방서 최신본과 발주처 시방서를 확인해 주세요.</b>
+              </p>
+            </div>
+          </fieldset>
+
+          <div class="grid grid-3">
+            <div class="field">
+              <label class="label" for="region">소재지 <span class="req" aria-hidden="true">*</span></label>
+              <select class="select" id="region" required><option value="">시·도 선택</option></select>
+            </div>
+            <div class="field has-suffix">
+              <label class="label" for="years">재배 기간</label>
+              <div class="input-group">
+                <input class="input" id="years" type="number" inputmode="numeric" min="0" max="200" value="14">
+                <span class="input-suffix">년</span>
+              </div>
+            </div>
+            <div class="field">
+              <label class="label" for="season">이식 적기</label>
+              <select class="select" id="season">
+                <option>11월 ~ 3월</option>
+                <option>12월 ~ 2월</option>
+                <option>10월 ~ 4월</option>
+                <option>연중</option>
+              </select>
+            </div>
+          </div>
+
+          <div>
+            <span class="label">굴취 상태</span>
+            <div class="pick grid-2 mt2">
+              <label class="pick-item">
+                <input type="radio" name="dug" value="no" checked>
+                <span class="pick-box">
+                  <span><b>아직 심겨 있음</b><br><span class="small muted">구매 확정 후 굴취 업체를 매칭해 드립니다.</span></span>
+                </span>
+              </label>
+              <label class="pick-item">
+                <input type="radio" name="dug" value="yes">
+                <span class="pick-box">
+                  <span><b>굴취 완료</b><br><span class="small muted">즉시 상차 가능. 구매자가 선호합니다.</span></span>
+                </span>
+              </label>
+            </div>
+          </div>
+        </section>
+
+        <!-- 2. 사진 -->
+        <section class="card card-pad stack g4">
+          <h2 class="h2">2. 사진을 올려 주세요 <span class="req" aria-hidden="true">*</span></h2>
+          <div class="notice notice-info"> <p><b>사진이 값을 정합니다.</b> 전체 수형 1장, 줄기 아래쪽 1장, 줄자 댄 사진 1장.
+               이 세 장만 있어도 문의가 3배 늘어납니다.</p>
+          </div>
+
+          <div class="drop-zone" role="button" tabindex="0" id="dropZone"
+               aria-label="사진 선택 — 최대 8장">
+            <p class="strong mt2">사진을 끌어다 놓거나 눌러서 선택하세요</p>
+            <p class="hint mt1">JPG·PNG · 최대 8장 · 첫 장이 대표 사진이 됩니다 · <b>1장 이상 필수</b></p>
+          </div>
+          <input type="file" id="photoInput" accept="image/*" multiple hidden>
+
+          <div class="photo-grid" id="photoGrid" hidden></div>
+          <p class="hint" id="photoStatus" role="status" aria-live="polite"></p>
+
+          <div class="field">
+            <label class="label" for="desc">재배자 설명</label>
+            <textarea class="textarea" id="desc"
+              placeholder="몇 년을 어떻게 키웠는지, 전정은 어떻게 했는지 적어 주세요. 이 설명이 값을 올립니다."></textarea>
+            <p class="hint">현장 확인 가능 여부, 진입로 상황(크레인 접근 가능 여부)을 적어 두면 거래가 빨라집니다.</p>
+          </div>
+        </section>
+
+        <!-- 3. 가격 -->
+        <section class="card card-pad stack g4">
+          <h2 class="h2">3. 가격을 정해 주세요</h2>
+
+          <div class="field has-suffix">
+            <label class="label" for="price">희망 단가 (주당) <span class="badge badge-gray">비공개</span> <span class="req" aria-hidden="true">*</span></label>
+            <div class="input-group">
+              <input class="input" id="price" type="number" inputmode="numeric" min="0" step="10000" value="268000" required>
+              <span class="input-suffix">원</span>
+            </div>
+          </div>
+
+          <div class="notice notice-green"> <p><b>이 가격은 화면에 노출되지 않습니다.</b>
+               매물에는 “가격 문의”로만 표시되고, 구매 문의가 오면 회신할 때 기준으로 쓰입니다.
+               아래 시세 판정도 본인에게만 보입니다.</p>
+          </div>
+
+          <div id="priceFeedback" role="status" aria-live="polite"></div>
+
+          <label class="check">
+            <input type="checkbox" id="negotiable" checked>
+            <span>가격 협의 가능 — 구매자가 제안할 수 있게 합니다. 제안 시 시세 대비 비율이 함께 표시됩니다.</span>
+          </label>
+          <label class="check">
+            <input type="checkbox" id="blockLowball" checked>
+            <span><b>시세 대비 20% 이상 낮은 제안은 자동으로 걸러 주세요.</b> 헐값 제안에 시달리지 않게 합니다.</span>
+          </label>
+        </section>
+
+        <!-- 4. 확인 -->
+        <section class="card card-pad stack g4">
+          <h2 class="h2">4. 마지막 확인</h2>
+          <div class="field">
+            <label class="check"><input type="checkbox" id="agree1"><span>등록한 정보가 사실과 다르지 않음을 확인합니다. <span class="req" aria-hidden="true">*</span></span></label>
+            <label class="check"><input type="checkbox" id="agree2"><span>거래 성사 시 <b>수수료 3%</b>가 정산액에서 차감되는 데 동의합니다. <span class="req" aria-hidden="true">*</span></span></label>
+            <label class="check"><input type="checkbox" id="agree3" checked><span>실거래가 통계에 이 거래를 포함하는 데 동의합니다. (권장 — 다른 재배자에게 도움이 됩니다)</span></label>
+          </div>
+
+          <div class="row g3 wrapf">
+            <button class="btn btn-primary btn-lg" type="submit" id="submitBtn">매물 등록하기</button>
+            <button class="btn btn-secondary btn-lg" type="button" id="resetBtn">처음부터 다시</button>
+          </div>
+        </section>
+
+      </form>
+
+      <!-- 우측: 실시간 시세 피드백 -->
+      <aside class="sell-side stack g4">
+        <div class="card card-pad stack g3">
+          <h2 class="h3">이 수종의 지금 시세</h2>
+          <div id="idxBox"></div>
+        </div>
+
+        <div class="card card-pad stack g3">
+          <h2 class="h3">내 규격과 비슷한 최근 거래</h2>
+          <div id="simDeals"></div>
+        </div>
+
+        <div class="notice notice-green"> <p><b>값을 먼저 확인하고 정하세요.</b><br>
+             시세를 모른 채 부르는 값에 응하는 것이, 재배 농가가 손해 보는 가장 흔한 방식입니다.</p>
+        </div>
+
+        <div class="card card-pad stack g3">
+          <h3 class="h3">내가 등록한 매물</h3>
+          <div id="myList"></div>
+        </div>
+
+        <div class="card card-pad stack g3">
+          <h3 class="h3">등록이 어려우시면</h3>
+          <p class="small muted">
+            전화 주시면 담당자가 대신 등록해 드립니다. 사진은 문자로 보내셔도 됩니다.
+          </p>
+          <a class="btn btn-secondary btn-block" href="tel:1600-0000">1600-0000 전화 등록</a>
+        </div>
+      </aside>
+
+    </div>
+  </div>
+</main>
+
+<div id="site-footer"></div>
+
+<script src="assets/js/data.js"></script>
+<script src="assets/js/farm-data.js"></script>
+<script src="assets/js/store.js"></script>
+<script src="assets/js/app.js"></script>
+<script>
+/* ---------- 셀렉트 채우기 ---------- */
+$('#species').insertAdjacentHTML('beforeend',
+  SPECIES.map(s => `<option value="${s.id}">${s.name}</option>`).join('') +
+  '<option value="etc">기타</option>');
+$('#region').insertAdjacentHTML('beforeend', REGIONS.map(r => `<option>${r}</option>`).join(''));
+$('#species').value = 'sonamu';
+
+const spEl = $('#species'), prEl = $('#price'), titleEl = $('#title');
+
+/* ---------- 한국 조경수 표준 규격 반영 ---------- */
+const SPEC_EL = { H: $('#specH'), W: $('#specW'), B: $('#specB'), R: $('#specR') };
+
+function currentSpec() {
+  const o = {};
+  Object.keys(SPEC_EL).forEach(k => {
+    const v = SPEC_EL[k].value.trim();
+    o[k] = v === '' ? null : Number(v);
+  });
+  return o;
+}
+
+function rule() { return SPEC_RULES[spEl.value] || SPEC_RULES.etc; }
+
+/* 수종을 고르면 그 수종의 표준 표기 조합으로 폼을 바꿉니다 */
+function applyRule() {
+  const r = rule();
+  const use = r.notation;
+
+  $$('[data-spec]').forEach(f => {
+    const k = f.dataset.spec;
+    const inNotation = use.indexOf(k) !== -1;
+    const isOptional = (r.optional || []).indexOf(k) !== -1;
+    const req = r.required.indexOf(k) !== -1;
+    f.style.opacity = inNotation ? '1' : isOptional ? '.72' : '.4';
+    f.querySelector('.req').hidden = !req;
+    f.querySelector('input').placeholder =
+      inNotation ? '' : isOptional ? '참고용 (선택)' : '이 수종은 쓰지 않음';
+  });
+
+  $('#ruleText').innerHTML =
+    `<b>${speciesName(spEl.value) || '기타'}</b>는 <b>${r.group}</b>이라 ` +
+    `<b class="num">${use.join(' × ')}</b> 로 표기합니다. ` +
+    `필수 항목은 <b>${r.required.map(k => SPEC_META[k].name).join(' · ')}</b>입니다.`;
+
+  $('#ruleWhy').textContent = use.indexOf('W') !== -1 && r.group.indexOf('침엽') !== -1
+    ? '침엽수·상록수는 수관이 값을 좌우해서 수관폭(W)을 함께 씁니다.'
+    : use.indexOf('B') !== -1
+      ? '줄기가 곧게 자라 흉고(1.2m) 측정이 쉬운 수종이라 흉고직경(B)을 씁니다.'
+      : '근원부가 굵거나 다간으로 자라 흉고 측정이 어려운 수종이라 근원직경(R)을 씁니다.';
+
+  /* 이식 적기 자동 선택 */
+  const season = $('#season');
+  const match = Array.from(season.options).find(o => o.value === r.season || o.text === r.season);
+  if (match) season.value = match.value;
+
+  renderDerived();
+}
+
+/* 표기 문자열 · 뿌리분 · 장비 구간 */
+function renderDerived() {
+  const spec = currentSpec();
+  const note = specNotation(spEl.value, spec);
+  $('#notation').textContent = note || '—';
+  $('#applyTitle').disabled = !note;
+
+  const r = rule();
+  const ballBase = spec.R || (r.primary === 'B' ? spec.B : null);
+  const ball = rootBall(ballBase, spEl.value);
+  const tier = equipTier(ballBase);
+
+  const cards = [];
+  if (ball) {
+    cards.push(`
+      <div class="stat">
+        <div class="stat-k">뿌리분 크기 (추정)</div>
+        <div class="stat-v num" style="font-size:20px">지름 ${ball.dia}cm</div>
+        <div class="stat-d muted num">깊이 약 ${ball.depth}cm · 상수 ${ball.factor}</div>
+      </div>`);
+  }
+  if (tier) {
+    cards.push(`
+      <div class="stat">
+        <div class="stat-k">굴취·운반 구간 (참고)</div>
+        <div class="stat-v" style="font-size:16px">${tier.label}</div>
+        <div class="stat-d muted">${tier.gear} · 굴취 ${tier.dig}</div>
+      </div>`);
+  }
+  $('#derived').innerHTML = cards.join('') ||
+    '<p class="small muted">근원직경(R) 또는 흉고직경(B)을 입력하면 뿌리분 크기와 필요 장비를 계산해 드립니다.</p>';
+
+  checkSpecSanity(spec);
+  renderSimilarDeals(spec);
+}
+
+/* 내가 넣은 규격과 비슷한 최근 실거래 — 값을 정하기 직전에 보는 정보 */
+function renderSimilarDeals(spec) {
+  const box = $('#simDeals');
+  const sim = similarDeals(spEl.value, spec, 0.3);
+
+  if (!sim.length) {
+    const any = RECENT_DEALS.filter(d => d.species === spEl.value);
+    box.innerHTML = any.length
+      ? `<p class="small muted mb3">같은 규격 거래는 없지만, ${speciesName(spEl.value)} 최근 거래는 이렇습니다.</p>
+         ${dealList(any.slice(0, 3))}`
+      : `<p class="small muted">${speciesName(spEl.value) || '이 수종'}의 최근 체결 건이 아직 없습니다.
+         표본이 없으면 없다고 알려드립니다.</p>`;
+    return;
+  }
+
+  const avg = Math.round(sim.reduce((s, d) => s + d.unitPrice, 0) / sim.length);
+  const mine = Number(prEl.value) || 0;
+  const gap = mine ? Math.round((mine / avg - 1) * 100) : null;
+
+  box.innerHTML = `
+    <div class="notice notice-green" style="padding:var(--sp-3)">
+      <div>
+        <p class="small"><b>비슷한 규격 ${sim.length}건 평균</b></p>
+        <p class="stat-v num" style="font-size:21px">${won(avg)}원</p>
+        ${gap !== null ? `<p class="tiny mt1">내 희망가는 이보다 ${gap === 0 ? '같음' : (gap > 0 ? `${gap}% 높음` : `${Math.abs(gap)}% 낮음`)}</p>` : ''}
+      </div>
+    </div>
+    ${dealList(sim.slice(0, 4))}`;
+}
+
+/* 규격끼리 앞뒤가 안 맞으면 알려줍니다 */
+function checkSpecSanity(spec) {
+  const warn = [];
+  if (spec.B && spec.R && spec.B >= spec.R) {
+    warn.push('흉고직경(B)이 근원직경(R)보다 크거나 같습니다. 보통은 아래쪽인 R이 더 굵습니다.');
+  }
+  if (spec.H && spec.W && spec.W > spec.H * 2) {
+    warn.push('수관폭(W)이 수고(H)의 2배를 넘습니다. 단위(m)를 확인해 주세요.');
+  }
+  if (spec.R && spec.H && spec.R > spec.H * 12) {
+    warn.push('근원직경(R·cm)과 수고(H·m)의 비율이 이례적입니다. 단위를 확인해 주세요.');
+  }
+
+  let box = $('#specWarn');
+  if (warn.length) {
+    if (!box) {
+      box = document.createElement('div');
+      box.id = 'specWarn';
+      box.className = 'notice notice-warn mt3';
+      $('#derived').after(box);
+    }
+    box.innerHTML = ` <div>${warn.map(w => `<p>${w}</p>`).join('')}</div>`;
+  } else if (box) box.remove();
+}
+
+$('#applyTitle').addEventListener('click', () => {
+  const note = specNotation(spEl.value, currentSpec());
+  if (!note) return;
+  const years = Number($('#years').value) || 0;
+  titleEl.value = [
+    years ? `${years}년생` : '',
+    speciesName(spEl.value),
+    '·',
+    note,
+  ].filter(Boolean).join(' ').slice(0, 60);
+  $('#titleCount').textContent = titleEl.value.length;
+  setError(titleEl, '');
+  toast('표준 표기로 제목을 채웠습니다.');
+});
+
+Object.values(SPEC_EL).forEach(el => el.addEventListener('input', renderDerived));
+$('#years').addEventListener('input', renderDerived);
+
+/* ---------- 사진 ---------- */
+const MAX_PHOTOS = 8;
+let photos = [];
+
+function renderPhotos() {
+  const grid = $('#photoGrid');
+  grid.hidden = photos.length === 0;
+  grid.innerHTML = photos.map((src, i) => `
+    <div class="photo-item">
+      <img src="${src}" alt="등록 사진 ${i + 1}">
+      ${i === 0 ? '<span class="cover">대표</span>' : ''}
+      <button class="photo-del" type="button" data-i="${i}" aria-label="사진 ${i + 1} 삭제">✕</button>
+    </div>`).join('');
+  $('#photoStatus').textContent = photos.length
+    ? `${photos.length}장 등록됨 · 최대 ${MAX_PHOTOS}장`
+    : '';
+}
+
+async function addFiles(fileList) {
+  const files = Array.from(fileList).filter(f => /^image\//.test(f.type));
+  if (!files.length) { toast('이미지 파일만 올릴 수 있습니다.', 'bad'); return; }
+
+  const room = MAX_PHOTOS - photos.length;
+  if (room <= 0) { toast(`사진은 최대 ${MAX_PHOTOS}장까지입니다.`, 'bad'); return; }
+
+  const take = files.slice(0, room);
+  $('#photoStatus').textContent = '사진을 처리하는 중…';
+
+  for (const f of take) {
+    try {
+      photos.push(await Store.resizeImage(f));
+    } catch (err) {
+      toast(err.message, 'bad');
+    }
+  }
+  renderPhotos();
+  if (files.length > room) toast(`${room}장만 추가했습니다. 최대 ${MAX_PHOTOS}장입니다.`);
+}
+
+$('#dropZone').addEventListener('click', () => $('#photoInput').click());
+$('#dropZone').addEventListener('keydown', e => {
+  if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); $('#photoInput').click(); }
+});
+$('#photoInput').addEventListener('change', e => { addFiles(e.target.files); e.target.value = ''; });
+
+['dragenter', 'dragover'].forEach(ev =>
+  $('#dropZone').addEventListener(ev, e => { e.preventDefault(); $('#dropZone').classList.add('is-over'); }));
+['dragleave', 'drop'].forEach(ev =>
+  $('#dropZone').addEventListener(ev, e => { e.preventDefault(); $('#dropZone').classList.remove('is-over'); }));
+$('#dropZone').addEventListener('drop', e => { if (e.dataTransfer.files.length) addFiles(e.dataTransfer.files); });
+
+$('#photoGrid').addEventListener('click', e => {
+  const b = e.target.closest('[data-i]'); if (!b) return;
+  photos.splice(Number(b.dataset.i), 1);
+  renderPhotos();
+});
+
+/* ---------- 시세 사이드바 ---------- */
+function renderIndex() {
+  const p = PRICE_INDEX[spEl.value];
+  const box = $('#idxBox');
+  if (!p) {
+    box.innerHTML = `<p class="small muted">이 수종은 최근 체결 표본이 부족해 시세를 표시하지 않습니다.
+      정확하지 않은 숫자를 보여드리지 않기 위해서입니다.</p>`;
+    return;
+  }
+  box.innerHTML = `
+    <div class="stat-k">${speciesName(spEl.value)} · ${p.unit}</div>
+    <div class="stat-v num">${won(p.now)}원</div>
+    <div class="gauge-wrap">
+      <div class="gauge" aria-hidden="true"></div>
+      <div class="gauge-labels">
+        <span class="num">${wonShort(p.low)}</span>
+        <span class="num">평균 ${wonShort(p.now)}</span>
+        <span class="num">${wonShort(p.high)}</span>
+      </div>
+    </div>
+    ${barsHTML(p.history, PRICE_MONTHS)}`;
+}
+
+function renderFeedback() {
+  const p = PRICE_INDEX[spEl.value];
+  const v = Number(prEl.value);
+  const box = $('#priceFeedback');
+  if (!p || !v) { box.innerHTML = ''; return; }
+  const ratio = v / p.now;
+  const pct = Math.abs(Math.round((ratio - 1) * 100));
+
+  if (ratio <= 0.85) {
+    box.innerHTML = `<div class="notice notice-warn"> <p><b>시세보다 ${pct}% 낮게 책정하셨습니다.</b>
+         ${speciesName(spEl.value)} 평균은 주당 ${won(p.now)}원입니다.
+         빨리 팔 목적이 아니라면 값을 다시 보시길 권합니다.</p></div>`;
+  } else if (ratio >= 1.2) {
+    box.innerHTML = `<div class="notice notice-info"> <p><b>시세보다 ${pct}% 높습니다.</b>
+         수형이나 수령이 특별하다면 설명에 근거를 적어 주세요. 그러면 팔립니다.</p></div>`;
+  } else {
+    box.innerHTML = `<div class="notice notice-green"> <p><b>적정 구간입니다.</b> 최근 ${speciesName(spEl.value)} 체결가 범위 안에 있습니다.
+         예상 정산액은 수수료 3% 차감 후 주당 <b class="num">${won(Math.round(v * 0.97))}원</b>입니다.</p></div>`;
+  }
+}
+
+/* ---------- 내가 등록한 매물 ---------- */
+function renderMine() {
+  const mine = Store.Listings.mine();
+  $('#myList').innerHTML = mine.length
+    ? `<ul class="stack g3">${mine.slice(0, 4).map(l => `
+        <li class="row g3" style="align-items:center">
+          <span style="width:44px;height:44px;border-radius:8px;overflow:hidden;flex:none;background:var(--bg-sunk)">
+            ${l.photoData && l.photoData[0] ? `<img src="${l.photoData[0]}" alt="" style="width:100%;height:100%;object-fit:cover">` : ''}
+          </span>
+          <span class="grow" style="min-width:0">
+            <a class="small strong" href="detail.html?id=${l.id}" style="display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${l.title}</a>
+            <span class="tiny muted num">${won(l.unitPrice)}원 · ${won(l.qty)}주</span>
+          </span>
+        </li>`).join('')}</ul>
+       <a class="small accent strong" href="mypage.html">마이페이지에서 전체 보기 →</a>`
+    : '<p class="small muted">아직 등록한 매물이 없습니다. 아래 폼을 채우면 여기에 쌓입니다.</p>';
+}
+
+spEl.addEventListener('change', () => { renderIndex(); renderFeedback(); applyRule(); });
+prEl.addEventListener('input', () => { renderFeedback(); renderSimilarDeals(currentSpec()); });
+titleEl.addEventListener('input', () => { $('#titleCount').textContent = titleEl.value.length; });
+
+/* ---------- 검증 · 제출 ---------- */
+function num(el) { const v = el.value.trim(); return v === '' ? null : Number(v); }
+
+function validate() {
+  const errs = [];
+  const check = (el, cond, msg) => {
+    setError(el, cond ? '' : msg);
+    if (!cond) errs.push(el);
+  };
+
+  check($('#species'), !!$('#species').value, '수종을 선택해 주세요.');
+  check($('#title'), $('#title').value.trim().length >= 5, '제목을 5자 이상 적어 주세요.');
+  check($('#qty'), num($('#qty')) > 0, '수량을 1주 이상 입력해 주세요.');
+  check($('#region'), !!$('#region').value, '소재지를 선택해 주세요.');
+  check($('#price'), num($('#price')) > 0, '희망 단가를 입력해 주세요.');
+
+  /* 사진은 필수 — 사진 없는 매물은 게시하지 않습니다 */
+  const dz = $('#dropZone');
+  if (photos.length === 0) {
+    dz.style.borderColor = 'var(--danger)';
+    $('#photoStatus').textContent = '사진을 1장 이상 올려 주세요. 사진 없는 매물은 게시되지 않습니다.';
+    errs.push(dz);
+  } else {
+    dz.style.borderColor = '';
+  }
+
+  /* 수종별 표준 표기의 필수 항목을 검사합니다 */
+  const r = rule();
+  let specOk = true;
+  Object.keys(SPEC_EL).forEach(k => setError(SPEC_EL[k], ''));
+  r.required.forEach(k => {
+    const el = SPEC_EL[k];
+    if (!(num(el) > 0)) {
+      const m = SPEC_META[k];
+      setError(el, `${speciesName(spEl.value)}는 ${m.name}(${k})가 표준 표기 항목입니다. ${m.where}를 재어 넣어 주세요.`);
+      errs.push(el);
+      specOk = false;
+    }
+  });
+  $('#specSet').setAttribute('aria-invalid', String(!specOk));
+
+  const agreed = $('#agree1').checked && $('#agree2').checked;
+  const box = $('#agree1').closest('.field');
+  let ae = box.querySelector('.err');
+  if (!agreed) {
+    if (!ae) { ae = document.createElement('p'); ae.className = 'err'; box.appendChild(ae); }
+    ae.textContent = '필수 항목 두 가지에 동의해 주세요.';
+    errs.push($('#agree1'));
+  } else if (ae) ae.remove();
+
+  return errs;
+}
+
+$('#sellForm').addEventListener('submit', e => {
+  e.preventDefault();
+  const errs = validate();
+  if (errs.length) {
+    errs[0].focus();
+    errs[0].scrollIntoView({ block: 'center', behavior: 'smooth' });
+    toast(`입력하지 않은 항목이 ${errs.length}개 있습니다.`, 'bad');
+    return;
+  }
+
+  const btn = $('#submitBtn');
+  btn.disabled = true;
+  btn.textContent = '등록하는 중…';
+
+  const spec = { R: num($('#specR')), B: num($('#specB')), H: num($('#specH')), W: num($('#specW')) };
+
+  const res = Store.Listings.add({
+    species: spEl.value,
+    title: $('#title').value.trim(),
+    qty: num($('#qty')),
+    unitPrice: num($('#price')),
+    spec,
+    notation: specNotation(spEl.value, spec),
+    ball: rootBall(spec.R || spec.B, spEl.value),
+    region: $('#region').value,
+    years: num($('#years')) || 0,
+    season: $('#season').value,
+    dug: document.querySelector('[name="dug"]:checked').value === 'yes',
+    desc: $('#desc').value.trim(),
+    photoData: photos,
+    negotiable: $('#negotiable').checked,
+    blockLowball: $('#blockLowball').checked,
+    tags: [
+      document.querySelector('[name="dug"]:checked').value === 'yes' ? '굴취완료' : '굴취미실시',
+      num($('#qty')) >= 50 ? '대량보유' : '소량',
+    ],
+  });
+
+  if (!res.ok) {
+    btn.disabled = false;
+    btn.textContent = '매물 등록하기';
+    toast(res.full
+      ? '저장 공간이 가득 찼습니다. 사진을 줄이거나 기존 매물을 지워 주세요.'
+      : '저장하지 못했습니다. 다시 시도해 주세요.', 'bad');
+    return;
+  }
+
+  toast('매물이 등록되었습니다.', 'ok');
+  setTimeout(() => { location.href = 'detail.html?id=' + res.listing.id; }, 700);
+});
+
+$('#resetBtn').addEventListener('click', () => {
+  if (!confirm('입력한 내용을 모두 지울까요?')) return;
+  $('#sellForm').reset();
+  photos = [];
+  renderPhotos();
+  $$('.err').forEach(e => e.remove());
+  $$('[aria-invalid]').forEach(e => e.removeAttribute('aria-invalid'));
+  $('#species').value = 'sonamu';
+  $('#titleCount').textContent = '0';
+  renderIndex(); renderFeedback(); applyRule();
+});
+
+renderIndex();
+renderFeedback();
+renderPhotos();
+renderMine();
+applyRule();
+</script>
+</body>
+</html>

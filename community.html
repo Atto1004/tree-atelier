@@ -1,0 +1,199 @@
+<!doctype html>
+<html lang="ko" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>커뮤니티 · Tree Atelier</title>
+<meta name="description" content="재배 노하우, 시세 정보, 거래 후기를 나누는 나무 농가 커뮤니티.">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<link rel="stylesheet" href="assets/css/style.css">
+<style>
+  .comm-layout { display: grid; grid-template-columns: 1fr 300px; gap: var(--sp-6); align-items: start; }
+  .comm-side { position: sticky; top: calc(var(--header-h) + 16px); }
+  @media (max-width: 940px) { .comm-layout { grid-template-columns: 1fr; } .comm-side { position: static; } }
+</style>
+</head>
+<body>
+
+<div id="site-header"></div>
+
+<main id="main">
+  <div class="wrap">
+    <nav class="breadcrumb" aria-label="현재 위치">
+      <a href="index.html">홈</a><span aria-hidden="true">›</span><span>커뮤니티</span>
+    </nav>
+
+    <header class="mb5">
+      <span class="eyebrow">재배자 · 구매자 · 운반업자</span>
+      <h1 class="h1">키우는 법은 서로에게서 배웁니다</h1>
+      <p class="lead mt2" style="max-width:54ch">
+        20년 키운 사람의 기록이, 이제 막 시작한 사람에게 가장 좋은 교재입니다.
+        여기서는 값도, 방법도 감추지 않습니다.
+      </p>
+    </header>
+
+    <div class="comm-layout">
+
+      <div>
+        <div class="row g2 wrapf mb4" role="group" aria-label="게시판 분류" id="catChips"></div>
+
+        <div class="row between wrapf g3 mb3">
+          <p class="small muted" id="postCount" role="status" aria-live="polite"></p>
+          <div class="row g2">
+            <div class="field" style="max-width:160px">
+              <label class="sr-only" for="postSearch">글 검색</label>
+              <input class="input" id="postSearch" type="search" placeholder="제목·내용 검색">
+            </div>
+            <div class="field" style="max-width:150px">
+              <label class="sr-only" for="postSort">정렬</label>
+              <select class="select" id="postSort">
+                <option value="new">최신순</option>
+                <option value="hot">인기순</option>
+                <option value="comment">댓글 많은순</option>
+                <option value="view">조회순</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <div class="card card-pad">
+          <ul id="postList"></ul>
+        </div>
+
+        <nav class="pagination" aria-label="페이지" id="pager">
+          <button type="button" id="prevBtn" aria-label="이전 페이지">←</button>
+          <span class="small muted num" id="pageInfo" style="padding:0 10px"></span>
+          <button type="button" id="nextBtn" aria-label="다음 페이지">→</button>
+        </nav>
+      </div>
+
+      <aside class="comm-side stack g4">
+        <a class="btn btn-primary btn-lg btn-block" href="community-write.html">글쓰기</a>
+
+        <div class="card card-pad stack g3">
+          <h2 class="h3">이번 주 인기 글</h2>
+          <ul class="stack g3" id="hotList"></ul>
+        </div>
+
+        <div class="card card-pad stack g3">
+          <h2 class="h3">많이 언급된 주제</h2>
+          <div class="row g2 wrapf">
+            <span class="badge badge-gray">#이식시기</span>
+            <span class="badge badge-gray">#분크기</span>
+            <span class="badge badge-gray">#활착률</span>
+            <span class="badge badge-gray">#가로수단가</span>
+            <span class="badge badge-gray">#소나무재선충</span>
+            <span class="badge badge-gray">#굴취비용</span>
+            <span class="badge badge-gray">#계약서</span>
+            <span class="badge badge-gray">#지자체발주</span>
+          </div>
+        </div>
+
+        <div class="notice notice-green"> <p><b>여기 규칙은 하나입니다.</b><br>
+             값을 물으면 아는 만큼 알려줍니다. 정보를 숨겨서 이득 보는 사람이 없게요.</p>
+        </div>
+      </aside>
+
+    </div>
+  </div>
+</main>
+
+<div id="site-footer"></div>
+
+<script src="assets/js/data.js"></script>
+<script src="assets/js/farm-data.js"></script>
+<script src="assets/js/store.js"></script>
+<script src="assets/js/app.js"></script>
+<script>
+const PER_PAGE = 8;
+let cat = new URLSearchParams(location.search).get('cat') || '전체';
+let sort = 'new', q = '', page = 1;
+
+if (POST_CATS.indexOf(cat) === -1) cat = '전체';
+
+$('#catChips').innerHTML = POST_CATS.map(c =>
+  `<button class="chip" type="button" data-c="${c}" aria-pressed="${c === cat}">${c}</button>`).join('');
+
+function filtered() {
+  const needle = q.trim().toLowerCase();
+  let rows = Store.Posts.all().filter(p => {
+    if (cat !== '전체' && p.cat !== cat) return false;
+    if (!needle) return true;
+    return (p.title + ' ' + (p.body || p.excerpt || '')).toLowerCase().includes(needle);
+  });
+
+  const sorters = {
+    new:     (a, b) => b.date.localeCompare(a.date) || String(b.id).localeCompare(String(a.id)),
+    hot:     (a, b) => Store.Likes.countFor(b) - Store.Likes.countFor(a),
+    comment: (a, b) => Store.Comments.countFor(b) - Store.Comments.countFor(a),
+    view:    (a, b) => (b.views || 0) - (a.views || 0),
+  };
+  return rows.slice().sort(sorters[sort]);
+}
+
+function render() {
+  const rows = filtered();
+  const pages = Math.max(1, Math.ceil(rows.length / PER_PAGE));
+  page = Math.min(page, pages);
+  const slice = rows.slice((page - 1) * PER_PAGE, page * PER_PAGE);
+
+  $('#postCount').textContent = `총 ${rows.length}개의 글`;
+  $('#pageInfo').textContent = `${page} / ${pages}`;
+  $('#prevBtn').disabled = page <= 1;
+  $('#nextBtn').disabled = page >= pages;
+  $('#pager').hidden = rows.length === 0;
+
+  $('#postList').innerHTML = slice.length ? slice.map(p => {
+    const comments = Store.Comments.countFor(p);
+    const likes = Store.Likes.countFor(p);
+    return `
+    <li class="post">
+      <span class="avatar" aria-hidden="true">${p.init}</span>
+      <div class="post-body">
+        <div class="row g2 wrapf mb1">
+          <span class="badge badge-gray">${p.cat}</span>
+          ${p.hot ? '<span class="badge badge-danger">인기</span>' : ''}
+          ${p.mine ? '<span class="badge badge-info">내 글</span>' : ''}
+        </div>
+        <a class="post-title" href="post.html?id=${encodeURIComponent(p.id)}">${p.title}</a>
+        <p class="post-excerpt">${p.excerpt || ''}</p>
+        <div class="post-meta">
+          <span class="strong">${p.author}</span>
+          <span>${p.date}</span>
+          <span aria-hidden="true">·</span>
+          <span>조회 ${won(p.views || 0)}</span>
+          <span>${comments}</span>
+          <span>${Store.Likes.has(p.id) ? '♥' : '♡'} ${likes}</span>
+        </div>
+      </div>
+    </li>`;
+  }).join('') : `
+    <li class="empty">
+      <p class="strong">${q ? '검색 결과가 없습니다.' : '아직 이 게시판에 글이 없습니다.'}</p>
+      <p class="small mt2">${q ? '다른 말로 찾아보세요.' : '첫 글을 남겨 보세요.'}</p>
+      <a class="btn btn-primary mt4" href="community-write.html">글쓰기</a>
+    </li>`;
+
+  $('#hotList').innerHTML = Store.Posts.all().slice()
+    .sort((a, b) => (b.views || 0) - (a.views || 0)).slice(0, 4)
+    .map((p, i) => `<li class="row g3" style="align-items:flex-start">
+      <b class="accent" aria-hidden="true">${i + 1}</b>
+      <a class="small" href="post.html?id=${encodeURIComponent(p.id)}" style="line-height:1.5">${p.title}</a>
+    </li>`).join('');
+}
+
+$('#catChips').addEventListener('click', e => {
+  const b = e.target.closest('[data-c]'); if (!b) return;
+  cat = b.dataset.c; page = 1;
+  $$('[data-c]').forEach(x => x.setAttribute('aria-pressed', String(x.dataset.c === cat)));
+  render();
+});
+$('#postSort').addEventListener('change', e => { sort = e.target.value; page = 1; render(); });
+$('#postSearch').addEventListener('input', e => { q = e.target.value; page = 1; render(); });
+$('#prevBtn').addEventListener('click', () => { page--; render(); window.scrollTo({ top: 0, behavior: 'smooth' }); });
+$('#nextBtn').addEventListener('click', () => { page++; render(); window.scrollTo({ top: 0, behavior: 'smooth' }); });
+
+render();
+</script>
+</body>
+</html>

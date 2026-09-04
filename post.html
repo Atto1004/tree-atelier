@@ -1,0 +1,214 @@
+<!doctype html>
+<html lang="ko" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>게시글 · Tree Atelier</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<link rel="stylesheet" href="assets/css/style.css">
+<style>
+  .post-content { font-size: 16.5px; line-height: 1.85; white-space: pre-wrap; }
+  .comment { display: flex; gap: var(--sp-3); padding: var(--sp-4) 0; border-bottom: 1px solid var(--line-2); }
+  .comment:last-child { border-bottom: 0; }
+  .like-btn {
+    display: inline-flex; align-items: center; gap: 8px; min-height: 46px; padding: 0 22px;
+    border-radius: var(--r-full); border: 1.5px solid var(--line); background: var(--bg);
+    font-size: 15px; font-weight: 700; cursor: pointer; transition: all .16s var(--ease);
+  }
+  .like-btn:hover { border-color: var(--danger); color: var(--danger); }
+  .like-btn[aria-pressed="true"] { background: var(--danger-bg); border-color: var(--danger); color: var(--danger); }
+</style>
+</head>
+<body>
+
+<div id="site-header"></div>
+
+<main id="main">
+  <div class="wrap wrap-narrow">
+    <nav class="breadcrumb" aria-label="현재 위치">
+      <a href="index.html">홈</a><span aria-hidden="true">›</span>
+      <a href="community.html">커뮤니티</a><span aria-hidden="true">›</span>
+      <span id="bcCat">게시글</span>
+    </nav>
+
+    <div id="postRoot"></div>
+  </div>
+</main>
+
+<div id="site-footer"></div>
+
+<script src="assets/js/data.js"></script>
+<script src="assets/js/farm-data.js"></script>
+<script src="assets/js/store.js"></script>
+<script src="assets/js/app.js"></script>
+<script>
+const id = new URLSearchParams(location.search).get('id');
+const P = Store.Posts.get(id);
+const root = $('#postRoot');
+
+/* HTML 이스케이프 — 사용자가 쓴 글을 그대로 붙이지 않습니다 */
+function esc(s) {
+  return String(s == null ? '' : s)
+    .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+}
+
+if (!P) {
+  root.innerHTML = `
+    <div class="empty">
+      <p class="strong">글을 찾을 수 없습니다.</p>
+      <p class="small mt2">삭제되었거나 주소가 잘못되었습니다.</p>
+      <a class="btn btn-primary mt4" href="community.html">커뮤니티로 돌아가기</a>
+    </div>`;
+} else {
+  document.title = P.title + ' · Tree Atelier';
+  $('#bcCat').textContent = P.cat;
+  Store.Posts.countView(P.id);
+
+  const body = P.body || P.excerpt || '';
+
+  root.innerHTML = `
+  <article class="mb6">
+    <header class="mb5">
+      <div class="row g2 wrapf mb3">
+        <a class="badge badge-gray" href="community.html?cat=${encodeURIComponent(P.cat)}">${esc(P.cat)}</a>
+        ${P.hot ? '<span class="badge badge-danger">인기</span>' : ''}
+        ${P.mine ? '<span class="badge badge-info">내 글</span>' : ''}
+      </div>
+      <h1 class="h1">${esc(P.title)}</h1>
+      <div class="row g3 wrapf mt4" style="align-items:center">
+        <span class="avatar" aria-hidden="true">${esc(P.init)}</span>
+        <div class="grow">
+          <div class="strong small">${esc(P.author)}</div>
+          <div class="tiny muted">${esc(P.date)} · 조회 ${won((P.views || 0) + 1)}</div>
+        </div>
+        ${P.mine ? '<button class="btn btn-ghost btn-sm" type="button" id="delPost">글 삭제</button>' : ''}
+      </div>
+    </header>
+
+    <div class="post-content">${esc(body)}</div>
+
+    <div class="row g3 wrapf mt6" style="justify-content:center">
+      <button class="like-btn" type="button" id="likeBtn"
+              aria-pressed="${Store.Likes.has(P.id)}">
+        <span id="likeIcon">${Store.Likes.has(P.id) ? '♥' : '♡'}</span>
+        <span>도움이 됐어요</span>
+        <span class="num" id="likeCount">${Store.Likes.countFor(P)}</span>
+      </button>
+    </div>
+  </article>
+
+  <hr>
+
+  <section id="commentSection">
+    <h2 class="h2 mb4">댓글 <span class="num accent" id="cCount">0</span></h2>
+
+    <form class="card card-pad stack g3 mb5" id="commentForm" novalidate>
+      <div class="field">
+        <label class="label sr-only" for="cBody">댓글 내용</label>
+        <textarea class="textarea" id="cBody" style="min-height:96px"
+          placeholder="아는 만큼 알려주세요. 겪은 숫자가 있으면 더 좋습니다."></textarea>
+      </div>
+      <div class="row between wrapf g3">
+        <span class="hint">${esc(Store.Me.get().name)} 님으로 등록됩니다</span>
+        <button class="btn btn-primary" type="submit">댓글 등록</button>
+      </div>
+    </form>
+
+    <ul id="commentList"></ul>
+  </section>
+
+  <hr>
+
+  <section class="mt5">
+    <div class="section-head">
+      <h2 class="h2">이 게시판의 다른 글</h2>
+      <a class="btn btn-secondary btn-sm" href="community.html?cat=${encodeURIComponent(P.cat)}">전체 보기</a>
+    </div>
+    <div class="card card-pad"><ul id="related"></ul></div>
+  </section>`;
+
+  /* ---------- 댓글 ---------- */
+  function renderComments() {
+    const list = Store.Comments.of(P.id);
+    const seeded = P.comments || 0;
+    $('#cCount').textContent = seeded + list.length;
+
+    $('#commentList').innerHTML = list.length ? list.map(c => `
+      <li class="comment">
+        <span class="avatar" aria-hidden="true">${esc(c.init)}</span>
+        <div class="grow">
+          <div class="row g2 wrapf" style="align-items:baseline">
+            <span class="strong small">${esc(c.author)}</span>
+            <span class="tiny muted">${esc(c.date)}</span>
+          </div>
+          <p class="mt1" style="white-space:pre-wrap">${esc(c.body)}</p>
+        </div>
+        <button class="btn btn-ghost btn-sm" type="button" data-del="${esc(c.id)}" aria-label="댓글 삭제">삭제</button>
+      </li>`).join('')
+      : (seeded
+          ? `<li class="empty" style="padding:var(--sp-6) var(--sp-4)">
+               <p class="small">이 글에는 댓글 ${seeded}개가 달려 있습니다. 여기에 새 댓글을 남기면 아래에 쌓입니다.</p>
+             </li>`
+          : `<li class="empty" style="padding:var(--sp-6) var(--sp-4)">
+               <p class="small">첫 댓글을 남겨 보세요.</p>
+             </li>`);
+  }
+
+  $('#commentForm').addEventListener('submit', e => {
+    e.preventDefault();
+    const ta = $('#cBody');
+    if (ta.value.trim().length < 2) {
+      setError(ta, '댓글을 2자 이상 적어 주세요.');
+      ta.focus();
+      return;
+    }
+    setError(ta, '');
+    if (!Store.Comments.add(P.id, ta.value)) {
+      toast('댓글을 저장하지 못했습니다.', 'bad');
+      return;
+    }
+    ta.value = '';
+    renderComments();
+    toast('댓글을 등록했습니다.', 'ok');
+  });
+
+  $('#commentList').addEventListener('click', e => {
+    const b = e.target.closest('[data-del]'); if (!b) return;
+    if (!confirm('이 댓글을 지울까요?')) return;
+    Store.Comments.remove(P.id, b.dataset.del);
+    renderComments();
+  });
+
+  /* ---------- 좋아요 ---------- */
+  $('#likeBtn').addEventListener('click', () => {
+    const on = Store.Likes.toggle(P.id);
+    $('#likeBtn').setAttribute('aria-pressed', String(on));
+    $('#likeIcon').textContent = on ? '♥' : '♡';
+    $('#likeCount').textContent = Store.Likes.countFor(P);
+  });
+
+  /* ---------- 글 삭제 ---------- */
+  $('#delPost')?.addEventListener('click', () => {
+    if (!confirm('이 글을 삭제할까요? 되돌릴 수 없습니다.')) return;
+    Store.Posts.remove(P.id);
+    location.href = 'community.html';
+  });
+
+  /* ---------- 같은 게시판 다른 글 ---------- */
+  const rel = Store.Posts.all().filter(x => x.cat === P.cat && String(x.id) !== String(P.id)).slice(0, 4);
+  $('#related').innerHTML = rel.length ? rel.map(p => `
+    <li class="post">
+      <span class="avatar" aria-hidden="true">${esc(p.init)}</span>
+      <div class="post-body">
+        <a class="post-title" href="post.html?id=${encodeURIComponent(p.id)}">${esc(p.title)}</a>
+        <div class="post-meta"><span>${esc(p.author)}</span><span>${esc(p.date)}</span></div>
+      </div>
+    </li>`).join('')
+    : '<li class="small muted">이 게시판의 다른 글이 아직 없습니다.</li>';
+
+  renderComments();
+}
+</script>
+</body>
+</html>

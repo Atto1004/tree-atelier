@@ -1,0 +1,377 @@
+<!doctype html>
+<html lang="ko" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>구매 문의 · Tree Atelier</title>
+<meta name="description" content="원하는 수종·규격·수량을 남기면 법원리농원이 시세 자료와 함께 회신합니다. 관리번호를 붙여 특정 나무를 바로 문의할 수도 있습니다.">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<link rel="stylesheet" href="assets/css/style.css">
+<style>
+  .inq-layout { display: grid; grid-template-columns: 1fr 340px; gap: var(--sp-6); align-items: start; }
+  .inq-side { position: sticky; top: calc(var(--header-h) + 16px); }
+  .target { display: flex; gap: 14px; align-items: center; padding: 12px; border: 1px solid var(--line); border-radius: var(--r-lg); background: var(--bg-soft); }
+  .target img { width: 84px; height: 84px; border-radius: var(--r-md); object-fit: cover; flex: none; }
+  .target .t-body { min-width: 0; flex: 1; }
+  .target .t-title { font-weight: 700; }
+  .range { display: grid; grid-template-columns: 1fr auto 1fr; gap: 8px; align-items: center; }
+  .range .sep { color: var(--ink-4); }
+  .chips { display: flex; flex-wrap: wrap; gap: 8px; }
+  .chip { border: 1px solid var(--line); background: var(--bg); border-radius: 999px; padding: 6px 12px; font-size: 13.5px; cursor: pointer; }
+  .chip[aria-pressed="true"] { background: var(--green-700); color: #fff; border-color: var(--green-700); }
+  .match { display: flex; align-items: baseline; gap: 8px; }
+  .match b { font-size: 28px; font-weight: 800; letter-spacing: -.02em; }
+  .steps { display: grid; gap: 10px; counter-reset: s; }
+  .steps li { display: flex; gap: 12px; list-style: none; }
+  .steps li::before { counter-increment: s; content: counter(s); flex: none; width: 24px; height: 24px; border-radius: 50%; background: var(--green-100); color: var(--green-700); font-weight: 800; font-size: 13px; display: grid; place-items: center; }
+  .q-item { display: flex; justify-content: space-between; gap: 10px; padding: 10px 0; border-bottom: 1px solid var(--line); font-size: 14px; }
+  .q-item:last-child { border-bottom: 0; }
+  .done { text-align: center; padding: var(--sp-7) var(--sp-4); }
+  .done .big { font-size: 46px; }
+  @media (max-width: 940px) {
+    .inq-layout { grid-template-columns: 1fr; }
+    .inq-side { position: static; }
+  }
+</style>
+</head>
+<body>
+
+<div id="site-header"></div>
+
+<main id="main">
+  <div class="wrap">
+    <nav class="breadcrumb" aria-label="현재 위치">
+      <a href="index.html">홈</a><span aria-hidden="true">›</span><span>구매 문의</span>
+    </nav>
+
+    <header class="mb5">
+      <h1 class="h1">구매 문의</h1>
+      <p class="lead mt2">
+        원하는 수종·규격·수량만 남겨 주세요. <b class="accent">농원이 시세 자료와 함께 직접 회신</b>합니다.
+        배치도에서 고른 나무가 있으면 관리번호가 그대로 첨부됩니다.
+      </p>
+    </header>
+
+    <div class="inq-layout">
+      <form class="stack g6" id="inqForm" novalidate>
+
+        <!-- 0. 문의 대상 -->
+        <section class="card card-pad stack g4">
+          <div class="row" style="justify-content:space-between; align-items:center">
+            <h2 class="h2">1. 어떤 나무를 문의하시나요?</h2>
+            <a class="btn btn-ghost btn-sm" href="farm.html">배치도에서 고르기</a>
+          </div>
+          <div id="targetBox"></div>
+        </section>
+
+        <!-- 1. 조건 -->
+        <section class="card card-pad stack g4">
+          <h2 class="h2">2. 원하는 조건</h2>
+
+          <div class="grid grid-2">
+            <div class="field">
+              <label class="label" for="species">수종 <span class="req" aria-hidden="true">*</span></label>
+              <select class="select" id="species" required>
+                <option value="sonamu">소나무(적송)</option>
+                <option value="bansong">반송</option>
+                <option value="any">상관없음 · 추천 받기</option>
+              </select>
+            </div>
+            <div class="field">
+              <label class="label" for="qty">수량 (주) <span class="req" aria-hidden="true">*</span></label>
+              <input class="input" id="qty" type="number" inputmode="numeric" min="1" value="1" required>
+            </div>
+          </div>
+
+          <div class="field">
+            <span class="label">근원직경 R 범위 (cm)</span>
+            <div class="range">
+              <input class="input" id="rMin" type="number" inputmode="numeric" min="10" max="60" placeholder="최소 (예: 20)" aria-label="근원직경 최소">
+              <span class="sep">~</span>
+              <input class="input" id="rMax" type="number" inputmode="numeric" min="10" max="60" placeholder="최대 (예: 30)" aria-label="근원직경 최대">
+            </div>
+            <div class="chips mt2" id="rChips" role="group" aria-label="규격 빠른 선택">
+              <button class="chip" type="button" data-r="14-20">R14–20 · 소형</button>
+              <button class="chip" type="button" data-r="20-28">R20–28 · 중형</button>
+              <button class="chip" type="button" data-r="28-40">R28–40 · 대형</button>
+            </div>
+            <p class="hint" id="matchHint"></p>
+          </div>
+
+          <div class="grid grid-2">
+            <div class="field">
+              <label class="label" for="purpose">용도</label>
+              <select class="select" id="purpose">
+                <option value="">선택</option>
+                <option>조경 공사 (아파트·단지)</option>
+                <option>주택·전원주택 정원</option>
+                <option>관공서·학교·공원</option>
+                <option>골프장·리조트</option>
+                <option>이식·재배용</option>
+                <option>기타</option>
+              </select>
+            </div>
+            <div class="field">
+              <label class="label" for="when">희망 시기</label>
+              <select class="select" id="when">
+                <option value="">선택</option>
+                <option>가능한 빨리</option>
+                <option>1개월 이내</option>
+                <option>3개월 이내</option>
+                <option>내년 봄 식재기 (3~4월)</option>
+                <option>아직 미정 · 견적만</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="grid grid-2">
+            <div class="field">
+              <label class="label" for="region">반입 지역</label>
+              <select class="select" id="region"><option value="">선택</option></select>
+            </div>
+            <div class="field">
+              <label class="label" for="site">현장 (시·군·구)</label>
+              <input class="input" id="site" type="text" placeholder="예: 파주시 운정동">
+            </div>
+          </div>
+
+          <label class="check">
+            <input type="checkbox" id="wantMove" checked>
+            <span><b>굴취·운반 견적도 함께</b> 받겠습니다. (R 규격 기준 뿌리분 크기·필요 장비로 산정)</span>
+          </label>
+        </section>
+
+        <!-- 2. 연락처 -->
+        <section class="card card-pad stack g4">
+          <h2 class="h2">3. 회신 받을 연락처</h2>
+          <div class="grid grid-2">
+            <div class="field">
+              <label class="label" for="name">성함 <span class="req" aria-hidden="true">*</span></label>
+              <input class="input" id="name" type="text" autocomplete="name" required>
+            </div>
+            <div class="field">
+              <label class="label" for="phone">연락처 <span class="req" aria-hidden="true">*</span></label>
+              <input class="input" id="phone" type="tel" inputmode="tel" autocomplete="tel" placeholder="010-0000-0000" required>
+            </div>
+          </div>
+          <div class="field">
+            <label class="label" for="org">회사·소속 <span class="muted small">(선택)</span></label>
+            <input class="input" id="org" type="text" autocomplete="organization" placeholder="예: OO조경, 개인">
+          </div>
+          <div class="field">
+            <label class="label" for="memo">요청 사항 <span class="muted small">(선택)</span></label>
+            <textarea class="textarea" id="memo" maxlength="600" placeholder="수형 선호(직간·곡간·다간), 현장 진입로 사정, 예산 범위 등 자유롭게 적어 주세요."></textarea>
+          </div>
+          <label class="check">
+            <input type="checkbox" id="agree" required>
+            <span>문의 회신 목적의 <b>개인정보 수집·이용에 동의</b>합니다. (연락처는 회신 후 90일 뒤 삭제) <span class="req" aria-hidden="true">*</span></span>
+          </label>
+          <div class="notice notice-info"> <p>가격은 화면에 공개하지 않습니다. 회신에는 <b>제시 가격과 함께 같은 규격의 최근 실거래 시세</b>가 나란히 붙습니다.</p>
+          </div>
+          <div class="row g3 wrapf">
+            <button class="btn btn-primary btn-lg" type="submit" id="submitBtn">문의 보내기</button>
+            <button class="btn btn-ghost" type="button" id="resetBtn">초기화</button>
+          </div>
+        </section>
+      </form>
+
+      <aside class="inq-side stack g4">
+        <div class="card card-pad stack g3">
+          <h2 class="h3">지금 조건에 맞는 나무</h2>
+          <div class="match"><b id="matchN">—</b><span class="muted">주 · 법원리농원 실측 장부</span></div>
+          <p class="small muted" id="matchDesc"></p>
+          <a class="btn btn-secondary btn-block" id="matchLink" href="farm.html">배치도에서 보기</a>
+        </div>
+
+        <div class="card card-pad stack g3">
+          <h2 class="h3">문의 후 진행</h2>
+          <ol class="steps">
+            <li><span><b>접수</b> — 접수번호가 발급되고 농원에 바로 전달됩니다.</span></li>
+            <li><span><b>회신</b> (영업일 1일 내) — 제시 가격 + 같은 규격 실거래 시세.</span></li>
+            <li><span><b>현장 확인</b> — 관리번호대로 나무를 직접 보고 고릅니다.</span></li>
+            <li><span><b>굴취·운반</b> — 뿌리분·장비 기준 견적, 인수 확인 후 정산.</span></li>
+          </ol>
+        </div>
+
+        <div class="card card-pad stack g3">
+          <h3 class="h3">내 문의 내역</h3>
+          <div id="myInq"></div>
+        </div>
+
+        <div class="card card-pad stack g3">
+          <h3 class="h3">전화가 편하시면</h3>
+          <p class="small muted">관리번호를 불러 주시면 같은 내용으로 접수됩니다.</p>
+          <a class="btn btn-secondary btn-block" href="tel:1600-0000">1600-0000 전화 문의</a>
+        </div>
+      </aside>
+    </div>
+  </div>
+</main>
+
+<div id="site-footer"></div>
+
+<script src="assets/js/data.js"></script>
+<script src="assets/js/farm-data.js"></script>
+<script src="assets/js/farm-map.js"></script>
+<script src="assets/js/farm-photos.js"></script>
+<script src="assets/js/store.js"></script>
+<script src="assets/js/app.js"></script>
+<script>
+const qs = new URLSearchParams(location.search);
+const codeQ = (qs.get('code') || '').trim().toUpperCase();
+const lotQ = (qs.get('lot') || '').trim();
+const RT = codeQ ? registryByCode(codeQ) : null;
+const LOT = lotQ ? (Store.Listings.get(lotQ) || LISTINGS.find(l => l.id === lotQ)) : null;
+
+$('#region').insertAdjacentHTML('beforeend', REGIONS.map(r => `<option>${r}</option>`).join(''));
+
+/* ---------- 문의 대상 ---------- */
+function renderTarget() {
+  const box = $('#targetBox');
+  if (RT) {
+    const hero = heroOf(RT.code);
+    box.innerHTML = `
+      <div class="target">
+        <img src="${hero.src}" alt="">
+        <div class="t-body">
+          <div class="row g2 wrapf">
+            <span class="tree-code">${RT.code}</span>
+            <span class="badge badge-gray">${RT.note === '반송' ? '반송' : '적송'}</span>
+            ${RT.multi ? `<span class="badge badge-green">다간 ${RT.stems.length}간</span>` : ''}
+          </div>
+          <div class="t-title mt1">R${RT.r != null ? RT.r : '—'}${RT.b != null ? ' · B' + RT.b : ''} · ${esc(FARM.name)}</div>
+          <div class="small muted">${farmPlaceText(RT.code)} · <a href="tree.html?code=${RT.code}">개체 페이지</a> · <a href="farm.html#${RT.code}">배치도</a></div>
+        </div>
+        <a class="btn btn-ghost btn-sm" href="inquiry.html">변경</a>
+      </div>
+      <p class="hint mt2">이 관리번호가 문의에 첨부됩니다. 같은 규격의 다른 나무도 함께 추천받으려면 아래 수량을 늘려 주세요.</p>`;
+    $('#species').value = RT.note === '반송' ? 'bansong' : 'sonamu';
+    if (RT.r) { $('#rMin').value = Math.max(10, RT.r - 2); $('#rMax').value = RT.r + 2; }
+    return;
+  }
+  if (LOT) {
+    const sp = SPECIES.find(s => s.id === LOT.species);
+    box.innerHTML = `
+      <div class="target">
+        <div class="t-body">
+          <div class="row g2 wrapf"><span class="badge badge-green">매물 ${esc(LOT.id)}</span><span class="badge badge-gray">${sp ? sp.name : LOT.species}</span></div>
+          <div class="t-title mt1">${esc(LOT.title)}</div>
+          <div class="small muted">${esc(LOT.grower)} · <a href="detail.html?id=${encodeURIComponent(LOT.id)}">매물 상세</a></div>
+        </div>
+        <a class="btn btn-ghost btn-sm" href="inquiry.html">변경</a>
+      </div>`;
+    if (sp && (sp.id === 'sonamu' || sp.id === 'bansong')) $('#species').value = sp.id;
+    if (LOT.spec && LOT.spec.R) { $("#rMin").value = LOT.spec.R; $("#rMax").value = LOT.spec.R; }
+    if (LOT.qty) $('#qty').value = Math.min(LOT.qty, 10);
+    return;
+  }
+  box.innerHTML = `
+    <div class="target">
+      <div class="t-body">
+        <div class="t-title">법원리농원 전체에서 조건에 맞는 나무를 추천받습니다</div>
+        <div class="small muted mt1">특정 나무를 찍어 문의하려면 <a href="farm.html">배치도</a>에서 나무를 고른 뒤 ‘구매 문의’를 누르세요. 관리번호(예: A-3-6)가 자동으로 붙습니다.</div>
+      </div>
+    </div>`;
+}
+
+/* ---------- 조건에 맞는 나무 수 (장부 기준) ---------- */
+function matchTrees() {
+  const sp = $('#species').value;
+  const lo = +$('#rMin').value || 0, hi = +$('#rMax').value || 999;
+  return FARM_TREES.filter(t => {
+    if (sp === 'bansong' && t.note !== '반송') return false;
+    if (sp === 'sonamu' && t.note === '반송') return false;
+    if (t.r == null) return sp === 'any';
+    return t.r >= lo && t.r <= hi;
+  });
+}
+function renderMatch() {
+  const list = matchTrees();
+  const lo = $('#rMin').value, hi = $('#rMax').value;
+  $('#matchN').textContent = list.length;
+  const byZone = {};
+  list.forEach(t => { byZone[t.zone] = (byZone[t.zone] || 0) + 1; });
+  const zones = Object.keys(byZone).sort().map(z => `${z} ${byZone[z]}주`).join(' · ');
+  $('#matchDesc').textContent = list.length
+    ? `${lo || hi ? `R${lo || '~'}–${hi || '~'} ` : ''}${$('#species').selectedOptions[0].textContent.replace(/^\S+\s/, '')} · ${zones}`
+    : '조건에 맞는 나무가 장부에 없습니다. 범위를 넓혀 보세요.';
+  $('#matchHint').textContent = list.length ? `이 범위의 나무가 농원에 ${list.length}주 있습니다.` : '';
+  const top = Object.keys(byZone).sort((a, b) => byZone[b] - byZone[a])[0];
+  $('#matchLink').href = 'farm.html' + (top ? '#' + top : '');
+}
+['species', 'rMin', 'rMax'].forEach(id => $('#' + id).addEventListener('input', renderMatch));
+$$('#rChips .chip').forEach(c => c.addEventListener('click', () => {
+  const [a, b] = c.dataset.r.split('-');
+  $('#rMin').value = a; $('#rMax').value = b;
+  $$('#rChips .chip').forEach(x => x.setAttribute('aria-pressed', x === c ? 'true' : 'false'));
+  renderMatch();
+}));
+
+/* ---------- 내 문의 내역 ---------- */
+function renderMine() {
+  const list = Store.Inquiries.all();
+  $('#myInq').innerHTML = list.length
+    ? list.slice(0, 5).map(q => `
+      <div class="q-item">
+        <div><b>${esc(q.id)}</b> <span class="muted">· ${q.code ? esc(q.code) : q.lot ? '매물 ' + esc(q.lot) : '조건 문의'}</span><br>
+          <span class="small muted">${esc(q.speciesLabel)} ${q.rMin || q.rMax ? `R${q.rMin || '~'}–${q.rMax || '~'}` : ''} · ${q.qty}주</span></div>
+        <span class="badge badge-info" style="align-self:center">${esc(q.status)}</span>
+      </div>`).join('')
+    : '<p class="small muted">아직 보낸 문의가 없습니다.</p>';
+}
+
+/* ---------- 제출 ---------- */
+$('#inqForm').addEventListener('submit', e => {
+  e.preventDefault();
+  let bad = null;
+  const need = (el, ok, msg) => { setError(el, ok ? '' : msg); if (!ok && !bad) bad = el; };
+  need($('#qty'), +$('#qty').value >= 1, '수량을 1주 이상 입력해 주세요.');
+  const lo = +$('#rMin').value, hi = +$('#rMax').value;
+  need($('#rMax'), !(lo && hi && lo > hi), '최대값이 최소값보다 작습니다.');
+  need($('#name'), $('#name').value.trim().length >= 2, '성함을 입력해 주세요.');
+  need($('#phone'), /^0\d{1,2}-?\d{3,4}-?\d{4}$/.test($('#phone').value.trim()), '연락처 형식을 확인해 주세요.');
+  need($('#agree'), $('#agree').checked, '동의가 필요합니다.');
+  if (bad) { bad.focus(); toast('입력을 확인해 주세요.', 'bad'); return; }
+
+  const data = {
+    code: RT ? RT.code : null, lot: LOT ? LOT.id : null,
+    species: $('#species').value, speciesLabel: $('#species').selectedOptions[0].textContent.replace(/^\S+\s/, ''),
+    rMin: $('#rMin').value || null, rMax: $('#rMax').value || null, qty: +$('#qty').value,
+    purpose: $('#purpose').value, when: $('#when').value, region: $('#region').value, site: $('#site').value.trim(),
+    wantMove: $('#wantMove').checked, name: $('#name').value.trim(), phone: $('#phone').value.trim(),
+    org: $('#org').value.trim(), memo: $('#memo').value.trim(), matchCount: matchTrees().length,
+  };
+  const res = Store.Inquiries.add(data);
+  if (!res.ok) { toast('저장하지 못했습니다. 다시 시도해 주세요.', 'bad'); return; }
+  const q = res.inquiry;
+  $('#inqForm').innerHTML = `
+    <section class="card card-pad done stack g3">
+      <h2 class="h2">문의가 접수되었습니다</h2>
+      <p class="lead">접수번호 <b class="accent">${q.id}</b></p>
+      <p class="muted">${q.code ? `관리번호 <span class="tree-code">${q.code}</span> 첨부 · ` : q.lot ? `매물 ${esc(q.lot)} · ` : ''}${esc(q.speciesLabel)} ${q.rMin || q.rMax ? `R${q.rMin || '~'}–${q.rMax || '~'}` : ''} · ${q.qty}주${q.wantMove ? ' · 굴취·운반 견적 포함' : ''}</p>
+      <p class="small muted">법원리농원이 영업일 1일 내에 <b>${esc(q.phone)}</b>로 제시 가격과 시세 자료를 함께 보내드립니다.<br>(프로토타입: 문의는 이 브라우저에만 저장됩니다.)</p>
+      <div class="row g3 wrapf" style="justify-content:center">
+        <a class="btn btn-primary" href="farm.html${q.code ? '#' + q.code : ''}">배치도로 돌아가기</a>
+        <a class="btn btn-secondary" href="inquiry.html">다른 문의 보내기</a>
+        <a class="btn btn-ghost" href="market.html">실거래 시세 보기</a>
+      </div>
+    </section>`;
+  toast('문의를 보냈습니다. 접수번호 ' + q.id, 'ok');
+  renderMine();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+});
+
+$('#resetBtn').addEventListener('click', () => {
+  $('#inqForm').reset();
+  $$('.err').forEach(e => e.remove());
+  $$('[aria-invalid]').forEach(e => e.removeAttribute('aria-invalid'));
+  $$('#rChips .chip').forEach(x => x.removeAttribute('aria-pressed'));
+  renderTarget(); renderMatch();
+});
+
+renderTarget();
+renderMatch();
+renderMine();
+</script>
+</body>
+</html>

@@ -1,0 +1,6 @@
+photos-original/
+wireframe/
+design/
+*.psd
+Thumbs.db
+.DS_Store

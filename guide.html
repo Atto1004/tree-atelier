@@ -1,0 +1,839 @@
+<!doctype html>
+<html lang="ko" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>나무 규격 안내 · Tree Atelier</title>
+<meta name="description" content="근원직경 R, 흉고직경 B, 수고 H, 수관폭 W. 어디를 어떻게 재는지 그림으로 안내합니다.">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<link rel="stylesheet" href="assets/css/style.css">
+<style>
+  .guide-layout { display: grid; grid-template-columns: 216px 1fr; gap: var(--sp-6); align-items: start; }
+  .toc { position: sticky; top: calc(var(--header-h) + 16px); }
+  .toc a {
+    display: block; padding: 9px 12px; border-radius: var(--r-sm);
+    font-size: 14px; font-weight: 600; color: var(--ink-3);
+    border-left: 2.5px solid transparent;
+  }
+  .toc a:hover { background: var(--bg-sunk); color: var(--ink); }
+  .toc a.is-on { color: var(--green-700); border-left-color: var(--green-700); background: var(--green-50); }
+
+  .spec-card { border-left: 4px solid var(--green-700); }
+  .term { padding: var(--sp-4) 0; border-bottom: 1px solid var(--line-2); }
+  .term:last-child { border-bottom: 0; }
+  .term dt { font-weight: 700; font-size: 15.5px; }
+  .term dd { margin: 5px 0 0; font-size: 14.5px; color: var(--ink-2); line-height: 1.65; }
+
+  details.faq { border: 1px solid var(--line); border-radius: var(--r); padding: 0; overflow: hidden; }
+  details.faq + details.faq { margin-top: 10px; }
+  details.faq summary {
+    padding: 15px 18px; cursor: pointer; font-weight: 700; font-size: 15.5px;
+    list-style: none; display: flex; justify-content: space-between; gap: 12px; align-items: center;
+  }
+  details.faq summary::-webkit-details-marker { display: none; }
+  details.faq summary::after { content: "+"; font-size: 20px; color: var(--ink-3); font-weight: 400; }
+  details.faq[open] summary::after { content: "−"; }
+  details.faq summary:hover { background: var(--bg-soft); }
+  details.faq .faq-body { padding: 0 18px 16px; font-size: 14.5px; color: var(--ink-2); line-height: 1.7; }
+
+  @media (max-width: 900px) {
+    .guide-layout { grid-template-columns: 1fr; }
+    .toc { position: static; }
+    .toc-box { display: flex; gap: 6px; overflow-x: auto; padding-bottom: 4px; }
+    .toc a { white-space: nowrap; border-left: 0; border: 1.5px solid var(--line); border-radius: var(--r-full); }
+    .toc a.is-on { border-color: var(--green-700); }
+  }
+</style>
+</head>
+<body>
+
+<div id="site-header"></div>
+
+<main id="main">
+  <div class="wrap">
+    <nav class="breadcrumb" aria-label="현재 위치">
+      <a href="index.html">홈</a><span aria-hidden="true">›</span><span>규격 안내</span>
+    </nav>
+
+    <header class="mb6">
+      <span class="eyebrow">처음이어도 괜찮습니다</span>
+      <h1 class="h1">나무 규격, 이렇게 읽습니다</h1>
+      <p class="lead mt3" style="max-width:56ch">
+        <b class="num">H4.2×W2.4×R15</b> 같은 표기가 낯설어서 거래를 못 하는 일이 없도록,
+        어디를 어떻게 재는지부터 정리했습니다.
+      </p>
+    </header>
+
+    <div class="guide-layout">
+
+      <aside class="toc" aria-label="목차">
+        <nav class="toc-box card" style="padding:8px">
+          <a href="#measure">측정 항목 4가지</a>
+          <a href="#notation">표기 읽는 법</a>
+          <a href="#bySpecies">수종별 표기</a>
+          <a href="#howto">재는 방법</a>
+          <a href="#calc">규격 계산기</a>
+          <a href="#ball">뿌리분과 장비</a>
+          <a href="#terms">용어 사전</a>
+          <a href="#faq">자주 묻는 질문</a>
+        </nav>
+      </aside>
+
+      <div class="stack g8">
+
+        <!-- ============ 측정 항목 ============ -->
+        <section id="measure">
+          <h2 class="h2 mb3">측정 항목 4가지</h2>
+          <p class="lead mb5">나무 값은 이 네 가지로 정해집니다. 수종에 따라 쓰는 항목이 다릅니다.</p>
+
+          <div class="notice notice-green mb4"> <p><b>슬라이더를 움직여 보세요.</b>
+               숫자를 올리고 내리면 소나무의 어느 부분이 늘어나고 줄어드는지 바로 보입니다.</p>
+          </div>
+
+          <div class="grid grid-2 g5 mb5" style="align-items:start">
+            <div class="tree-stage" id="treeStage"></div>
+
+            <div class="card card-pad stack g2">
+              <div class="row between wrapf g2 mb2">
+                <h3 class="h3">규격을 바꿔 보세요</h3>
+                <span class="badge badge-gray num" id="liveNotation">—</span>
+              </div>
+
+              <div class="slider-row" data-row="H">
+                <div class="slider-head">
+                  <label class="slider-key" for="sH"><b>H</b> 수고</label>
+                  <span class="slider-val" id="vH">4.2<small>m</small></span>
+                </div>
+                <input class="range" id="sH" type="range" min="1" max="10" step="0.1" value="4.2"
+                       aria-describedby="dH">
+                <p class="hint" id="dH">지표면에서 수관 정상부까지</p>
+              </div>
+
+              <div class="slider-row" data-row="W">
+                <div class="slider-head">
+                  <label class="slider-key" for="sW"><b>W</b> 수관폭</label>
+                  <span class="slider-val" id="vW">2.4<small>m</small></span>
+                </div>
+                <input class="range" id="sW" type="range" min="0.4" max="8" step="0.1" value="2.4"
+                       aria-describedby="dW">
+                <p class="hint" id="dW">가지가 퍼진 가장 넓은 폭</p>
+              </div>
+
+              <div class="slider-row" data-row="B">
+                <div class="slider-head">
+                  <label class="slider-key" for="sB"><b>B</b> 흉고직경</label>
+                  <span class="slider-val" id="vB">12<small>cm</small></span>
+                </div>
+                <input class="range" id="sB" type="range" min="2" max="40" step="0.5" value="12"
+                       aria-describedby="dB">
+                <p class="hint" id="dB">지표면 1.2m 높이의 줄기 지름</p>
+              </div>
+
+              <div class="slider-row" data-row="R">
+                <div class="slider-head">
+                  <label class="slider-key" for="sR"><b>R</b> 근원직경</label>
+                  <span class="slider-val" id="vR">15<small>cm</small></span>
+                </div>
+                <input class="range" id="sR" type="range" min="3" max="45" step="0.5" value="15"
+                       aria-describedby="dR">
+                <p class="hint" id="dR">지표면에 닿는 부분의 줄기 지름</p>
+              </div>
+
+              <div id="sliderWarn"></div>
+
+              <div class="divider mt2 mb3"></div>
+
+              <p class="hint mb2">이런 나무를 눌러 보세요</p>
+              <div class="row g2 wrapf">
+                <button class="chip" type="button" data-preset="1.2,0.8,4,6">묘목</button>
+                <button class="chip" type="button" data-preset="4.2,2.4,12,15">조경수 R15</button>
+                <button class="chip" type="button" data-preset="6.8,3.4,17,20">대형목 R20</button>
+                <button class="chip" type="button" data-preset="9.0,6.5,26,30">노거수 R30</button>
+              </div>
+
+              <button class="btn btn-secondary btn-block mt4" type="button" id="toCalc">
+                이 규격으로 계산기 보기
+              </button>
+            </div>
+          </div>
+
+          <div class="grid grid-2" id="specCards"></div>
+        </section>
+
+        <!-- ============ 표기 읽는 법 ============ -->
+        <section id="notation">
+          <h2 class="h2 mb3">표기 읽는 법</h2>
+          <p class="lead mb4">매물에 붙은 규격 표기는 이렇게 분해됩니다.</p>
+
+          <div class="card card-pad">
+            <p class="num center" style="font-size:clamp(24px,5vw,38px);font-weight:800;letter-spacing:-.03em">
+              H4.2 <span class="muted">×</span> W2.4 <span class="muted">×</span> R15
+            </p>
+            <div class="grid grid-3 mt5">
+              <div class="stat">
+                <div class="stat-k">H4.2</div>
+                <div class="stat-v" style="font-size:17px">수고 4.2m</div>
+                <div class="stat-d muted">지표면에서 꼭대기까지</div>
+              </div>
+              <div class="stat">
+                <div class="stat-k">W2.4</div>
+                <div class="stat-v" style="font-size:17px">수관폭 2.4m</div>
+                <div class="stat-d muted">가지가 퍼진 최대 너비</div>
+              </div>
+              <div class="stat">
+                <div class="stat-k">R15</div>
+                <div class="stat-v" style="font-size:17px">근원직경 15cm</div>
+                <div class="stat-d muted">밑동 줄기 굵기</div>
+              </div>
+            </div>
+            <div class="notice notice-info mt5"> <p><b>단위를 헷갈리기 쉽습니다.</b>
+                 H·W는 <b>미터(m)</b>, B·R은 <b>센티미터(cm)</b>입니다.
+                 R15는 15cm이지 15m가 아닙니다.</p>
+            </div>
+          </div>
+        </section>
+
+        <!-- ============ 수종별 표기 ============ -->
+        <section id="bySpecies">
+          <h2 class="h2 mb3">수종별로 쓰는 표기가 다릅니다</h2>
+          <p class="lead mb4">
+            침엽수는 수관이 값을 좌우하고, 줄기가 곧은 활엽수는 흉고를 재기 쉽습니다.
+            그래서 수종마다 관행이 다릅니다.
+          </p>
+          <div class="table-scroll">
+            <table class="table">
+              <caption class="sr-only">수종별 표준 규격 표기</caption>
+              <thead>
+                <tr>
+                  <th scope="col">수종</th>
+                  <th scope="col">분류</th>
+                  <th scope="col">표기</th>
+                  <th scope="col">필수 항목</th>
+                  <th scope="col">이식 적기</th>
+                </tr>
+              </thead>
+              <tbody id="speciesTable"></tbody>
+            </table>
+          </div>
+          <p class="hint mt3">
+            표기 조합은 조경설계기준·조경공사 표준시방서의 통용 관행을 따랐습니다.
+            <b>실제 납품 규격은 발주처 시방서를 확인해 주세요.</b>
+          </p>
+        </section>
+
+        <!-- ============ 재는 방법 ============ -->
+        <section id="howto">
+          <h2 class="h2 mb3">직접 재는 방법</h2>
+          <p class="lead mb4">줄자 하나면 됩니다. 어림값이어도 등록할 수 있습니다.</p>
+
+          <div class="stack g4">
+            <div class="card card-pad">
+              <div class="row g4" style="align-items:flex-start">
+                <div class="step-n">R</div>
+                <div class="grow">
+                  <h3 class="h3">근원직경 재기</h3>
+                  <p class="small muted mt2">
+                    <b>지표면에 닿는 부분</b>의 줄기 지름을 잽니다. 흙에 묻힌 뿌리 위쪽이 아니라,
+                    땅과 줄기가 만나는 바로 그 지점입니다. 줄자로 둘레를 재서
+                    <b class="num">둘레 ÷ 3.14</b> 를 하면 지름이 나옵니다.
+                  </p>
+                  <p class="small mt2"><b>흔한 실수 —</b> 무릎 높이에서 재면 실제보다 작게 나옵니다.
+                    낙엽이나 복토를 걷어내고 진짜 지표면을 찾으세요.</p>
+                </div>
+              </div>
+            </div>
+
+            <div class="card card-pad">
+              <div class="row g4" style="align-items:flex-start">
+                <div class="step-n">B</div>
+                <div class="grow">
+                  <h3 class="h3">흉고직경 재기</h3>
+                  <p class="small muted mt2">
+                    지표면에서 <b>1.2m 높이</b>의 줄기 지름입니다. 보통 성인 가슴 높이입니다.
+                    경사지에서는 <b>산 위쪽 지표면</b>을 기준으로 잽니다.
+                  </p>
+                  <p class="small mt2"><b>흔한 실수 —</b> 1.2m 지점에 가지가 갈라져 있으면
+                    갈라지기 바로 아래를 재고, 매물 설명에 그 사실을 적어 주세요.</p>
+                </div>
+              </div>
+            </div>
+
+            <div class="card card-pad">
+              <div class="row g4" style="align-items:flex-start">
+                <div class="step-n">H</div>
+                <div class="grow">
+                  <h3 class="h3">수고 재기</h3>
+                  <p class="small muted mt2">
+                    지표면부터 <b>수관 정상부</b>까지입니다. 웃자란 가지 하나가 아니라
+                    수관이 이루는 꼭대기 선을 기준으로 봅니다.
+                  </p>
+                  <p class="small mt2"><b>간단한 방법 —</b> 키를 아는 사람을 나무 옆에 세우고
+                    사진을 찍어 비율로 계산하면 충분히 정확합니다.</p>
+                </div>
+              </div>
+            </div>
+
+            <div class="card card-pad">
+              <div class="row g4" style="align-items:flex-start">
+                <div class="step-n">W</div>
+                <div class="grow">
+                  <h3 class="h3">수관폭 재기</h3>
+                  <p class="small muted mt2">
+                    가지가 퍼진 <b>가장 넓은 폭</b>입니다. 한쪽으로 치우쳤다면
+                    긴 쪽과 짧은 쪽을 재서 평균을 냅니다.
+                  </p>
+                  <p class="small mt2"><b>왜 중요한가 —</b> 침엽수·반송은 수관폭이 값을 좌우합니다.
+                    같은 수고라도 수관이 풍성하면 값이 크게 올라갑니다.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="notice notice-green mt5"> <p><b>재기 어려우시면 전화 주세요.</b>
+               1600-0000으로 연락 주시면 담당자가 방문해 규격을 재 드리고 등록까지 도와드립니다.</p>
+          </div>
+        </section>
+
+        <!-- ============ 계산기 ============ -->
+        <section id="calc">
+          <h2 class="h2 mb3">규격 계산기</h2>
+          <p class="lead mb4">잰 값을 넣으면 표준 표기와 필요한 것들을 한 번에 알려드립니다.</p>
+
+          <div class="card card-pad">
+            <div class="grid grid-3 g4">
+              <div class="field">
+                <label class="label" for="cSpecies">수종</label>
+                <select class="select" id="cSpecies"></select>
+              </div>
+              <div class="field has-suffix">
+                <label class="label" for="cH">수고 H</label>
+                <div class="input-group"><input class="input" id="cH" type="number" inputmode="decimal" min="0" step="0.1" value="4.2"><span class="input-suffix">m</span></div>
+              </div>
+              <div class="field has-suffix">
+                <label class="label" for="cW">수관폭 W</label>
+                <div class="input-group"><input class="input" id="cW" type="number" inputmode="decimal" min="0" step="0.1" value="2.4"><span class="input-suffix">m</span></div>
+              </div>
+              <div class="field has-suffix">
+                <label class="label" for="cB">흉고직경 B</label>
+                <div class="input-group"><input class="input" id="cB" type="number" inputmode="decimal" min="0" step="0.5"><span class="input-suffix">cm</span></div>
+              </div>
+              <div class="field has-suffix">
+                <label class="label" for="cR">근원직경 R</label>
+                <div class="input-group"><input class="input" id="cR" type="number" inputmode="decimal" min="0" step="0.5" value="15"><span class="input-suffix">cm</span></div>
+              </div>
+              <div class="field has-suffix">
+                <label class="label" for="cGirth">둘레로 계산</label>
+                <div class="input-group"><input class="input" id="cGirth" type="number" inputmode="decimal" min="0" step="1" placeholder="줄자 둘레"><span class="input-suffix">cm</span></div>
+                <p class="hint">넣으면 R을 자동 계산합니다</p>
+              </div>
+            </div>
+
+            <div id="calcOut" class="mt5" role="status" aria-live="polite"></div>
+
+            <a class="btn btn-primary btn-lg mt5" href="sell.html">이 규격으로 매물 등록하기</a>
+          </div>
+        </section>
+
+        <!-- ============ 뿌리분 ============ -->
+        <section id="ball">
+          <h2 class="h2 mb3">뿌리분과 필요 장비</h2>
+          <p class="lead mb4">
+            나무를 옮기려면 뿌리를 흙째 떠야 합니다. 이 흙덩이를 <b>뿌리분</b>이라고 하고,
+            크기는 근원직경으로 정합니다.
+          </p>
+
+          <div class="card card-pad mb4">
+            <h3 class="h3 mb3">뿌리분 크기 계산식</h3>
+            <p class="num center" style="font-size:clamp(17px,3.4vw,24px);font-weight:800;letter-spacing:-.02em">
+              분 지름 = 24 + (근원직경 − 3) × 상수
+            </p>
+            <p class="small muted center mt2">상수 — 활엽수 4 · 침엽수 5</p>
+            <div class="table-scroll mt4">
+              <table class="table">
+                <caption class="sr-only">근원직경별 뿌리분 크기</caption>
+                <thead>
+                  <tr>
+                    <th scope="col">근원직경</th>
+                    <th scope="col" class="ta-r">분 지름 (활엽수)</th>
+                    <th scope="col" class="ta-r">분 지름 (침엽수)</th>
+                    <th scope="col" class="ta-r">분 깊이 (약)</th>
+                  </tr>
+                </thead>
+                <tbody id="ballTable"></tbody>
+              </table>
+            </div>
+            <p class="hint mt3">
+              깊이는 보통분 기준 지름의 약 2/3입니다. 심근성 수종은 더 깊게(조개분),
+              천근성 수종은 더 얕게(접시분) 뜹니다.
+              <b>실제 시공 기준은 조경공사 표준시방서 최신본을 확인해 주세요.</b>
+            </p>
+          </div>
+
+          <h3 class="h3 mb3">규격별 필요 장비와 비용 (참고)</h3>
+          <div class="table-scroll">
+            <table class="table">
+              <caption class="sr-only">규격별 굴취·운반 장비와 비용</caption>
+              <thead>
+                <tr>
+                  <th scope="col">규격</th>
+                  <th scope="col">필요 장비</th>
+                  <th scope="col" class="ta-r">굴취 (주당)</th>
+                  <th scope="col" class="ta-r">운반 (차당)</th>
+                </tr>
+              </thead>
+              <tbody id="tierTable"></tbody>
+            </table>
+          </div>
+          <div class="notice notice-warn mt4"> <p><b>진입로가 비용을 좌우합니다.</b> 크레인이 못 들어가는 현장은 비용이 두 배가 되기도 합니다.
+               매물 등록 시 진입로 사진을 함께 올려 주세요.
+               <a class="accent strong" href="movers.html">견적 받기 →</a></p>
+          </div>
+        </section>
+
+        <!-- ============ 용어 ============ -->
+        <section id="terms">
+          <h2 class="h2 mb3">용어 사전</h2>
+          <div class="card card-pad">
+            <dl>
+              <div class="term"><dt>주 (株)</dt><dd>나무를 세는 단위. 한 그루가 1주입니다. 거래는 보통 주당 단가로 합니다.</dd></div>
+              <div class="term"><dt>근원경 · 근원직경 (R)</dt><dd>같은 말입니다. 지표면에 닿는 줄기의 지름. 조경수 거래에서 가장 많이 쓰는 기준입니다.</dd></div>
+              <div class="term"><dt>흉고직경 (B)</dt><dd>지표면 1.2m 높이의 줄기 지름. 줄기가 곧게 자라는 교목에 씁니다. 영문 표기 DBH와 같습니다.</dd></div>
+              <div class="term"><dt>지하고 (L)</dt><dd>지표면에서 첫 가지까지의 높이. 가로수는 보도 통행을 위해 지하고 2m 이상을 요구하는 경우가 많습니다.</dd></div>
+              <div class="term"><dt>주립수 · 다간형</dt><dd>줄기가 한 개가 아니라 뿌리 부근에서 여러 대로 갈라져 자란 형태. 배롱나무·모과나무 등에 흔하며, 줄기 개수를 함께 표기합니다.</dd></div>
+              <div class="term"><dt>직간</dt><dd>줄기가 곧게 하나로 자란 형태. 가로수용으로 선호됩니다.</dd></div>
+              <div class="term"><dt>뿌리분 · 분</dt><dd>이식할 때 뿌리를 감싸 뜬 흙덩이. 분이 크면 활착률이 높지만 무거워져 장비 비용이 올라갑니다.</dd></div>
+              <div class="term"><dt>조개분 · 접시분 · 보통분</dt><dd>분의 모양. 뿌리가 깊게 내리는 심근성 수종은 조개분(깊게), 얕게 퍼지는 천근성 수종은 접시분(넓고 얕게)으로 뜹니다.</dd></div>
+              <div class="term"><dt>굴취</dt><dd>나무를 캐내는 작업. 분을 뜨고 뿌리를 감싸는 것까지 포함합니다.</dd></div>
+              <div class="term"><dt>활착</dt><dd>옮겨 심은 나무가 새 자리에 뿌리를 내리고 살아나는 것. 이식 적기를 지키면 활착률이 올라갑니다.</dd></div>
+              <div class="term"><dt>이식 적기</dt><dd>옮겨 심기 좋은 시기. 낙엽수는 잎이 진 휴면기(대개 11~3월), 상록수는 생장이 시작되기 전후가 일반적입니다.</dd></div>
+              <div class="term"><dt>수형</dt><dd>나무의 전체적인 생김새. 같은 규격이라도 수형에 따라 값 차이가 큽니다.</dd></div>
+            </dl>
+          </div>
+        </section>
+
+        <!-- ============ FAQ ============ -->
+        <section id="faq">
+          <h2 class="h2 mb4">자주 묻는 질문</h2>
+
+          <details class="faq">
+            <summary>규격을 정확히 모르는데 등록해도 되나요?</summary>
+            <div class="faq-body">
+              됩니다. 줄자로 잰 어림값이면 충분합니다. 구매자는 대부분 현장을 직접 확인하기 때문에,
+              등록 단계에서 소수점까지 맞출 필요는 없습니다.
+              다만 <b>실제보다 크게 적으면 현장에서 거래가 깨집니다.</b> 모르면 작게 잡는 편이 낫습니다.
+            </div>
+          </details>
+
+          <details class="faq">
+            <summary>R과 B를 둘 다 재야 하나요?</summary>
+            <div class="faq-body">
+              아닙니다. 수종에 따라 하나만 쓰면 됩니다.
+              등록 화면에서 수종을 고르면 그 수종에 필요한 항목만 표시되고, 나머지는 흐리게 처리됩니다.
+              <a class="accent strong" href="#bySpecies">수종별 표기 보기 →</a>
+            </div>
+          </details>
+
+          <details class="faq">
+            <summary>같은 R15인데 값이 왜 다른가요?</summary>
+            <div class="faq-body">
+              규격이 같아도 <b>수형·수령·굴취 여부·지역</b>에 따라 값이 달라집니다.
+              특히 수형은 사진으로 판단되기 때문에, 사진을 잘 올리는 것이 값을 올리는 가장 확실한 방법입니다.
+              최근 실제 거래가 얼마였는지는 <a class="accent strong" href="market.html">실거래 시세</a>에서 규격별로 확인하실 수 있습니다.
+            </div>
+          </details>
+
+          <details class="faq">
+            <summary>시세는 어떤 규격을 기준으로 한 값인가요?</summary>
+            <div class="faq-body">
+              수종마다 기준 규격이 정해져 있습니다. 소나무는 R15, 반송은 H2.5, 금강송은 R20 같은 식입니다.
+              기준에서 많이 벗어난 규격은 값을 직접 비교할 수 없어서,
+              Tree Atelier에서는 <b>시세 대비 표시 대신 “기준보다 큰/작은 규격”으로 안내</b>합니다.
+              비교할 수 없는 걸 비교한 것처럼 보이지 않게 하기 위해서입니다.
+            </div>
+          </details>
+
+          <details class="faq">
+            <summary>굴취를 미리 해두는 게 유리한가요?</summary>
+            <div class="faq-body">
+              구매자 입장에서는 즉시 상차가 가능해 선호합니다. 다만 굴취한 나무는 오래 두면 활착률이 떨어지므로,
+              <b>거래가 어느 정도 정해진 뒤에 하는 것이 일반적</b>입니다.
+              Tree Atelier에서는 거래가 확정되면 현장 인근 업체 견적을 붙여 드리기 때문에 미리 하실 필요가 없습니다.
+            </div>
+          </details>
+
+          <details class="faq">
+            <summary>이 페이지의 수치를 시공 기준으로 써도 되나요?</summary>
+            <div class="faq-body">
+              아닙니다. 여기 적힌 표기 조합·뿌리분 공식·비용 구간은 <b>거래 당사자끼리 규격을 주고받기 위한 안내</b>입니다.
+              실제 설계·시공·납품 검수 기준은 <b>조경공사 표준시방서 최신본과 발주처 시방서</b>를 따라야 합니다.
+            </div>
+          </details>
+        </section>
+
+        <div class="notice notice-green"> <p><b>여기 없는 게 궁금하시면 커뮤니티에 물어보세요.</b>
+             현직 재배자와 조경업자가 직접 답합니다.
+             <a class="accent strong" href="community.html?cat=질문답변">질문 남기기 →</a></p>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</main>
+
+<div id="site-footer"></div>
+
+<script src="assets/js/data.js"></script>
+<script src="assets/js/farm-data.js"></script>
+<script src="assets/js/store.js"></script>
+<script src="assets/js/app.js"></script>
+<script>
+/* =========================================================
+   슬라이더로 조종하는 소나무
+   H·W 는 미터 실척으로, B·R(줄기 굵기)은 보이도록 과장해 그립니다.
+   ========================================================= */
+const STAGE = {
+  w: 460, h: 430,
+  ground: 372,      // 지표면 y
+  cx: 246,          // 줄기 중심 x
+  mPx: 30,          // 1m = 30px
+  cmPx: 1.5,        // 줄기 굵기용 과장 배율 (1cm = 1.5px)
+};
+
+const V = { H: 4.2, W: 2.4, B: 12, R: 15 };
+let hot = null;               // 지금 움직이는 항목
+let hotTimer = null;
+
+function drawTree() {
+  const S = STAGE;
+  const treeTop   = S.ground - V.H * S.mPx;
+  const trunkTop  = S.ground - V.H * S.mPx * 0.30;   // 지하고 = 수고의 30%
+  const canopyH   = trunkTop - treeTop;
+  const halfW     = (V.W * S.mPx) / 2;
+  const rPx       = V.R * S.cmPx;
+  const bPx       = V.B * S.cmPx;
+  const topPx     = bPx * 0.62;
+  const y12       = S.ground - 1.2 * S.mPx;          // 흉고 1.2m 지점
+
+  const on = k => (hot === k ? ' hot' : '');
+  /* 수관은 H·W 를, 줄기는 B·R 을 움직일 때 빛납니다 */
+  const canopyGlow = (hot === 'H' || hot === 'W') ? ' glow' : '';
+  const trunkGlow  = (hot === 'B' || hot === 'R') ? ' glow' : '';
+
+  /* 줄기 — 밑동(R)에서 흉고(B)로, 다시 위로 좁아지는 형태 */
+  const trunk = `M ${S.cx - rPx / 2} ${S.ground}
+                 L ${S.cx - bPx / 2} ${y12}
+                 L ${S.cx - topPx / 2} ${trunkTop}
+                 L ${S.cx + topPx / 2} ${trunkTop}
+                 L ${S.cx + bPx / 2} ${y12}
+                 L ${S.cx + rPx / 2} ${S.ground} Z`;
+
+  /* 수관 — 3단 소나무 층 */
+  function layer(apexF, baseF, wF) {
+    const apex = treeTop + canopyH * apexF;
+    const base = treeTop + canopyH * baseF;
+    const hw = halfW * wF;
+    return `M ${S.cx} ${apex} L ${S.cx + hw} ${base} L ${S.cx - hw} ${base} Z`;
+  }
+
+  /* 수관폭 치수선은 항상 나무 위쪽에 둡니다.
+     나무 크기에 따라 위아래로 튀지 않아야 슬라이더를 움직일 때 눈이 편합니다. */
+  const wy = Math.max(treeTop - 28, 24);
+
+  return `
+  <svg viewBox="0 0 ${S.w} ${S.h}" role="img"
+       aria-label="수고 ${V.H.toFixed(1)}미터, 수관폭 ${V.W.toFixed(1)}미터, 흉고직경 ${V.B}센티미터, 근원직경 ${V.R}센티미터인 소나무 그림">
+
+    <!-- 사람 (키 1.7m) — 크기 가늠용 -->
+    <g class="tp tp-person">
+      <circle cx="430" cy="${S.ground - 1.7 * S.mPx + 6}" r="6"/>
+      <path d="M430 ${S.ground - 1.7 * S.mPx + 13}
+               L430 ${S.ground - 18}
+               M430 ${S.ground - 18} L424 ${S.ground}
+               M430 ${S.ground - 18} L436 ${S.ground}
+               M420 ${S.ground - 1.7 * S.mPx + 22} L440 ${S.ground - 1.7 * S.mPx + 22}"
+            stroke="currentColor" stroke-width="3.5" fill="none" stroke-linecap="round"/>
+      <text class="tp-sub" x="412" y="${S.ground + 17}" style="opacity:.8">1.7m</text>
+    </g>
+
+    <!-- 수관 -->
+    <g class="tp${canopyGlow}">
+      <path fill="#1B6B47" d="${layer(0.40, 1.00, 1.00)}"/>
+      <path fill="#22855A" d="${layer(0.18, 0.72, 0.80)}"/>
+      <path fill="#2FA06E" d="${layer(0.00, 0.44, 0.58)}"/>
+    </g>
+
+    <!-- 줄기 -->
+    <path class="tp${trunkGlow}" fill="#7A5533" d="${trunk}"/>
+
+    <!-- 지표면 -->
+    <line class="tp-ground" x1="40" y1="${S.ground}" x2="${S.w - 20}" y2="${S.ground}"/>
+    <text class="tp-sub" x="42" y="${S.ground + 17}">지표면</text>
+
+    <!-- H : 수고 -->
+    <g class="tp${on('H')}">
+      <line class="tp-guide" x1="${S.cx}" y1="${treeTop}" x2="76" y2="${treeTop}"/>
+      <path class="tp-dim" d="M96 ${treeTop} L96 ${S.ground}
+                              M90 ${treeTop + 9} L96 ${treeTop - 1} L102 ${treeTop + 9}
+                              M90 ${S.ground - 9} L96 ${S.ground + 1} L102 ${S.ground - 9}"/>
+      <text class="tp-txt" x="52" y="${(treeTop + S.ground) / 2 - 4}">H</text>
+      <text class="tp-sub" x="34" y="${(treeTop + S.ground) / 2 + 13}">${V.H.toFixed(1)}m</text>
+    </g>
+
+    <!-- W : 수관폭 -->
+    <g class="tp${on('W')}">
+      <line class="tp-guide" x1="${S.cx - halfW}" y1="${trunkTop}" x2="${S.cx - halfW}" y2="${wy - 6}"/>
+      <line class="tp-guide" x1="${S.cx + halfW}" y1="${trunkTop}" x2="${S.cx + halfW}" y2="${wy - 6}"/>
+      <path class="tp-dim" d="M ${S.cx - halfW} ${wy} L ${S.cx + halfW} ${wy}
+                              M ${S.cx - halfW + 9} ${wy - 6} L ${S.cx - halfW - 1} ${wy} L ${S.cx - halfW + 9} ${wy + 6}
+                              M ${S.cx + halfW - 9} ${wy - 6} L ${S.cx + halfW + 1} ${wy} L ${S.cx + halfW - 9} ${wy + 6}"/>
+      <text class="tp-txt" x="${S.cx - 34}" y="${wy - 9}">W</text>
+      <text class="tp-sub" x="${S.cx - 6}" y="${wy - 9}">${V.W.toFixed(1)}m</text>
+    </g>
+
+    <!-- B : 흉고직경 -->
+    <g class="tp${on('B')}">
+      <line class="tp-guide" x1="${S.cx + bPx / 2}" y1="${y12}" x2="350" y2="${y12}"/>
+      <circle class="tp-mark" cx="${S.cx - bPx / 2}" cy="${y12}" r="3.6"/>
+      <circle class="tp-mark" cx="${S.cx + bPx / 2}" cy="${y12}" r="3.6"/>
+      <text class="tp-txt" x="354" y="${y12 - 5}">B</text>
+      <text class="tp-sub" x="372" y="${y12 - 5}">${V.B}cm</text>
+      <text class="tp-sub" x="354" y="${y12 + 12}">1.2m 높이</text>
+    </g>
+
+    <!-- R : 근원직경 -->
+    <g class="tp${on('R')}">
+      <line class="tp-guide" x1="${S.cx - rPx / 2}" y1="${S.ground}" x2="128" y2="${S.ground}"/>
+      <circle class="tp-mark" cx="${S.cx - rPx / 2}" cy="${S.ground}" r="3.6"/>
+      <circle class="tp-mark" cx="${S.cx + rPx / 2}" cy="${S.ground}" r="3.6"/>
+      <text class="tp-txt" x="132" y="${S.ground - 8}">R</text>
+      <text class="tp-sub" x="150" y="${S.ground - 8}">${V.R}cm</text>
+    </g>
+  </svg>`;
+}
+
+function paintTree() {
+  $('#treeStage').innerHTML = drawTree();
+
+  $('#vH').innerHTML = V.H.toFixed(1) + '<small>m</small>';
+  $('#vW').innerHTML = V.W.toFixed(1) + '<small>m</small>';
+  $('#vB').innerHTML = V.B + '<small>cm</small>';
+  $('#vR').innerHTML = V.R + '<small>cm</small>';
+
+  $('#liveNotation').textContent = `H${V.H.toFixed(1)}×W${V.W.toFixed(1)}×R${V.R}`;
+
+  $$('.slider-row').forEach(r => r.classList.toggle('is-active', r.dataset.row === hot));
+
+  /* 앞뒤가 안 맞는 조합이면 알려줍니다 — 직접 만들어 보면서 배우도록 */
+  const msgs = [];
+  if (V.B >= V.R) {
+    msgs.push('흉고직경(B)이 근원직경(R)보다 큽니다. 나무는 아래쪽이 굵어서, 보통은 <b>R이 B보다 큽니다.</b> 줄기 모양이 뒤집힌 게 보이시죠.');
+  }
+  if (V.W > V.H * 1.6) {
+    msgs.push('수관폭이 수고보다 훨씬 넓습니다. 반송처럼 옆으로 퍼지는 수종이 아니면 드문 형태입니다.');
+  }
+  if (V.R > V.H * 8) {
+    msgs.push('수고에 비해 밑동이 매우 굵습니다. 단위를 확인해 주세요 — R은 cm, H는 m입니다.');
+  }
+  $('#sliderWarn').innerHTML = msgs.length
+    ? `<div class="notice notice-warn" style="padding:var(--sp-3)"> <div>${msgs.map(m => `<p class="small">${m}</p>`).join('')}</div>
+       </div>`
+    : '';
+}
+
+/* 슬라이더 조작 */
+['H', 'W', 'B', 'R'].forEach(k => {
+  const el = $('#s' + k);
+  const touch = () => {
+    hot = k;
+    clearTimeout(hotTimer);
+    hotTimer = setTimeout(() => { hot = null; paintTree(); }, 1400);
+  };
+  el.addEventListener('input', () => {
+    V[k] = Number(el.value);
+    touch();
+    paintTree();
+  });
+  el.addEventListener('focus', () => { touch(); paintTree(); });
+});
+
+/* 프리셋 */
+$$('[data-preset]').forEach(b => {
+  b.addEventListener('click', () => {
+    const [h, w, bb, r] = b.dataset.preset.split(',').map(Number);
+    V.H = h; V.W = w; V.B = bb; V.R = r;
+    ['H', 'W', 'B', 'R'].forEach(k => { $('#s' + k).value = V[k]; });
+    hot = null;
+    paintTree();
+    $$('[data-preset]').forEach(x => x.setAttribute('aria-pressed', String(x === b)));
+  });
+});
+
+/* 계산기로 값 넘기기 */
+$('#toCalc').addEventListener('click', () => {
+  $('#cH').value = V.H.toFixed(1);
+  $('#cW').value = V.W.toFixed(1);
+  $('#cB').value = V.B;
+  $('#cR').value = V.R;
+  $('#cGirth').value = '';
+  calc();
+  document.getElementById('calc').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  toast('계산기에 이 규격을 넣었습니다.');
+});
+
+paintTree();
+
+/* ---------- 측정 항목 카드 ---------- */
+const SPEC_EXTRA = {
+  H: { emoji: '', why: '전체 크기를 나타내는 가장 기본 값. 거의 모든 수종에 씁니다.' },
+  W: { emoji: '', why: '침엽수·반송처럼 수관이 값을 좌우하는 수종에서 결정적입니다.' },
+  B: { emoji: '', why: '줄기가 곧게 자라 가슴 높이에서 재기 쉬운 교목에 씁니다.' },
+  R: { emoji: '', why: '조경수 거래에서 가장 널리 쓰이는 기준. 밑동이 굵은 수종에 적합합니다.' },
+};
+
+$('#specCards').innerHTML = ['H', 'W', 'B', 'R'].map(k => {
+  const m = SPEC_META[k];
+  return `
+  <div class="card card-pad spec-card stack g2">
+    <div class="row g2" style="align-items:baseline">
+      <span class="h2 num">${k}</span>
+      <span class="h3">${m.name}</span>
+      <span class="badge badge-gray">${m.unit}</span>
+    </div>
+    <p class="small"><b>어디를 재나</b> — ${m.where}</p>
+    <p class="small muted">${SPEC_EXTRA[k].why}</p>
+  </div>`;
+}).join('');
+
+/* ---------- 수종별 표기 ---------- */
+$('#speciesTable').innerHTML = SPECIES.map(s => {
+  const r = SPEC_RULES[s.id];
+  return `<tr>
+    <th scope="row" style="font-weight:700">${s.name}</th>
+    <td class="muted">${r.group}</td>
+    <td class="num strong">${r.notation.join('×')}</td>
+    <td class="muted">${r.required.map(k => SPEC_META[k].name).join(' · ')}</td>
+    <td class="muted">${r.season}</td>
+  </tr>`;
+}).join('');
+
+/* ---------- 뿌리분 표 ---------- */
+$('#ballTable').innerHTML = [8, 10, 12, 15, 18, 20, 25, 30].map(r => {
+  const wide = 24 + (r - 3) * 4;
+  const cone = 24 + (r - 3) * 5;
+  return `<tr>
+    <th scope="row" class="num" style="font-weight:700">R${r}</th>
+    <td class="ta-r num">${wide} cm</td>
+    <td class="ta-r num">${cone} cm</td>
+    <td class="ta-r num muted">${Math.round(wide * 2 / 3)} ~ ${Math.round(cone * 2 / 3)} cm</td>
+  </tr>`;
+}).join('');
+
+/* ---------- 장비 구간 표 ---------- */
+$('#tierTable').innerHTML = [8, 15, 25, 40].map(r => {
+  const t = equipTier(r);
+  return `<tr>
+    <th scope="row" style="font-weight:700">${t.label}</th>
+    <td class="muted">${t.gear}</td>
+    <td class="ta-r num">${t.dig}</td>
+    <td class="ta-r num">${t.move}</td>
+  </tr>`;
+}).join('');
+
+/* ---------- 계산기 ---------- */
+$('#cSpecies').innerHTML = SPECIES.map(s => `<option value="${s.id}">${s.name}</option>`).join('');
+$('#cSpecies').value = 'sonamu';
+
+const C = { H: $('#cH'), W: $('#cW'), B: $('#cB'), R: $('#cR') };
+
+function calc() {
+  const sp = $('#cSpecies').value;
+  const rule = SPEC_RULES[sp];
+  const spec = {};
+  Object.keys(C).forEach(k => {
+    const v = C[k].value.trim();
+    spec[k] = v === '' ? null : Number(v);
+  });
+
+  /* 이 수종에서 쓰지 않는 항목은 흐리게 */
+  Object.keys(C).forEach(k => {
+    const field = C[k].closest('.field');
+    const used = rule.notation.indexOf(k) !== -1;
+    field.style.opacity = used ? '1' : '.5';
+  });
+
+  const note = specNotation(sp, spec);
+  const base = spec.R || spec.B;
+  const ball = rootBall(base, sp);
+  const tier = equipTier(base);
+  const idx = PRICE_INDEX[sp];
+  const sim = similarDeals(sp, spec, 0.3);
+
+  const missing = rule.required.filter(k => !(spec[k] > 0));
+
+  $('#calcOut').innerHTML = `
+    ${missing.length ? `
+      <div class="notice notice-warn mb4"> <p>${speciesName(sp)}는 <b>${missing.map(k => SPEC_META[k].name + '(' + k + ')').join(' · ')}</b>가 표준 표기 항목입니다. 넣어 주세요.</p>
+      </div>` : ''}
+
+    <div class="card card-pad" style="background:var(--bg-soft)">
+      <div class="stat-k">표준 규격 표기</div>
+      <div class="num" style="font-size:clamp(22px,4.4vw,30px);font-weight:800;letter-spacing:-.03em">${note || '—'}</div>
+      <div class="small muted mt1">${rule.group} · ${rule.notation.join(' × ')} 로 표기</div>
+
+      <div class="grid grid-3 g4 mt5">
+        ${ball ? `
+        <div class="stat">
+          <div class="stat-k">뿌리분 크기</div>
+          <div class="stat-v num" style="font-size:19px">Ø${ball.dia}cm</div>
+          <div class="stat-d muted num">깊이 약 ${ball.depth}cm</div>
+        </div>` : ''}
+        ${tier ? `
+        <div class="stat">
+          <div class="stat-k">필요 장비</div>
+          <div class="stat-v" style="font-size:14.5px;line-height:1.4">${tier.gear}</div>
+          <div class="stat-d muted">굴취 ${tier.dig}</div>
+        </div>` : ''}
+        ${idx ? `
+        <div class="stat">
+          <div class="stat-k">${speciesName(sp)} 시세</div>
+          <div class="stat-v num" style="font-size:19px">${won(idx.now)}원</div>
+          <div class="stat-d muted">${idx.unit} · 주당</div>
+        </div>` : ''}
+      </div>
+
+      <div class="mt5">
+        <h3 class="h3 mb3">이 규격의 최근 실거래</h3>
+        ${dealList(sim.slice(0, 4),
+          `${speciesName(sp)} ${note || '이 규격'} 와 비슷한 최근 체결 건이 아직 없습니다. 표본이 없으면 없다고 알려드립니다.`)}
+      </div>
+    </div>`;
+}
+
+Object.values(C).forEach(el => el.addEventListener('input', () => { $('#cGirth').value = ''; calc(); }));
+$('#cSpecies').addEventListener('change', calc);
+
+/* 둘레 → 지름 */
+$('#cGirth').addEventListener('input', e => {
+  const g = Number(e.target.value);
+  if (g > 0) C.R.value = (g / Math.PI).toFixed(1);
+  calc();
+});
+
+calc();
+
+/* ---------- 목차 현재 위치 표시 ---------- */
+const links = $$('.toc a');
+const targets = links.map(a => document.querySelector(a.getAttribute('href'))).filter(Boolean);
+
+if ('IntersectionObserver' in window) {
+  const io = new IntersectionObserver(entries => {
+    entries.forEach(en => {
+      if (!en.isIntersecting) return;
+      links.forEach(a => a.classList.toggle('is-on', a.getAttribute('href') === '#' + en.target.id));
+    });
+  }, { rootMargin: '-20% 0px -70% 0px' });
+  targets.forEach(t => io.observe(t));
+}
+</script>
+</body>
+</html>

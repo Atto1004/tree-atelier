@@ -1,0 +1,161 @@
+<!doctype html>
+<html lang="ko" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>글쓰기 · 커뮤니티 · Tree Atelier</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+
+<div id="site-header"></div>
+
+<main id="main">
+  <div class="wrap wrap-narrow">
+    <nav class="breadcrumb" aria-label="현재 위치">
+      <a href="index.html">홈</a><span aria-hidden="true">›</span>
+      <a href="community.html">커뮤니티</a><span aria-hidden="true">›</span><span>글쓰기</span>
+    </nav>
+
+    <header class="mb5">
+      <h1 class="h1">글쓰기</h1>
+      <p class="lead mt2">키우면서 알게 된 것, 값을 받아 본 경험. 짧아도 좋습니다.</p>
+    </header>
+
+    <form class="card card-pad stack g5" id="writeForm" novalidate>
+
+      <fieldset style="border:0;padding:0;margin:0" id="catSet">
+        <legend class="label mb3">어느 게시판에 올릴까요? <span class="req" aria-hidden="true">*</span></legend>
+        <div class="row g2 wrapf" id="catPick" role="radiogroup" aria-label="게시판 선택"></div>
+        <p class="hint mt2" id="catHint"></p>
+      </fieldset>
+
+      <div class="field">
+        <label class="label" for="wTitle">제목 <span class="req" aria-hidden="true">*</span></label>
+        <input class="input" id="wTitle" type="text" maxlength="80" placeholder="한 줄로 요약해 주세요" required>
+        <p class="hint"><span class="num" id="titleCount">0</span>/80자</p>
+      </div>
+
+      <div class="field">
+        <label class="label" for="wBody">내용 <span class="req" aria-hidden="true">*</span></label>
+        <textarea class="textarea" id="wBody" style="min-height:280px"
+          placeholder="겪은 일을 그대로 적어 주세요. 숫자(규격·단가·기간)가 들어가면 다른 사람에게 훨씬 도움이 됩니다."></textarea>
+        <p class="hint"><span class="num" id="bodyCount">0</span>자 · 20자 이상</p>
+      </div>
+
+      <div class="field">
+        <label class="label" for="wAuthor">작성자 이름</label>
+        <input class="input" id="wAuthor" type="text" maxlength="30" placeholder="예) 법원리농원 김OO">
+        <p class="hint">한 번 적으면 다음 글에도 그대로 쓰입니다.</p>
+      </div>
+
+      <div class="notice notice-green"> <p><b>값을 물으면 아는 만큼 알려줍니다.</b>
+           시세나 거래 조건을 적을 때는 실제 겪은 숫자를 그대로 적어 주세요.
+           그게 이 커뮤니티가 있는 이유입니다.</p>
+      </div>
+
+      <div class="row g3 wrapf">
+        <button class="btn btn-primary btn-lg" type="submit" id="submitBtn">등록하기</button>
+        <a class="btn btn-secondary btn-lg" href="community.html">취소</a>
+      </div>
+    </form>
+  </div>
+</main>
+
+<div id="site-footer"></div>
+
+<script src="assets/js/data.js"></script>
+<script src="assets/js/farm-data.js"></script>
+<script src="assets/js/store.js"></script>
+<script src="assets/js/app.js"></script>
+<script>
+const CAT_HINT = {
+  '재배노하우': '키우는 방법, 전정·방제·시비 기록. 사진 대신 숫자를 남겨 주세요.',
+  '시세정보':   '실제로 거래한 단가와 규격. 어디서 언제 얼마에 팔았는지가 핵심입니다.',
+  '거래후기':   '누구와 어떻게 거래했는지. 좋았던 점과 아쉬웠던 점 모두 적어 주세요.',
+  '질문답변':   '막히는 부분을 구체적으로. 수종·규격·지역을 함께 적으면 답이 빨리 옵니다.',
+  '정책·지원':  '지자체 지원사업, 제도 변경, 마감일. 출처 링크가 있으면 함께 적어 주세요.',
+};
+
+const CATS = POST_CATS.filter(c => c !== '전체');
+let cat = new URLSearchParams(location.search).get('cat');
+if (CATS.indexOf(cat) === -1) cat = CATS[0];
+
+$('#catPick').innerHTML = CATS.map(c =>
+  `<button class="chip" type="button" role="radio" data-c="${c}" aria-checked="${c === cat}" aria-pressed="${c === cat}">${c}</button>`
+).join('');
+
+function syncCat() {
+  $$('[data-c]').forEach(x => {
+    const on = x.dataset.c === cat;
+    x.setAttribute('aria-checked', String(on));
+    x.setAttribute('aria-pressed', String(on));
+  });
+  $('#catHint').textContent = CAT_HINT[cat] || '';
+  setError($('#wTitle'), '');
+}
+syncCat();
+
+$('#catPick').addEventListener('click', e => {
+  const b = e.target.closest('[data-c]'); if (!b) return;
+  cat = b.dataset.c;
+  syncCat();
+});
+
+/* 저장된 이름 불러오기 */
+$('#wAuthor').value = Store.Me.get().name;
+
+$('#wTitle').addEventListener('input', e => { $('#titleCount').textContent = e.target.value.length; });
+$('#wBody').addEventListener('input', e => { $('#bodyCount').textContent = e.target.value.length; });
+
+$('#writeForm').addEventListener('submit', e => {
+  e.preventDefault();
+
+  const errs = [];
+  const title = $('#wTitle'), body = $('#wBody');
+
+  if (title.value.trim().length < 3) { setError(title, '제목을 3자 이상 적어 주세요.'); errs.push(title); }
+  else setError(title, '');
+
+  if (body.value.trim().length < 20) { setError(body, '내용을 20자 이상 적어 주세요.'); errs.push(body); }
+  else setError(body, '');
+
+  if (errs.length) {
+    errs[0].focus();
+    errs[0].scrollIntoView({ block: 'center', behavior: 'smooth' });
+    return;
+  }
+
+  const name = $('#wAuthor').value.trim();
+  if (name) Store.Me.set(name);
+
+  const btn = $('#submitBtn');
+  btn.disabled = true;
+  btn.textContent = '등록하는 중…';
+
+  const res = Store.Posts.add({ cat, title: title.value, body: body.value });
+
+  if (!res.ok) {
+    btn.disabled = false;
+    btn.textContent = '등록하기';
+    toast(res.full ? '저장 공간이 가득 찼습니다. 기존 글을 지워 주세요.' : '저장하지 못했습니다.', 'bad');
+    return;
+  }
+
+  toast('글이 등록되었습니다.', 'ok');
+  setTimeout(() => { location.href = 'post.html?id=' + encodeURIComponent(res.post.id); }, 600);
+});
+
+/* 작성 중 이탈 경고 */
+let dirty = false;
+['#wTitle', '#wBody'].forEach(s => $(s).addEventListener('input', () => { dirty = true; }));
+$('#writeForm').addEventListener('submit', () => { dirty = false; });
+window.addEventListener('beforeunload', e => {
+  if (!dirty) return;
+  e.preventDefault();
+  e.returnValue = '';
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,310 @@
+<!doctype html>
+<html lang="ko" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>나무 찾기 · Tree Atelier</title>
+<meta name="description" content="수종·규격·지역으로 나무를 찾고, 표시된 시세와 비교해 거래하세요.">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<link rel="stylesheet" href="assets/css/style.css">
+<style>
+  .listing-layout { display: grid; grid-template-columns: 258px 1fr; gap: var(--sp-6); align-items: start; }
+  .filters { position: sticky; top: calc(var(--header-h) + 16px); }
+  .filter-group { padding: var(--sp-4) 0; border-bottom: 1px solid var(--line-2); }
+  .filter-group:last-child { border-bottom: 0; }
+  .filter-group h3 { font-size: 14.5px; margin-bottom: var(--sp-3); }
+  .chip-wrap { display: flex; flex-wrap: wrap; gap: 6px; }
+  .filter-toggle { display: none; }
+  @media (max-width: 900px) {
+    .listing-layout { grid-template-columns: 1fr; }
+    .filters { position: static; }
+    .filter-toggle { display: inline-flex; }
+    .filters[hidden] { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<div id="site-header"></div>
+
+<main id="main">
+  <div id="dealBanner"></div>
+
+  <div class="wrap">
+    <nav class="breadcrumb" aria-label="현재 위치">
+      <a href="index.html">홈</a><span aria-hidden="true">›</span><span>나무 찾기</span>
+    </nav>
+
+    <header class="mb5">
+      <h1 class="h1">나무 찾기</h1>
+      <p class="lead mt2">
+        필요한 조건 — <b class="accent">수종 · 크기 · 수량 · 특징</b> — 을 고르면 맞는 나무만 남습니다.
+        나무마다 개체 코드가 있어 한 그루씩 확인할 수 있습니다.
+      </p>
+    </header>
+
+    <button class="btn btn-secondary filter-toggle mb4" id="filterToggle" aria-expanded="false" aria-controls="filters">
+      필터 열기
+    </button>
+
+    <div class="listing-layout">
+
+      <!-- ========== 필터 ========== -->
+      <aside class="filters card card-pad" id="filters" aria-label="검색 필터">
+        <div class="row between mb3">
+          <h2 class="h3">필터</h2>
+          <button class="btn btn-ghost btn-sm" id="resetBtn" type="button">초기화</button>
+        </div>
+
+        <div class="filter-group">
+          <h3>수종</h3>
+          <div class="chip-wrap" id="fSpecies"></div>
+        </div>
+
+        <div class="filter-group">
+          <h3>지역</h3>
+          <div class="field">
+            <label class="sr-only" for="fRegion">지역 선택</label>
+            <select class="select" id="fRegion">
+              <option value="">전체 지역</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="filter-group">
+          <h3>규격 (근원경 R)</h3>
+          <div class="row g2">
+            <div class="field grow">
+              <label class="sr-only" for="fRmin">최소 근원경</label>
+              <input class="input" id="fRmin" type="number" inputmode="numeric" placeholder="최소" min="0">
+            </div>
+            <span class="muted" aria-hidden="true">~</span>
+            <div class="field grow">
+              <label class="sr-only" for="fRmax">최대 근원경</label>
+              <input class="input" id="fRmax" type="number" inputmode="numeric" placeholder="최대" min="0">
+            </div>
+          </div>
+          <p class="hint mt2">단위 cm. 침엽수는 수고(H)로 거래되기도 합니다.</p>
+        </div>
+
+        <div class="filter-group">
+          <h3>필요 수량</h3>
+          <div class="field has-suffix">
+            <label class="sr-only" for="fQty">최소 수량</label>
+            <div class="input-group">
+              <input class="input" id="fQty" type="number" inputmode="numeric" placeholder="이 수량 이상 보유" min="1">
+              <span class="input-suffix">주</span>
+            </div>
+          </div>
+          <p class="hint mt2">공사에 필요한 수량을 넣으면 그만큼 보유한 매물만 남습니다.</p>
+        </div>
+
+        <div class="filter-group">
+          <h3>특징</h3>
+          <div class="chip-wrap" id="fTags"></div>
+        </div>
+
+        <div class="filter-group">
+          <h3>검색어</h3>
+          <div class="field">
+            <label class="sr-only" for="fQ">검색어</label>
+            <input class="input" id="fQ" type="search" placeholder="제목·설명에서 찾기">
+          </div>
+        </div>
+
+        <div class="filter-group">
+          <h3>조건</h3>
+          <label class="check"><input type="checkbox" id="fVerified"><span>인증 농가만</span></label>
+          <label class="check"><input type="checkbox" id="fDug"><span>굴취 완료된 나무</span></label>
+        </div>
+      </aside>
+
+      <!-- ========== 결과 ========== -->
+      <div>
+        <div class="row between wrapf g3 mb4">
+          <p class="small muted" id="resultCount" role="status" aria-live="polite"></p>
+          <div class="field" style="max-width:200px">
+            <label class="sr-only" for="sortBy">정렬 기준</label>
+            <select class="select" id="sortBy">
+              <option value="new">최신 등록순</option>
+              <option value="size">규격 큰순</option>
+              <option value="qty">수량 많은순</option>
+              <option value="popular">인기순</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="grid grid-auto" id="results"></div>
+
+        <div class="empty" id="emptyBox" hidden>
+          <p class="strong">조건에 맞는 나무가 없습니다.</p>
+          <p class="small mt2">필터를 넓혀 보시거나, 원하는 규격을 등록해 두면 새 매물이 올라올 때 알려드립니다.</p>
+          <button class="btn btn-secondary mt4" type="button" id="resetBtn2">필터 초기화</button>
+        </div>
+
+        <nav class="pagination" aria-label="페이지" id="pager">
+          <button type="button" disabled aria-label="이전 페이지">←</button>
+          <button type="button" aria-current="page">1</button>
+          <button type="button">2</button>
+          <button type="button">3</button>
+          <button type="button" aria-label="다음 페이지">→</button>
+        </nav>
+      </div>
+
+    </div>
+  </div>
+</main>
+
+<div id="site-footer"></div>
+
+<script src="assets/js/data.js"></script>
+<script src="assets/js/farm-data.js"></script>
+<script src="assets/js/store.js"></script>
+<script src="assets/js/app.js"></script>
+<script>
+const state = { q: '', species: new Set(), region: '', rmin: null, rmax: null,
+                qty: null, tags: new Set(), verified: false, dug: false, sort: 'new' };
+
+/* 특징 필터 — 매물 태그에서 뽑은 구매자 관심 조건 */
+const FEATURES = ['수형우수', '대량보유', '규격균일', '현장확인가능', '즉시출하', '가로수규격', '내염성', '다간형'];
+
+/* 필터 UI 채우기 */
+document.getElementById('fSpecies').innerHTML = SPECIES.map(s =>
+  `<button class="chip" type="button" data-sp="${s.id}" aria-pressed="false">${s.name}</button>`
+).join('');
+document.getElementById('fTags').innerHTML = FEATURES.map(t =>
+  `<button class="chip" type="button" data-tag="${t}" aria-pressed="false">${t}</button>`
+).join('');
+document.getElementById('fRegion').insertAdjacentHTML('beforeend',
+  REGIONS.map(r => `<option value="${r}">${r}</option>`).join(''));
+
+/* 렌더 */
+function render() {
+  const needle = state.q.trim().toLowerCase();
+
+  let rows = Store.Listings.all().filter(l => {
+    if (state.species.size && !state.species.has(l.species)) return false;
+    if (state.region && l.region !== state.region) return false;
+    if (state.rmin != null && (!l.spec.R || l.spec.R < state.rmin)) return false;
+    if (state.rmax != null && (!l.spec.R || l.spec.R > state.rmax)) return false;
+    if (state.qty != null && l.qty < state.qty) return false;
+    if (state.verified && !l.verified) return false;
+    if (state.dug && !l.dug) return false;
+    if (state.tags.size) {
+      for (const t of state.tags) {
+        if (!(l.tags || []).includes(t)) return false;
+      }
+    }
+    if (needle) {
+      const hay = (l.title + ' ' + (l.desc || '') + ' ' + l.region + ' ' + speciesName(l.species)).toLowerCase();
+      if (!hay.includes(needle)) return false;
+    }
+    return true;
+  });
+
+  const sizeOf = l => l.spec.R || l.spec.B || (l.spec.H ? l.spec.H * 4 : 0);
+  const sorters = {
+    new:     (a, b) => b.createdAt.localeCompare(a.createdAt),
+    size:    (a, b) => sizeOf(b) - sizeOf(a),
+    qty:     (a, b) => b.qty - a.qty,
+    popular: (a, b) => b.views - a.views,
+  };
+  rows.sort(sorters[state.sort]);
+
+  document.getElementById('results').innerHTML = rows.map(listingCard).join('');
+  document.getElementById('resultCount').textContent = `조건에 맞는 나무 ${rows.length}건`;
+  document.getElementById('emptyBox').hidden = rows.length > 0;
+  document.getElementById('pager').hidden = rows.length === 0;
+}
+
+/* 이벤트 */
+document.getElementById('fSpecies').addEventListener('click', e => {
+  const b = e.target.closest('[data-sp]'); if (!b) return;
+  const on = b.getAttribute('aria-pressed') === 'true';
+  b.setAttribute('aria-pressed', String(!on));
+  on ? state.species.delete(b.dataset.sp) : state.species.add(b.dataset.sp);
+  render();
+  renderBanner();
+});
+
+const num = v => (v === '' ? null : Number(v));
+document.getElementById('fRegion').addEventListener('change', e => { state.region = e.target.value; render(); });
+document.getElementById('fRmin').addEventListener('input', e => { state.rmin = num(e.target.value); render(); });
+document.getElementById('fRmax').addEventListener('input', e => { state.rmax = num(e.target.value); render(); });
+document.getElementById('fQty').addEventListener('input', e => { state.qty = num(e.target.value); render(); });
+document.getElementById('fQ').addEventListener('input', e => { state.q = e.target.value; render(); });
+document.getElementById('fVerified').addEventListener('change', e => { state.verified = e.target.checked; render(); });
+document.getElementById('fDug').addEventListener('change', e => { state.dug = e.target.checked; render(); });
+document.getElementById('sortBy').addEventListener('change', e => { state.sort = e.target.value; render(); });
+
+document.getElementById('fTags').addEventListener('click', e => {
+  const b = e.target.closest('[data-tag]'); if (!b) return;
+  const on = b.getAttribute('aria-pressed') === 'true';
+  b.setAttribute('aria-pressed', String(!on));
+  on ? state.tags.delete(b.dataset.tag) : state.tags.add(b.dataset.tag);
+  render();
+});
+
+function reset() {
+  state.q = ''; state.species.clear(); state.tags.clear();
+  state.region = ''; state.rmin = state.rmax = state.qty = null;
+  state.verified = state.dug = false; state.sort = 'new';
+  document.querySelectorAll('[data-sp],[data-tag]').forEach(b => b.setAttribute('aria-pressed', 'false'));
+  ['fRegion','fRmin','fRmax','fQty','fQ','sortBy'].forEach(id => document.getElementById(id).value = id === 'sortBy' ? 'new' : '');
+  document.getElementById('fVerified').checked = false;
+  document.getElementById('fDug').checked = false;
+  render();
+}
+
+/* URL 파라미터로 들어온 구매 조건 반영 — 메인의 '필요한 나무' 폼과 헤더 검색이 이 주소로 옵니다 */
+(function applyParams() {
+  const P = new URLSearchParams(location.search);
+  if (P.get('q')) { state.q = P.get('q'); document.getElementById('fQ').value = state.q; }
+  if (P.get('species')) {
+    P.get('species').split(',').forEach(id => {
+      const b = document.querySelector(`[data-sp="${id}"]`);
+      if (b) { state.species.add(id); b.setAttribute('aria-pressed', 'true'); }
+    });
+  }
+  if (P.get('rmin')) { state.rmin = Number(P.get('rmin')); document.getElementById('fRmin').value = state.rmin; }
+  if (P.get('rmax')) { state.rmax = Number(P.get('rmax')); document.getElementById('fRmax').value = state.rmax; }
+  if (P.get('qty'))  { state.qty = Number(P.get('qty'));  document.getElementById('fQty').value = state.qty; }
+  if (P.get('tag')) {
+    P.get('tag').split(',').forEach(t => {
+      const b = document.querySelector(`[data-tag="${t}"]`);
+      if (b) { state.tags.add(t); b.setAttribute('aria-pressed', 'true'); }
+    });
+  }
+})();
+document.getElementById('resetBtn').addEventListener('click', reset);
+document.getElementById('resetBtn2').addEventListener('click', reset);
+
+/* 최근 실거래 배너 — 선택한 수종이 있으면 그 수종 거래만 보여줍니다 */
+function renderBanner() {
+  const deals = state.species.size
+    ? RECENT_DEALS.filter(d => state.species.has(d.species))
+    : RECENT_DEALS;
+  dealTicker(document.getElementById('dealBanner'), deals.length ? deals : RECENT_DEALS, { max: 8 });
+}
+
+/* 모바일 필터 토글 */
+const fToggle = document.getElementById('filterToggle'), fBox = document.getElementById('filters');
+function syncFilterVisibility() {
+  const mobile = matchMedia('(max-width: 900px)').matches;
+  if (mobile) { fBox.hidden = fToggle.getAttribute('aria-expanded') !== 'true'; }
+  else { fBox.hidden = false; }
+}
+fToggle.addEventListener('click', () => {
+  const on = fToggle.getAttribute('aria-expanded') === 'true';
+  fToggle.setAttribute('aria-expanded', String(!on));
+  fToggle.textContent = on ? '필터 열기' : '필터 닫기';
+  syncFilterVisibility();
+});
+matchMedia('(max-width: 900px)').addEventListener('change', syncFilterVisibility);
+syncFilterVisibility();
+
+render();
+renderBanner();
+</script>
+</body>
+</html>

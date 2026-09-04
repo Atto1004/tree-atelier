@@ -1,0 +1,158 @@
+<!doctype html>
+<html lang="ko" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>굴취·운반 · Tree Atelier</title>
+<meta name="description" content="나무를 캐고 옮기는 일. 지역 업체 견적을 한 번에 비교하세요.">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+
+<div id="site-header"></div>
+
+<main id="main">
+  <div class="wrap">
+    <nav class="breadcrumb" aria-label="현재 위치">
+      <a href="index.html">홈</a><span aria-hidden="true">›</span><span>굴취·운반</span>
+    </nav>
+
+    <header class="mb5">
+      <span class="eyebrow">세 번째 참여자</span>
+      <h1 class="h1">나무는 캐야 하고, 옮겨야 합니다</h1>
+      <p class="lead mt2" style="max-width:56ch">
+        거래가 성사되면 굴취와 운반이 남습니다. 여기서 값이 새거나 일이 틀어지는 경우가 많습니다.
+        Tree Atelier는 이 단계까지 플랫폼 안에 넣었습니다.
+      </p>
+    </header>
+
+    <!-- 견적 요청 -->
+    <section class="card card-pad mb6">
+      <h2 class="h2 mb4">견적 한 번에 받기</h2>
+      <form class="grid grid-4 g4" id="quoteForm" novalidate>
+        <div class="field">
+          <label class="label" for="qRegion">현장 지역</label>
+          <select class="select" id="qRegion"><option value="">시·도 선택</option></select>
+        </div>
+        <div class="field">
+          <label class="label" for="qSpecies">수종</label>
+          <select class="select" id="qSpecies"><option value="">선택</option></select>
+        </div>
+        <div class="field has-suffix">
+          <label class="label" for="qQty">수량</label>
+          <div class="input-group">
+            <input class="input" id="qQty" type="number" inputmode="numeric" min="1" value="20">
+            <span class="input-suffix">주</span>
+          </div>
+        </div>
+        <div class="field">
+          <label class="label" for="qWork">필요한 작업</label>
+          <select class="select" id="qWork">
+            <option>굴취 + 운반</option>
+            <option>굴취만</option>
+            <option>운반만</option>
+            <option>굴취 + 운반 + 식재</option>
+          </select>
+        </div>
+        <div style="grid-column:1/-1">
+          <button class="btn btn-primary btn-lg" type="submit">등록 업체에 견적 요청</button>
+          <p class="hint mt2">요청은 조건에 맞는 업체에만 전달됩니다. 전화번호는 견적 수락 후 공개됩니다.</p>
+        </div>
+      </form>
+    </section>
+
+    <!-- 업체 목록 -->
+    <section class="mb6">
+      <div class="section-head">
+        <div>
+          <h2 class="h2">등록 업체</h2>
+          <p class="small muted mt1">모든 업체는 사업자등록·보험 가입을 확인했습니다.</p>
+        </div>
+      </div>
+      <div class="grid grid-3" id="moverGrid"></div>
+    </section>
+
+    <!-- 비용 안내 -->
+    <section class="mb6">
+      <h2 class="h2 mb3">대략 이 정도 듭니다</h2>
+      <div class="table-scroll">
+        <table class="table">
+          <caption class="sr-only">규격별 굴취·운반 비용 참고표</caption>
+          <thead>
+            <tr>
+              <th scope="col">규격</th>
+              <th scope="col" class="ta-r">굴취 (주당)</th>
+              <th scope="col" class="ta-r">운반 (차당)</th>
+              <th scope="col">필요 장비</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><th scope="row">R10 이하 소형</th><td class="ta-r num">30,000 ~ 60,000원</td><td class="ta-r num">250,000원 ~</td><td class="muted">굴삭기 03W</td></tr>
+            <tr><th scope="row">R10 ~ R20 중형</th><td class="ta-r num">80,000 ~ 150,000원</td><td class="ta-r num">450,000원 ~</td><td class="muted">굴삭기 06W · 5t 카고</td></tr>
+            <tr><th scope="row">R20 ~ R30 대형</th><td class="ta-r num">200,000 ~ 400,000원</td><td class="ta-r num">800,000원 ~</td><td class="muted">크레인 25t · 트레일러</td></tr>
+            <tr><th scope="row">R30 이상 특대</th><td class="ta-r num">현장 견적</td><td class="ta-r num">현장 견적</td><td class="muted">크레인 50t 이상 · 도로 협의</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="notice notice-warn mt4"> <p><b>진입로가 비용을 좌우합니다.</b> 크레인이 못 들어가는 현장은 비용이 두 배가 되기도 합니다.
+           매물 등록 시 진입로 사진을 함께 올려 주세요.</p>
+      </div>
+    </section>
+
+    <!-- 업체 등록 유도 -->
+    <section class="card card-pad center">
+      <span class="eyebrow">업체이신가요?</span>
+      <h2 class="h2">비수기에도 일감이 들어옵니다</h2>
+      <p class="lead mt3" style="max-width:48ch;margin-inline:auto">
+        지역과 보유 장비를 등록해 두면, 조건에 맞는 거래가 성사될 때마다 견적 요청이 갑니다.
+        등록비와 월 이용료는 없습니다. 성사된 건에 대해서만 수수료를 받습니다.
+      </p>
+      <a class="btn btn-primary btn-lg mt5" href="login.html">업체로 가입하기</a>
+    </section>
+  </div>
+</main>
+
+<div id="site-footer"></div>
+
+<script src="assets/js/data.js"></script>
+<script src="assets/js/farm-data.js"></script>
+<script src="assets/js/store.js"></script>
+<script src="assets/js/app.js"></script>
+<script>
+document.getElementById('qRegion').insertAdjacentHTML('beforeend', REGIONS.map(r => `<option>${r}</option>`).join(''));
+document.getElementById('qSpecies').insertAdjacentHTML('beforeend',
+  SPECIES.map(s => `<option>${s.name}</option>`).join(''));
+
+document.getElementById('moverGrid').innerHTML = MOVERS.concat(MOVERS.slice(0, 3).map(m =>
+  ({ ...m, name: m.name + ' 제2지점', deals: Math.round(m.deals * 0.4), rating: (m.rating - 0.2).toFixed(1) })
+)).map(m => `
+  <article class="card card-pad stack g3">
+    <div class="row g3">
+      <span class="avatar avatar-lg" aria-hidden="true">${m.init}</span>
+      <div class="grow">
+        <h3 class="h3">${m.name}</h3>
+        <p class="tiny muted mt1">${m.region}</p>
+      </div>
+    </div>
+    <p class="small muted">${m.spec}</p>
+    <div class="row g2 wrapf">
+      <span class="badge badge-green">${m.badge}</span>
+      <span class="badge badge-gray">★ ${m.rating}</span>
+      <span class="badge badge-gray">거래 ${m.deals}건</span>
+    </div>
+    <div class="divider"></div>
+    <div class="row between">
+      <span class="strong small">${m.price}</span>
+      <button class="btn btn-secondary btn-sm" type="button"
+              onclick="alert('프로토타입입니다.\\n견적 요청이 업체에 전달됩니다.')">견적 요청</button>
+    </div>
+  </article>`).join('');
+
+document.getElementById('quoteForm').addEventListener('submit', e => {
+  e.preventDefault();
+  alert('프로토타입입니다.\n\n조건에 맞는 업체 3~5곳에 요청이 전달되고,\n24시간 안에 견적을 비교할 수 있습니다.');
+});
+</script>
+</body>
+</html>
