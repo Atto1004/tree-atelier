@@ -1277,3 +1277,4 @@ h1, h2, h3, .display, .lead { text-wrap: pretty; }
 .shape-wrap-wide .sp-shape { padding: 10px 6px 9px; }
 .shape-wrap-wide .shape-ic { width: 44px; height: 44px; }
 .shape-inline { display: inline-flex; align-items: center; gap: 6px; } .shape-inline .shape-ic { width: 26px; height: 26px; margin: 0; color: var(--green-700); }
+html.intro-on .intro.is-leaving { opacity: 0; transition: opacity .4s var(--ease); pointer-events: none; }

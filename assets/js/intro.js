@@ -134,14 +134,25 @@
     }
   });
 
-  /* 둘러보기 · 아래로 */
+  /* 둘러보기 — 인트로를 걷어내고 홈 첫 화면으로 */
   function browse() {
+    markSeen();
     html.classList.remove('intro-lock');
-    const hero = document.querySelector('.hero');
-    if (hero) hero.scrollIntoView({ behavior: reduce ? 'auto' : 'smooth' });
+    intro.classList.add('is-leaving');
+    setTimeout(() => {
+      html.classList.remove('intro-on');
+      intro.remove();
+      window.scrollTo(0, 0);
+    }, reduce ? 0 : 420);
+  }
+  /* 아래로 내려서 구경하기 — 인트로 아래 홈으로 스크롤 */
+  function down() {
+    html.classList.remove('intro-lock');
+    const main = document.getElementById('main');
+    if (main) main.scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'start' });
   }
   $i('#introBrowse').addEventListener('click', browse);
-  $i('#introDown').addEventListener('click', browse);
+  $i('#introDown').addEventListener('click', down);
 
   /* 건너뛰기 — 언제든 */
   function skip() {
