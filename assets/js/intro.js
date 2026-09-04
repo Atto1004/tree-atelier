@@ -139,6 +139,23 @@
       paint(false);
       intro.classList.add('is-finale');
       sparkle(8);
+
+      /* 나무가 올라간 자리를 재서 광선·후광의 중심으로 삼습니다 */
+      let litDone = false;
+      const lit = () => {
+        if (litDone) return;
+        litDone = true;
+        const ir = intro.getBoundingClientRect();
+        const tr = treeEl.getBoundingClientRect();
+        intro.style.setProperty('--cx', (tr.left - ir.left + tr.width / 2) + 'px');
+        intro.style.setProperty('--cy', (tr.top - ir.top + tr.height * 0.5) + 'px');
+        intro.classList.add('is-lit');
+      };
+      if (reduce) lit();
+      else {
+        treeEl.addEventListener('transitionend', lit, { once: true });
+        setTimeout(lit, 1600);
+      }
       $i('#introHud').hidden = true;
       $i('#introPanel').hidden = true;
 
