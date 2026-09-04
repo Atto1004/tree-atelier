@@ -954,7 +954,8 @@ html.intro-on .intro { --intro-ground: calc(172px + env(safe-area-inset-bottom))
 
 /* 수확 연출 — 햇살 광선 */
 .intro-rays {
-  position: absolute; left: 50%; bottom: -30vmin; z-index: 2; pointer-events: none;
+  /* 광선의 중심 = 수확 연출에서 나무가 서는 자리(분 위 줄기 부근) */
+  position: absolute; left: 50%; bottom: calc(var(--intro-copy) + 120px - 85vmin); z-index: 2; pointer-events: none;
   width: 170vmin; height: 170vmin; border-radius: 50%;
   transform: translateX(-50%);
   background: repeating-conic-gradient(from 0deg,
