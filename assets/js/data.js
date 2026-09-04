@@ -15,6 +15,23 @@ const SPECIES = [
   { id: 'gamnamu',  name: '감나무',   group: '유실수', emoji: '' },
 ];
 
+/* 수형(모양) — 수종을 고르면 그 수종에서 나오는 형태만 보여줍니다. icon 은 app.js SHAPE_ICONS 키 */
+const SHAPES = [
+  { id: 'natural',  name: '자연형', desc: '키운 그대로',      for: ['sonamu', 'geumgang', 'juyok', 'danpung', 'gamnamu', 'neuti'] },
+  { id: 'sculpt',   name: '조형',   desc: '층으로 다듬음', for: ['sonamu', 'geumgang', 'juyok', 'baerong'] },
+  { id: 'straight', name: '직간',   desc: '곧게 선 줄기',      for: ['sonamu', 'geumgang', 'neuti', 'ipap', 'danpung', 'baerong'] },
+  { id: 'curved',   name: '곡간',   desc: '굽이진 줄기',       for: ['sonamu', 'geumgang'] },
+  { id: 'multi',    name: '다간',   desc: '여러 갈래 줄기',         for: ['sonamu', 'bansong', 'neuti', 'ipap', 'baerong', 'danpung'] },
+  { id: 'round',    name: '둥근형', desc: '둥근 수관',   for: ['bansong', 'juyok', 'gamnamu'] },
+  { id: 'umbrella', name: '우산형', desc: '넓게 퍼진 수관',   for: ['neuti', 'sonamu', 'ipap', 'bansong'] },
+  { id: 'cone',     name: '원추형', desc: '위로 좁아짐', for: ['juyok', 'geumgang'] },
+];
+function shapesFor(speciesIds) {
+  const ids = [...speciesIds];
+  return SHAPES.filter(sh => ids.some(id => sh.for.includes(id)));
+}
+function shapeName(id) { return (SHAPES.find(s => s.id === id) || {}).name || id; }
+
 const REGIONS = ['경기', '강원', '충북', '충남', '전북', '전남', '경북', '경남', '제주'];
 
 /* =========================================================
@@ -200,7 +217,7 @@ const PRICE_INDEX = {
 
 const PRICE_MONTHS = ['4월', '5월', '6월', '7월', '8월', '9월'];
 
-/* 매물 — 런칭 단계: 봉화 법원리농원(1호 농가) 단독 입점.
+/* 매물 — 런칭 단계: 파주 법원리농원(1호 농가) 단독 입점.
    할아버지가 30년 넘게 기른 소나무를 규격별 로트로 나눠 등록합니다.
    unitPrice 는 비공개 내부값(문의 회신·시세 피드백 기준)입니다. */
 const FARM = {
@@ -208,17 +225,17 @@ const FARM = {
   owner: '법원리농원 김OO',
   init: '김',
   no: 1,                       /* 인증 농가 1호 */
-  region: '경북',
-  addr: '경북 봉화군 물야면',
+  region: '경기',
+  addr: '경기 파주시 법원읍',
   years: 32,
   area: '약 4만 평 (13ha)',
   stock: '적송 239주 실측',
-  story: '봉화 산지에서 30년 넘게 소나무만 길러 온 농장입니다. 그동안은 밭에 찾아온 중간상이 부르는 값에 넘겨야 했습니다. Tree Atelier는 이 농장의 나무를 제값에 팔기 위해 시작한 플랫폼입니다.',
+  story: '파주 법원리에서 30년 넘게 소나무만 길러 온 농장입니다. 그동안은 밭에 찾아온 중간상이 부르는 값에 넘겨야 했습니다. Tree Atelier는 이 농장의 나무를 제값에 팔기 위해 시작한 플랫폼입니다.',
 };
 
 const LISTINGS = [
   {
-    id: 'L2409-0142', species: 'sonamu', title: '적송 R15 균일주 · 조경 식재 바로 가능',
+    id: 'L2409-0142', species: 'sonamu', shape: 'natural', title: '적송 R15 균일주 · 조경 식재 바로 가능',
     grower: FARM.owner, growerInit: FARM.init, verified: true, years: FARM.years, deals: 41, rating: 4.9,
     region: FARM.region, addr: FARM.addr, qty: 120, unitPrice: 268000,
     spec: { R: 15, H: 4.2, W: 2.4, B: null }, notation: 'H4.2×W2.4×R15',
@@ -229,7 +246,7 @@ const LISTINGS = [
     photos: 8,
   },
   {
-    id: 'L2409-0121', species: 'sonamu', title: '적송 R12 · 단지 조경용 200주',
+    id: 'L2409-0121', species: 'sonamu', shape: 'straight', title: '적송 R12 · 단지 조경용 200주',
     grower: FARM.owner, growerInit: FARM.init, verified: true, years: FARM.years, deals: 41, rating: 4.9,
     region: FARM.region, addr: FARM.addr, qty: 200, unitPrice: 205000,
     spec: { R: 12, H: 3.6, W: 2.0, B: null }, notation: 'H3.6×W2.0×R12',
@@ -240,7 +257,7 @@ const LISTINGS = [
     photos: 6,
   },
   {
-    id: 'L2409-0133', species: 'sonamu', title: '적송 R18 특선 · 수형 관리목 40주',
+    id: 'L2409-0133', species: 'sonamu', shape: 'sculpt', title: '적송 R18 특선 · 수형 관리목 40주',
     grower: FARM.owner, growerInit: FARM.init, verified: true, years: FARM.years, deals: 41, rating: 4.9,
     region: FARM.region, addr: FARM.addr, qty: 40, unitPrice: 385000,
     spec: { R: 18, H: 5.0, W: 3.0, B: 15 }, notation: 'H5.0×W3.0×R18',
@@ -251,7 +268,7 @@ const LISTINGS = [
     photos: 12,
   },
   {
-    id: 'L2409-0108', species: 'sonamu', title: '적송 R22 대형목 · 상징목급 12주',
+    id: 'L2409-0108', species: 'sonamu', shape: 'curved', title: '적송 R22 대형목 · 상징목급 12주',
     grower: FARM.owner, growerInit: FARM.init, verified: true, years: FARM.years, deals: 41, rating: 4.9,
     region: FARM.region, addr: FARM.addr, qty: 12, unitPrice: 520000,
     spec: { R: 22, H: 6.2, W: 3.8, B: 18 }, notation: 'H6.2×W3.8×R22',
@@ -262,7 +279,7 @@ const LISTINGS = [
     photos: 15,
   },
   {
-    id: 'L2409-0114', species: 'bansong', title: '반송 H2.5 · 굴취 완료 즉시 출하 18주',
+    id: 'L2409-0114', species: 'bansong', shape: 'round', title: '반송 H2.5 · 굴취 완료 즉시 출하 18주',
     grower: FARM.owner, growerInit: FARM.init, verified: true, years: FARM.years, deals: 41, rating: 4.9,
     region: FARM.region, addr: FARM.addr, qty: 18, unitPrice: 690000,
     spec: { R: null, H: 2.5, W: 3.0, B: null }, notation: 'H2.5×W3.0',
@@ -273,7 +290,7 @@ const LISTINGS = [
     photos: 10,
   },
   {
-    id: 'L2409-0074', species: 'bansong', title: '소형 반송 H1.5 · 주택 정원용 (판매 완료)',
+    id: 'L2409-0074', species: 'bansong', shape: 'round', title: '소형 반송 H1.5 · 주택 정원용 (판매 완료)',
     grower: FARM.owner, growerInit: FARM.init, verified: true, years: FARM.years, deals: 41, rating: 4.9,
     region: FARM.region, addr: FARM.addr, qty: 36, unitPrice: 385000,
     spec: { R: null, H: 1.5, W: 1.8, B: null }, notation: 'H1.5×W1.8',
@@ -284,7 +301,7 @@ const LISTINGS = [
     photos: 9,
   },
   {
-    id: 'L2409-0097', species: 'geumgang', title: '금강송 R20 · 문화재 보수용 규격 6주',
+    id: 'L2409-0097', species: 'geumgang', shape: 'straight', title: '금강송 R20 · 문화재 보수용 규격 6주',
     grower: FARM.owner, growerInit: FARM.init, verified: true, years: FARM.years, deals: 41, rating: 4.9,
     region: FARM.region, addr: FARM.addr, qty: 6, unitPrice: 1180000,
     spec: { R: 20, H: 6.8, W: 3.0, B: 17 }, notation: 'H6.8×W3.0×R20',
@@ -295,7 +312,7 @@ const LISTINGS = [
     photos: 14,
   },
   {
-    id: 'L2409-0089', species: 'sonamu', title: '적송 R10 · 육성용 300주 일괄',
+    id: 'L2409-0089', species: 'sonamu', shape: 'natural', title: '적송 R10 · 육성용 300주 일괄',
     grower: FARM.owner, growerInit: FARM.init, verified: true, years: FARM.years, deals: 41, rating: 4.9,
     region: FARM.region, addr: FARM.addr, qty: 300, unitPrice: 145000,
     spec: { R: 10, H: 2.8, W: 1.6, B: null }, notation: 'H2.8×W1.6×R10',
@@ -312,11 +329,11 @@ const LISTINGS = [
    정산까지 끝난 건만 들어갑니다.
    ========================================================= */
 const RECENT_DEALS = [
-  { species:'sonamu',   spec:{H:4.2,W:2.4,R:15}, qty:80,  unitPrice:281000,  region:'경북', date:'2026-09-01' },
+  { species:'sonamu',   spec:{H:4.2,W:2.4,R:15}, qty:80,  unitPrice:281000,  region:'경기', date:'2026-09-01' },
   { species:'bansong',  spec:{H:2.5,W:3.1},      qty:12,  unitPrice:668000,  region:'전북', date:'2026-09-01' },
   { species:'ipap',     spec:{H:4.0,B:12},       qty:220, unitPrice:186000,  region:'전남', date:'2026-08-31' },
   { species:'sonamu',   spec:{H:5.0,W:3.2,R:18}, qty:24,  unitPrice:372000,  region:'경남', date:'2026-08-30' },
-  { species:'neuti',    spec:{H:6.0,R:18},       qty:16,  unitPrice:388000,  region:'경북', date:'2026-08-30' },
+  { species:'neuti',    spec:{H:6.0,R:18},       qty:16,  unitPrice:388000,  region:'경기', date:'2026-08-30' },
   { species:'danpung',  spec:{H:3.6,R:15},       qty:34,  unitPrice:318000,  region:'경기', date:'2026-08-29' },
   { species:'geumgang', spec:{H:6.8,W:3.0,R:20}, qty:4,   unitPrice:1310000, region:'강원', date:'2026-08-28' },
   { species:'sonamu',   spec:{H:3.5,W:2.0,R:12}, qty:150, unitPrice:214000,  region:'충북', date:'2026-08-28' },
@@ -326,9 +343,9 @@ const RECENT_DEALS = [
   { species:'sonamu',   spec:{H:4.0,W:2.2,R:15}, qty:60,  unitPrice:274000,  region:'강원', date:'2026-08-24' },
   { species:'gamnamu',  spec:{H:2.6,R:10},       qty:48,  unitPrice:129000,  region:'경남', date:'2026-08-22' },
   { species:'ipap',     spec:{H:3.8,B:10},       qty:300, unitPrice:171000,  region:'전북', date:'2026-08-21' },
-  { species:'sonamu',   spec:{H:6.0,W:3.6,R:22}, qty:8,   unitPrice:512000,  region:'경북', date:'2026-08-19' },
+  { species:'sonamu',   spec:{H:6.0,W:3.6,R:22}, qty:8,   unitPrice:512000,  region:'경기', date:'2026-08-19' },
   { species:'danpung',  spec:{H:3.0,R:12},       qty:40,  unitPrice:241000,  region:'충남', date:'2026-08-18' },
-  { species:'bansong',  spec:{H:1.5,W:1.8},      qty:36,  unitPrice:392000,  region:'경북', date:'2026-08-16' },
+  { species:'bansong',  spec:{H:1.5,W:1.8},      qty:36,  unitPrice:392000,  region:'경기', date:'2026-08-16' },
   { species:'geumgang', spec:{H:5.5,W:2.6,R:16}, qty:6,   unitPrice:940000,  region:'강원', date:'2026-08-14' },
 ];
 
@@ -402,7 +419,7 @@ const MOVERS = [
 /* 커뮤니티 게시글 */
 const POSTS = [
   { id: 1, cat: '재배노하우', title: '소나무 근원경 15cm까지, 저는 이렇게 키웠습니다 (14년 기록)',
-    excerpt: '봉화에서 소나무 농사 짓는 사람입니다. 처음 묘목 심을 때부터 지금까지 간격, 전정 시기, 비료 준 기록을 다 남겨뒀는데 도움이 될까 싶어 정리해서 올립니다.',
+    excerpt: '파주에서 소나무 농사 짓는 사람입니다. 처음 묘목 심을 때부터 지금까지 간격, 전정 시기, 비료 준 기록을 다 남겨뒀는데 도움이 될까 싶어 정리해서 올립니다.',
     author: '법원리농원 김OO', init: '김', date: '2026-08-30', views: 1842, comments: 47, likes: 213, hot: true },
   { id: 2, cat: '시세정보', title: '올해 이팝나무 가로수 단가, 작년보다 확실히 올랐습니다',
     excerpt: '지자체 발주가 몰리면서 R12 기준으로 작년 대비 15% 정도 올랐네요. 계약하신 분들 단가 어떻게 되시나요?',

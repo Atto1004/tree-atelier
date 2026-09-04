@@ -59,6 +59,13 @@
         <div class="filter-group">
           <h3>수종</h3>
           <div class="chip-wrap" id="fSpecies"></div>
+          <p class="hint mt2">지금 등록된 나무가 있는 수종만 보여드립니다.</p>
+        </div>
+
+        <div class="filter-group" id="gShape">
+          <h3>수형</h3>
+          <div class="shape-wrap" id="fShapes"></div>
+          <p class="hint mt2" id="shapeHint">수종을 고르면 그 수종에서 나오는 형태를 고를 수 있습니다.</p>
         </div>
 
         <div class="filter-group">
@@ -72,19 +79,12 @@
         </div>
 
         <div class="filter-group">
-          <h3>규격 (근원경 R)</h3>
-          <div class="row g2">
-            <div class="field grow">
-              <label class="sr-only" for="fRmin">최소 근원경</label>
-              <input class="input" id="fRmin" type="number" inputmode="numeric" placeholder="최소" min="0">
-            </div>
-            <span class="muted" aria-hidden="true">~</span>
-            <div class="field grow">
-              <label class="sr-only" for="fRmax">최대 근원경</label>
-              <input class="input" id="fRmax" type="number" inputmode="numeric" placeholder="최대" min="0">
-            </div>
+          <h3>규격</h3>
+          <div class="stack g3">
+            <div id="fR"></div>
+            <div id="fH"></div>
           </div>
-          <p class="hint mt2">단위 cm. 침엽수는 수고(H)로 거래되기도 합니다.</p>
+          <p class="hint mt2">손잡이를 끌어 범위를 정합니다. 양 끝에 두면 그 조건은 적용되지 않습니다.</p>
         </div>
 
         <div class="filter-group">
@@ -92,7 +92,7 @@
           <div class="field has-suffix">
             <label class="sr-only" for="fQty">최소 수량</label>
             <div class="input-group">
-              <input class="input" id="fQty" type="number" inputmode="numeric" placeholder="이 수량 이상 보유" min="1">
+              <input class="input" id="fQty" type="number" inputmode="numeric" placeholder="최소 수량" min="1">
               <span class="input-suffix">주</span>
             </div>
           </div>
@@ -162,16 +162,41 @@
 <script src="assets/js/store.js"></script>
 <script src="assets/js/app.js"></script>
 <script>
-const state = { q: '', species: new Set(), region: '', rmin: null, rmax: null,
+const state = { q: '', species: new Set(), shapes: new Set(), region: '', rmin: null, rmax: null, hmin: null, hmax: null,
                 qty: null, tags: new Set(), verified: false, dug: false, sort: 'new' };
 
 /* 특징 필터 — 매물 태그에서 뽑은 구매자 관심 조건 */
 const FEATURES = ['수형우수', '대량보유', '규격균일', '현장확인가능', '즉시출하', '가로수규격', '내염성', '다간형'];
 
 /* 필터 UI 채우기 */
-document.getElementById('fSpecies').innerHTML = SPECIES.map(s =>
+document.getElementById('fSpecies').innerHTML = speciesWithStock().map(s =>
   `<button class="chip" type="button" data-sp="${s.id}" aria-pressed="false">${s.name}</button>`
 ).join('');
+
+/* 수형 칩 — 고른 수종에 따라 다시 그립니다 */
+function renderShapes() {
+  const box = document.getElementById('fShapes'), hint = document.getElementById('shapeHint');
+  if (!state.species.size) { box.innerHTML = ''; state.shapes.clear(); hint.hidden = false; return; }
+  const list = shapesFor(state.species);
+  for (const id of [...state.shapes]) if (!list.some(x => x.id === id)) state.shapes.delete(id);
+  hint.hidden = true;
+  box.innerHTML = list.map(sh =>
+    `<button class="sp-shape" type="button" data-shape="${sh.id}" aria-pressed="${state.shapes.has(sh.id)}">${shapeIcon(sh.id)}<b>${sh.name}</b></button>`
+  ).join('');
+}
+document.getElementById('fShapes').addEventListener('click', e => {
+  const b = e.target.closest('[data-shape]'); if (!b) return;
+  state.shapes.has(b.dataset.shape) ? state.shapes.delete(b.dataset.shape) : state.shapes.add(b.dataset.shape);
+  b.setAttribute('aria-pressed', String(state.shapes.has(b.dataset.shape)));
+  render();
+});
+
+/* 규격 구간 슬라이더 */
+const sliderR = rangeSlider(document.getElementById('fR'), { min: 5, max: 40, step: 1, label: '근원직경 R', unit: 'cm', plus: true,
+  onChange: v => { state.rmin = v.lo; state.rmax = v.hi; render(); } });
+const sliderH = rangeSlider(document.getElementById('fH'), { min: 1, max: 10, step: 0.5, label: '수고 H', unit: 'm', plus: true,
+  fmt: v => Number(v).toFixed(1).replace(/\.0$/, ''),
+  onChange: v => { state.hmin = v.lo; state.hmax = v.hi; render(); } });
 document.getElementById('fTags').innerHTML = FEATURES.map(t =>
   `<button class="chip" type="button" data-tag="${t}" aria-pressed="false">${t}</button>`
 ).join('');
@@ -180,27 +205,7 @@ document.getElementById('fRegion').insertAdjacentHTML('beforeend',
 
 /* 렌더 */
 function render() {
-  const needle = state.q.trim().toLowerCase();
-
-  let rows = Store.Listings.all().filter(l => {
-    if (state.species.size && !state.species.has(l.species)) return false;
-    if (state.region && l.region !== state.region) return false;
-    if (state.rmin != null && (!l.spec.R || l.spec.R < state.rmin)) return false;
-    if (state.rmax != null && (!l.spec.R || l.spec.R > state.rmax)) return false;
-    if (state.qty != null && l.qty < state.qty) return false;
-    if (state.verified && !l.verified) return false;
-    if (state.dug && !l.dug) return false;
-    if (state.tags.size) {
-      for (const t of state.tags) {
-        if (!(l.tags || []).includes(t)) return false;
-      }
-    }
-    if (needle) {
-      const hay = (l.title + ' ' + (l.desc || '') + ' ' + l.region + ' ' + speciesName(l.species)).toLowerCase();
-      if (!hay.includes(needle)) return false;
-    }
-    return true;
-  });
+  let rows = Store.Listings.all().filter(l => matchListing(l, state));
 
   const sizeOf = l => l.spec.R || l.spec.B || (l.spec.H ? l.spec.H * 4 : 0);
   const sorters = {
@@ -223,14 +228,13 @@ document.getElementById('fSpecies').addEventListener('click', e => {
   const on = b.getAttribute('aria-pressed') === 'true';
   b.setAttribute('aria-pressed', String(!on));
   on ? state.species.delete(b.dataset.sp) : state.species.add(b.dataset.sp);
+  renderShapes();
   render();
   renderBanner();
 });
 
 const num = v => (v === '' ? null : Number(v));
 document.getElementById('fRegion').addEventListener('change', e => { state.region = e.target.value; render(); });
-document.getElementById('fRmin').addEventListener('input', e => { state.rmin = num(e.target.value); render(); });
-document.getElementById('fRmax').addEventListener('input', e => { state.rmax = num(e.target.value); render(); });
 document.getElementById('fQty').addEventListener('input', e => { state.qty = num(e.target.value); render(); });
 document.getElementById('fQ').addEventListener('input', e => { state.q = e.target.value; render(); });
 document.getElementById('fVerified').addEventListener('change', e => { state.verified = e.target.checked; render(); });
@@ -246,11 +250,12 @@ document.getElementById('fTags').addEventListener('click', e => {
 });
 
 function reset() {
-  state.q = ''; state.species.clear(); state.tags.clear();
-  state.region = ''; state.rmin = state.rmax = state.qty = null;
+  state.q = ''; state.species.clear(); state.shapes.clear(); state.tags.clear();
+  state.region = ''; state.rmin = state.rmax = state.hmin = state.hmax = state.qty = null;
   state.verified = state.dug = false; state.sort = 'new';
   document.querySelectorAll('[data-sp],[data-tag]').forEach(b => b.setAttribute('aria-pressed', 'false'));
-  ['fRegion','fRmin','fRmax','fQty','fQ','sortBy'].forEach(id => document.getElementById(id).value = id === 'sortBy' ? 'new' : '');
+  sliderR.reset(true); sliderH.reset(true); renderShapes();
+  ['fRegion','fQty','fQ','sortBy'].forEach(id => document.getElementById(id).value = id === 'sortBy' ? 'new' : '');
   document.getElementById('fVerified').checked = false;
   document.getElementById('fDug').checked = false;
   render();
@@ -266,8 +271,21 @@ function reset() {
       if (b) { state.species.add(id); b.setAttribute('aria-pressed', 'true'); }
     });
   }
-  if (P.get('rmin')) { state.rmin = Number(P.get('rmin')); document.getElementById('fRmin').value = state.rmin; }
-  if (P.get('rmax')) { state.rmax = Number(P.get('rmax')); document.getElementById('fRmax').value = state.rmax; }
+  renderShapes();
+  if (P.get('shape')) {
+    P.get('shape').split(',').forEach(id => {
+      const b = document.querySelector(`[data-shape="${id}"]`);
+      if (b) { state.shapes.add(id); b.setAttribute('aria-pressed', 'true'); }
+    });
+  }
+  if (P.get('rmin') || P.get('rmax')) {
+    sliderR.set(P.get('rmin') ? Number(P.get('rmin')) : null, P.get('rmax') ? Number(P.get('rmax')) : null, true);
+    const r = sliderR.get(); state.rmin = r.lo; state.rmax = r.hi;
+  }
+  if (P.get('hmin') || P.get('hmax')) {
+    sliderH.set(P.get('hmin') ? Number(P.get('hmin')) : null, P.get('hmax') ? Number(P.get('hmax')) : null, true);
+    const h = sliderH.get(); state.hmin = h.lo; state.hmax = h.hi;
+  }
   if (P.get('qty'))  { state.qty = Number(P.get('qty'));  document.getElementById('fQty').value = state.qty; }
   if (P.get('tag')) {
     P.get('tag').split(',').forEach(t => {

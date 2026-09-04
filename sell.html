@@ -70,6 +70,12 @@
             </div>
           </div>
 
+          <div class="field" id="shapeField" hidden>
+            <span class="label">수형 <span class="req" aria-hidden="true">*</span></span>
+            <div class="shape-wrap shape-wrap-wide" id="shapePick" role="radiogroup" aria-label="수형 선택"></div>
+            <p class="hint">구매자가 수형으로 검색합니다. 가장 가까운 형태를 하나 고르세요.</p>
+          </div>
+
           <div class="field">
             <label class="label" for="title">매물 제목 <span class="req" aria-hidden="true">*</span></label>
             <input class="input" id="title" type="text" maxlength="60"
@@ -567,7 +573,27 @@ function renderMine() {
     : '<p class="small muted">아직 등록한 매물이 없습니다. 아래 폼을 채우면 여기에 쌓입니다.</p>';
 }
 
-spEl.addEventListener('change', () => { renderIndex(); renderFeedback(); applyRule(); });
+/* 수형 선택 — 수종에 따라 고를 수 있는 형태가 달라집니다 */
+let shapeSel = '';
+function renderShapePick() {
+  const box = $('#shapePick'), field = $('#shapeField');
+  if (!spEl.value) { field.hidden = true; shapeSel = ''; return; }
+  const list = shapesFor([spEl.value]);
+  if (!list.some(x => x.id === shapeSel)) shapeSel = '';
+  field.hidden = false;
+  box.innerHTML = list.map(sh =>
+    `<button class="sp-shape" type="button" role="radio" data-shape="${sh.id}" aria-checked="${shapeSel === sh.id}" aria-pressed="${shapeSel === sh.id}">${shapeIcon(sh.id)}<b>${sh.name}</b><span>${sh.desc}</span></button>`
+  ).join('');
+}
+$('#shapePick').addEventListener('click', e => {
+  const b = e.target.closest('[data-shape]'); if (!b) return;
+  shapeSel = b.dataset.shape;
+  $('#shapePick').querySelectorAll('[data-shape]').forEach(x => {
+    const on = x.dataset.shape === shapeSel;
+    x.setAttribute('aria-checked', String(on)); x.setAttribute('aria-pressed', String(on));
+  });
+});
+spEl.addEventListener('change', () => { renderIndex(); renderFeedback(); applyRule(); renderShapePick(); });
 prEl.addEventListener('input', () => { renderFeedback(); renderSimilarDeals(currentSpec()); });
 titleEl.addEventListener('input', () => { $('#titleCount').textContent = titleEl.value.length; });
 
@@ -582,6 +608,12 @@ function validate() {
   };
 
   check($('#species'), !!$('#species').value, '수종을 선택해 주세요.');
+  /* 수형 — 수종을 골랐으면 형태도 하나 골라야 검색에 걸립니다 */
+  const sf = $('#shapeField'), sfErr = sf.querySelector('.err');
+  if (!sf.hidden && !shapeSel) {
+    if (!sfErr) { const p = document.createElement('p'); p.className = 'err'; p.textContent = '수형을 하나 골라 주세요.'; sf.appendChild(p); }
+    errs.push($('#shapePick'));
+  } else if (sfErr) sfErr.remove();
   check($('#title'), $('#title').value.trim().length >= 5, '제목을 5자 이상 적어 주세요.');
   check($('#qty'), num($('#qty')) > 0, '수량을 1주 이상 입력해 주세요.');
   check($('#region'), !!$('#region').value, '소재지를 선택해 주세요.');
@@ -642,6 +674,7 @@ $('#sellForm').addEventListener('submit', e => {
 
   const res = Store.Listings.add({
     species: spEl.value,
+    shape: shapeSel || null,
     title: $('#title').value.trim(),
     qty: num($('#qty')),
     unitPrice: num($('#price')),

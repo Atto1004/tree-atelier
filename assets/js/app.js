@@ -72,13 +72,14 @@ function renderChrome() {
       ${NAV.map(n => `<a href="${n.href}"${isCur(n.href)}>${n.label}</a>`).join('')}
     </nav>
     <div class="header-actions">
-      <form class="header-search hide-sm" role="search" id="hsearchForm">
+      <form class="header-search" role="search" id="hsearchForm">
         <label class="sr-only" for="hsearch">수종·규격·수량으로 검색</label>
         <div class="input-group">
           <span class="ig-icon" aria-hidden="true">${ICON.search}</span>
-          <input class="input" id="hsearch" type="search" placeholder="예: 소나무 R20 30주">
+          <input class="input" id="hsearch" type="search" placeholder="수종·규격으로 찾기" autocomplete="off">
         </div>
       </form>
+      <button class="btn btn-ghost btn-icon search-btn" id="searchBtn" type="button" aria-label="나무 검색" aria-expanded="false">${ICON.search}</button>
       <a class="btn btn-secondary btn-sm hide-sm" href="login.html">로그인</a>
       <a class="btn btn-secondary btn-sm hide-sm" href="inquiry.html"${isCur('inquiry.html')}>${ICON.chat}<span>구매 문의</span></a>
       <a class="btn btn-primary btn-sm" href="sell.html">${ICON.plus}<span>농원 등록</span></a>
@@ -191,13 +192,23 @@ function bindChrome() {
     setTimeout(() => { drawer.hidden = true; back.hidden = true; }, 260);
     if (lastFocus) lastFocus.focus();
   }
-  /* 헤더 검색 — 수종·규격·수량 문장을 목록 검색 조건으로 바꿉니다 (예: "소나무 R20 30주") */
-  $('#hsearchForm')?.addEventListener('submit', e => {
-    e.preventDefault();
-    const v = $('#hsearch').value.trim();
-    if (!v) return;
-    location.href = 'listings.html?' + specQuery(v).toString();
-  });
+  /* 헤더 검색 — 검색창을 누르면 조건 패널이 열리고, 문장 입력("소나무 R20 30주")도 조건으로 풉니다 */
+  const sForm = $('#hsearchForm'), sInput = $('#hsearch');
+  if (sForm && sInput) {
+    const sp = buildSearchPanel(sForm, sInput);
+    sForm.addEventListener('submit', e => {
+      e.preventDefault();
+      const p = sp.params();
+      location.href = 'listings.html' + (p.toString() ? '?' + p.toString() : '');
+    });
+    $('#searchBtn')?.addEventListener('click', e => {
+      e.stopPropagation();
+      if (sp.isOpen()) { sp.close(); return; }
+      sp.open();
+      $('#searchBtn').setAttribute('aria-expanded', 'true');
+      setTimeout(() => $('#spQ')?.focus(), 30);
+    });
+  }
 
   btn?.addEventListener('click', open);
   $('#drawerClose')?.addEventListener('click', close);
@@ -483,3 +494,197 @@ function barsHTML(history, months) {
 
 document.addEventListener('DOMContentLoaded', renderChrome);
 
+
+/* ---------- 수형 실루엣 아이콘 ---------- */
+const SHAPE_ICONS = {
+  natural:  '<svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"><path d="M24 44V26"/><path d="M24 26l-6-6M24 22l7-6"/><path d="M10 20c-2-8 5-14 12-13 4-4 12-3 14 3 5 2 6 9 2 12 1 5-4 9-9 7-3 3-9 3-12-1-4 1-8-3-7-8z"/></svg>',
+  sculpt:   '<svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"><path d="M24 44V30"/><path d="M24 30v-6M24 24v-9"/><ellipse cx="17" cy="27" rx="9" ry="3.5"/><ellipse cx="30" cy="20" rx="9" ry="3.5"/><ellipse cx="20" cy="12" rx="7" ry="3"/></svg>',
+  straight: '<svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"><path d="M24 44V28"/><ellipse cx="24" cy="17" rx="9" ry="13"/></svg>',
+  curved:   '<svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"><path d="M22 44c0-6 6-8 6-14s-8-8-6-14"/><path d="M13 14c-2-7 6-11 11-8 6-3 13 1 12 8 4 3 2 9-3 9-2 4-9 5-12 1-5 1-9-3-8-10z"/></svg>',
+  multi:    '<svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"><path d="M24 44V32M24 38l-8-9M24 38l8-9"/><path d="M8 20c-2-8 6-13 12-10 3-5 11-5 14 0 6-3 14 2 12 10 2 6-4 10-9 8-3 3-9 3-12 0-5 2-11-2-9-8-5 1-10-3-8-8z"/></svg>',
+  round:    '<svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"><path d="M24 44v-8"/><circle cx="24" cy="21" r="15"/></svg>',
+  umbrella: '<svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"><path d="M24 44V22"/><path d="M24 22l-7-5M24 22l7-5"/><path d="M4 20c4-9 12-13 20-13s16 4 20 13c-6 2-13 3-20 3S10 22 4 20z"/></svg>',
+  cone:     '<svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"><path d="M24 44v-6"/><path d="M24 4L10 38h28z"/><path d="M24 12l-8 18M24 12l8 18"/></svg>',
+};
+function shapeIcon(id) { return `<span class="shape-ic" aria-hidden="true">${SHAPE_ICONS[id] || SHAPE_ICONS.natural}</span>`; }
+function listingShape(l) {
+  if (l.shape) return l.shape;
+  if ((l.tags || []).includes('다간형')) return 'multi';
+  return null;
+}
+
+/* 사이트에 매물이 있는 수종만 — 검색 패널·필터의 수종 목록 */
+function speciesWithStock() {
+  const count = {};
+  for (const l of Store.Listings.all()) count[l.species] = (count[l.species] || 0) + (l.qty || 0);
+  return SPECIES.filter(s => count[s.id]).map(s => ({ ...s, qty: count[s.id] }));
+}
+
+/* ---------- 공통 매물 조건 판정 ----------
+   crit: { species:Set, shapes:Set, rmin, rmax, hmin, hmax, qty, tags:Set, region, q, verified, dug } */
+function matchListing(l, c) {
+  if (c.species && c.species.size && !c.species.has(l.species)) return false;
+  if (c.shapes && c.shapes.size) { const sh = listingShape(l); if (!sh || !c.shapes.has(sh)) return false; }
+  if (c.region && l.region !== c.region) return false;
+  const R = l.spec && l.spec.R, H = l.spec && l.spec.H;
+  if (c.rmin != null && (!R || R < c.rmin)) return false;
+  if (c.rmax != null && (!R || R > c.rmax)) return false;
+  if (c.hmin != null && (!H || H < c.hmin)) return false;
+  if (c.hmax != null && (!H || H > c.hmax)) return false;
+  if (c.qty != null && l.qty < c.qty) return false;
+  if (c.verified && !l.verified) return false;
+  if (c.dug && !l.dug) return false;
+  if (c.tags && c.tags.size) for (const t of c.tags) if (!(l.tags || []).includes(t)) return false;
+  const needle = (c.q || '').trim().toLowerCase();
+  if (needle) {
+    const hay = (l.title + ' ' + (l.desc || '') + ' ' + l.region + ' ' + speciesName(l.species)).toLowerCase();
+    if (!hay.includes(needle)) return false;
+  }
+  return true;
+}
+
+/* ---------- 구간 슬라이더 (최소·최대 두 손잡이) ----------
+   rangeSlider(el, { min, max, step, lo, hi, unit, label, fmt, plus, onChange })
+   손잡이가 양 끝에 있으면 그 쪽은 조건 없음(null)으로 봅니다. */
+function rangeSlider(el, o) {
+  const min = o.min, max = o.max, step = o.step || 1;
+  const fmt = o.fmt || (v => String(v));
+  let lo = o.lo != null ? o.lo : min, hi = o.hi != null ? o.hi : max;
+  el.classList.add('rslider');
+  el.innerHTML = `
+    <div class="rs-head"><span class="rs-label">${o.label || ''}</span><span class="rs-val" aria-live="polite"></span></div>
+    <div class="rs-track">
+      <div class="rs-fill"></div>
+      <input type="range" class="rs-a" min="${min}" max="${max}" step="${step}" value="${lo}" aria-label="${o.label || ''} 최소">
+      <input type="range" class="rs-b" min="${min}" max="${max}" step="${step}" value="${hi}" aria-label="${o.label || ''} 최대">
+    </div>
+    <div class="rs-ends"><span>${fmt(min)}</span><span>${fmt(max)}${o.plus ? '+' : ''}</span></div>`;
+  const a = el.querySelector('.rs-a'), b = el.querySelector('.rs-b'), fill = el.querySelector('.rs-fill'), val = el.querySelector('.rs-val');
+  const pct = v => ((v - min) / (max - min)) * 100;
+  function paint() {
+    fill.style.left = pct(lo) + '%'; fill.style.right = (100 - pct(hi)) + '%';
+    const u = o.unit || '';
+    if (lo <= min && hi >= max) val.textContent = '전체';
+    else if (lo <= min) val.textContent = `${fmt(hi)}${u} 이하`;
+    else if (hi >= max) val.textContent = `${fmt(lo)}${u} 이상`;
+    else val.textContent = `${fmt(lo)} – ${fmt(hi)}${u}`;
+    /* 두 손잡이가 왼쪽 끝에서 겹치면 위쪽 손잡이를 앞으로 */
+    b.style.zIndex = (hi - min) < (max - min) * 0.05 ? 5 : 3;
+  }
+  function get() { return { lo: lo <= min ? null : lo, hi: hi >= max ? null : hi }; }
+  function emit() { paint(); if (o.onChange) o.onChange(get()); }
+  a.addEventListener('input', () => { lo = Math.min(Number(a.value), hi); a.value = lo; emit(); });
+  b.addEventListener('input', () => { hi = Math.max(Number(b.value), lo); b.value = hi; emit(); });
+  function set(nlo, nhi, silent) {
+    lo = nlo == null ? min : Math.max(min, Math.min(max, nlo));
+    hi = nhi == null ? max : Math.max(min, Math.min(max, nhi));
+    if (lo > hi) [lo, hi] = [hi, lo];
+    a.value = lo; b.value = hi;
+    silent ? paint() : emit();
+  }
+  paint();
+  return { get, set, reset: silent => set(null, null, silent) };
+}
+
+/* ---------- 헤더 검색 패널 ----------
+   검색창을 누르면 열립니다. 보유 수종 다중 선택 → 수종별 수형 선택 → 규격 구간 슬라이더 → 결과 보기. */
+function buildSearchPanel(form, input) {
+  const panel = document.createElement('div');
+  panel.className = 'search-panel'; panel.id = 'searchPanel'; panel.hidden = true;
+  panel.setAttribute('role', 'dialog'); panel.setAttribute('aria-label', '조건으로 나무 찾기');
+  panel.innerHTML = `
+    <div class="sp-mobile-q">
+      <div class="input-group"><span class="ig-icon" aria-hidden="true">${ICON.search}</span>
+        <input class="input" id="spQ" type="search" placeholder="예: 소나무 R20 30주" autocomplete="off"></div>
+      <button class="btn btn-ghost btn-icon" type="button" id="spClose" aria-label="닫기">${ICON.close}</button>
+    </div>
+    <section class="sp-sec">
+      <div class="sp-head"><h3>수종</h3><span class="sp-sub">여러 개 고를 수 있습니다</span></div>
+      <div class="sp-species" id="spSpecies"></div>
+    </section>
+    <section class="sp-sec" id="spShapeSec" hidden>
+      <div class="sp-head"><h3>수형</h3><span class="sp-sub" id="spShapeSub"></span></div>
+      <div class="sp-shapes" id="spShapes"></div>
+    </section>
+    <section class="sp-sec">
+      <div class="sp-head"><h3>규격</h3><span class="sp-sub">손잡이를 끌어 범위를 정합니다</span></div>
+      <div class="sp-sliders"><div id="spR"></div><div id="spH"></div></div>
+    </section>
+    <div class="sp-foot">
+      <button class="btn btn-ghost btn-sm" type="button" id="spReset">초기화</button>
+      <span class="sp-count" id="spCount"></span>
+      <button class="btn btn-primary" type="submit" id="spGo">나무 보기</button>
+    </div>`;
+  form.appendChild(panel);
+
+  const crit = { species: new Set(), shapes: new Set(), rmin: null, rmax: null, hmin: null, hmax: null };
+  const sR = rangeSlider(panel.querySelector('#spR'), { min: 5, max: 40, step: 1, label: '근원직경 R', unit: 'cm', plus: true,
+    onChange: v => { crit.rmin = v.lo; crit.rmax = v.hi; update(); } });
+  const sH = rangeSlider(panel.querySelector('#spH'), { min: 1, max: 10, step: 0.5, label: '수고 H', unit: 'm', plus: true,
+    fmt: v => Number(v).toFixed(1).replace(/\.0$/, ''),
+    onChange: v => { crit.hmin = v.lo; crit.hmax = v.hi; update(); } });
+
+  function renderSpecies() {
+    const all = Store.Listings.all();
+    panel.querySelector('#spSpecies').innerHTML = speciesWithStock().map(s => {
+      const n = all.filter(l => l.species === s.id).length;
+      return `<button class="sp-chip" type="button" data-sp="${s.id}" aria-pressed="${crit.species.has(s.id)}">
+        <b>${s.name}</b><span>${n}건 · ${s.qty.toLocaleString()}주</span></button>`;
+    }).join('');
+  }
+  function renderShapes() {
+    const sec = panel.querySelector('#spShapeSec');
+    if (!crit.species.size) { sec.hidden = true; crit.shapes.clear(); return; }
+    const list = shapesFor(crit.species);
+    for (const id of [...crit.shapes]) if (!list.some(s => s.id === id)) crit.shapes.delete(id);
+    sec.hidden = false;
+    panel.querySelector('#spShapeSub').textContent = [...crit.species].map(speciesName).join(' · ') + '에서 고를 수 있는 형태';
+    panel.querySelector('#spShapes').innerHTML = list.map(sh =>
+      `<button class="sp-shape" type="button" data-shape="${sh.id}" aria-pressed="${crit.shapes.has(sh.id)}">
+        ${shapeIcon(sh.id)}<b>${sh.name}</b><span>${sh.desc}</span></button>`).join('');
+  }
+  function update() {
+    const rows = Store.Listings.all().filter(l => matchListing(l, crit));
+    const trees = rows.reduce((a, l) => a + (l.qty || 0), 0);
+    panel.querySelector('#spCount').textContent = rows.length ? `${rows.length}건 · ${trees.toLocaleString()}주` : '조건에 맞는 나무가 없습니다';
+    panel.querySelector('#spGo').textContent = rows.length ? `나무 ${rows.length}건 보기` : '나무 보기';
+  }
+  function params() {
+    const p = new URLSearchParams();
+    const text = (input.value || panel.querySelector('#spQ').value || '').trim();
+    if (text) for (const [k, v] of specQuery(text)) p.set(k, v);
+    if (crit.species.size) p.set('species', [...crit.species].join(','));
+    if (crit.shapes.size) p.set('shape', [...crit.shapes].join(','));
+    for (const k of ['rmin', 'rmax', 'hmin', 'hmax']) if (crit[k] != null) p.set(k, crit[k]);
+    return p;
+  }
+  function open() {
+    if (!panel.hidden) return;
+    renderSpecies(); renderShapes(); update();
+    panel.hidden = false; form.classList.add('is-open');
+    document.addEventListener('pointerdown', onOutside, true);
+  }
+  function close() {
+    panel.hidden = true; form.classList.remove('is-open');
+    document.removeEventListener('pointerdown', onOutside, true);
+  }
+  function onOutside(e) { if (!form.contains(e.target) && !e.target.closest('#searchBtn')) close(); }
+
+  panel.addEventListener('click', e => {
+    const sp = e.target.closest('[data-sp]'), sh = e.target.closest('[data-shape]');
+    if (sp) { crit.species.has(sp.dataset.sp) ? crit.species.delete(sp.dataset.sp) : crit.species.add(sp.dataset.sp);
+      sp.setAttribute('aria-pressed', crit.species.has(sp.dataset.sp)); renderShapes(); update(); }
+    if (sh) { crit.shapes.has(sh.dataset.shape) ? crit.shapes.delete(sh.dataset.shape) : crit.shapes.add(sh.dataset.shape);
+      sh.setAttribute('aria-pressed', crit.shapes.has(sh.dataset.shape)); update(); }
+    if (e.target.closest('#spReset')) {
+      crit.species.clear(); crit.shapes.clear(); crit.rmin = crit.rmax = crit.hmin = crit.hmax = null;
+      sR.reset(true); sH.reset(true); input.value = ''; panel.querySelector('#spQ').value = '';
+      renderSpecies(); renderShapes(); update();
+    }
+    if (e.target.closest('#spClose')) close();
+  });
+  input.addEventListener('focus', open);
+  input.addEventListener('click', open);
+  document.addEventListener('keydown', e => { if (e.key === 'Escape' && !panel.hidden) close(); });
+  return { open, close, params, isOpen: () => !panel.hidden };
+}

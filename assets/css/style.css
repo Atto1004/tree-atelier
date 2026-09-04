@@ -339,9 +339,14 @@ hr { border: 0; border-top: 1px solid var(--line); margin: var(--sp-5) 0; }
 .header-search .input { min-height: 42px; font-size: 14.5px; background: var(--bg-soft); }
 .hamburger { display: none; }
 
+.header-search { position: relative; }
+.search-btn { display: none; }
 @media (max-width: 1040px) {
-  .nav, .header-search { display: none; }
-  .hamburger { display: inline-flex; }
+  .nav { display: none; }
+  /* 검색창은 숨기고 폼만 남겨 패널을 붙입니다 — 검색 버튼이 패널을 엽니다 */
+  .header-search { flex: none; min-width: 0; max-width: none; width: 0; position: static; }
+  .header-search > .input-group { display: none; }
+  .search-btn, .hamburger { display: inline-flex; }
 }
 
 /* 모바일 드로어 */
@@ -1183,3 +1188,92 @@ a.tree-code:hover { background: var(--green-200); border-color: var(--green-600)
 h1, h2, h3, .display, .lead { text-wrap: pretty; }
 .btn-block { white-space: normal; }
 :root { color-scheme: light; }
+
+/* ---------- 헤더 검색 패널 ---------- */
+.search-panel {
+  position: absolute; top: calc(100% + 8px); right: 0; width: min(660px, calc(100vw - 32px));
+  background: var(--bg); border: 1px solid var(--line); border-radius: var(--r-lg); box-shadow: var(--sh-3), 0 24px 60px rgba(16,32,24,.14);
+  padding: 18px 20px 14px; z-index: 120; display: flex; flex-direction: column; gap: 18px;
+  max-height: calc(100vh - var(--header-h) - 24px); overflow: auto; text-align: left; cursor: default;
+}
+.search-panel[hidden] { display: none; }
+.sp-mobile-q { display: none; }
+.sp-head { display: flex; align-items: baseline; gap: 10px; margin-bottom: 10px; }
+.sp-head h3 { font-size: 14px; font-weight: 700; letter-spacing: -.01em; }
+.sp-sub { font-size: 12.5px; color: var(--ink-3); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.sp-species { display: flex; flex-wrap: wrap; gap: 8px; }
+.sp-chip {
+  display: flex; flex-direction: column; align-items: flex-start; gap: 0; padding: 8px 13px 7px;
+  border: 1.5px solid var(--line); border-radius: 12px; background: var(--bg); font: inherit; color: var(--ink);
+  cursor: pointer; white-space: nowrap; transition: border-color .15s, background-color .15s;
+}
+.sp-chip:hover { border-color: var(--green-500); }
+.sp-chip b { font-size: 14.5px; font-weight: 700; }
+.sp-chip span { font-size: 12px; color: var(--ink-3); }
+.sp-chip[aria-pressed="true"] { border-color: var(--green-700); background: var(--green-50); color: var(--green-800); }
+.sp-chip[aria-pressed="true"] span { color: var(--green-700); }
+.sp-shapes { display: grid; grid-template-columns: repeat(auto-fill, minmax(112px, 1fr)); gap: 8px; }
+.sp-shape {
+  display: flex; flex-direction: column; align-items: center; text-align: center; gap: 1px; padding: 10px 6px 9px;
+  border: 1.5px solid var(--line); border-radius: 12px; background: var(--bg); font: inherit; color: var(--ink-2);
+  cursor: pointer; transition: border-color .15s, background-color .15s;
+}
+.sp-shape:hover { border-color: var(--green-500); }
+.sp-shape b { font-size: 13.5px; color: var(--ink); white-space: nowrap; }
+.sp-shape span { font-size: 11.5px; color: var(--ink-3); white-space: nowrap; max-width: 100%; overflow: hidden; text-overflow: ellipsis; }
+.sp-shape[aria-pressed="true"] { border-color: var(--green-700); background: var(--green-50); }
+.sp-shape[aria-pressed="true"] .shape-ic, .sp-shape[aria-pressed="true"] b { color: var(--green-800); }
+.shape-ic { width: 46px; height: 46px; color: var(--ink-3); display: block; margin-bottom: 2px; }
+.shape-ic svg { width: 100%; height: 100%; display: block; }
+.sp-sliders { display: grid; grid-template-columns: 1fr 1fr; gap: 12px 28px; }
+.sp-foot { display: flex; align-items: center; gap: 12px; padding-top: 14px; border-top: 1px solid var(--line); }
+.sp-count { margin-left: auto; font-size: 13px; color: var(--ink-3); white-space: nowrap; font-variant-numeric: tabular-nums; }
+
+/* 구간 슬라이더 */
+.rs-head { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; margin-bottom: 4px; }
+.rs-label { font-size: 13.5px; font-weight: 600; white-space: nowrap; }
+.rs-val { font-size: 13.5px; font-weight: 700; color: var(--green-700); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.rs-track { position: relative; height: 30px; }
+.rs-track::before { content: ""; position: absolute; left: 0; right: 0; top: 13px; height: 4px; border-radius: 2px; background: var(--line); }
+.rs-fill { position: absolute; top: 13px; height: 4px; border-radius: 2px; background: var(--green-600); }
+.rs-track input[type="range"] {
+  position: absolute; left: 0; top: 0; width: 100%; height: 30px; margin: 0; padding: 0;
+  background: none; -webkit-appearance: none; appearance: none; pointer-events: none; outline: none;
+}
+.rs-track input[type="range"]::-webkit-slider-runnable-track { background: transparent; height: 30px; }
+.rs-track input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none; pointer-events: auto; width: 22px; height: 22px; margin-top: 4px; border-radius: 50%;
+  background: #fff; border: 2px solid var(--green-700); box-shadow: 0 1px 4px rgba(16,32,24,.2); cursor: grab;
+}
+.rs-track input[type="range"]:active::-webkit-slider-thumb { cursor: grabbing; background: var(--green-50); }
+.rs-track input[type="range"]:focus-visible::-webkit-slider-thumb { box-shadow: 0 0 0 4px var(--green-200); }
+.rs-track input[type="range"]::-moz-range-track { background: transparent; }
+.rs-track input[type="range"]::-moz-range-thumb {
+  pointer-events: auto; width: 18px; height: 18px; border-radius: 50%; background: #fff; border: 2px solid var(--green-700); cursor: grab;
+}
+.rs-a { z-index: 4; } .rs-b { z-index: 3; }
+.rs-ends { display: flex; justify-content: space-between; font-size: 11.5px; color: var(--ink-4); margin-top: -2px; }
+
+@media (max-width: 1040px) {
+  .search-panel {
+    position: fixed; top: calc(var(--header-h) + 8px); left: 12px; right: 12px; width: auto;
+    max-height: calc(100vh - var(--header-h) - 92px);
+  }
+  .sp-mobile-q { display: flex; gap: 8px; align-items: center; }
+  .sp-mobile-q .input-group { flex: 1; }
+  .sp-sliders { grid-template-columns: 1fr; }
+}
+@media (max-width: 560px) {
+  .search-panel { padding: 14px 14px 12px; gap: 14px; }
+  .sp-shapes { grid-template-columns: repeat(3, 1fr); }
+  .sp-foot .btn-primary { flex: 1; }
+}
+/* 목록 필터의 수형 칩 */
+.shape-wrap { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
+.shape-wrap:empty { display: none; }
+.shape-wrap .sp-shape { padding: 8px 4px 6px; }
+.shape-wrap .shape-ic { width: 36px; height: 36px; }
+.shape-wrap-wide { grid-template-columns: repeat(auto-fill, minmax(112px, 1fr)); gap: 8px; }
+.shape-wrap-wide .sp-shape { padding: 10px 6px 9px; }
+.shape-wrap-wide .shape-ic { width: 44px; height: 44px; }
+.shape-inline { display: inline-flex; align-items: center; gap: 6px; } .shape-inline .shape-ic { width: 26px; height: 26px; margin: 0; color: var(--green-700); }

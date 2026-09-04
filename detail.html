@@ -197,6 +197,7 @@ document.getElementById('detailRoot').innerHTML = `
           <tr><th scope="row">흉고직경 (B)</th><td>${L.spec.B ? L.spec.B + ' cm' : '해당 없음'}<span class="tiny muted"> · 지표면 1.2m 높이</span></td></tr>
           <tr><th scope="row">수고 (H)</th><td>${L.spec.H ? L.spec.H + ' m' : '해당 없음'}</td></tr>
           <tr><th scope="row">수관폭 (W)</th><td>${L.spec.W ? L.spec.W + ' m' : '해당 없음'}</td></tr>
+          ${listingShape(L) ? `<tr><th scope="row">수형</th><td><span class="shape-inline">${shapeIcon(listingShape(L))}${shapeName(listingShape(L))}</span></td></tr>` : ''}
           <tr><th scope="row">수량</th><td class="num">${won(L.qty)}주</td></tr>
           <tr><th scope="row">재배 기간</th><td>${L.years}년</td></tr>
           <tr><th scope="row">굴취 여부</th><td>${L.dug ? '굴취 완료 · 즉시 상차 가능' : '미실시 · 굴취 별도 진행'}</td></tr>
