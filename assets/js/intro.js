@@ -54,19 +54,37 @@
     liveEl.textContent = STAGES[idx].name + ' 단계';
   }
 
-  /* 물방울 — 나무 위에서 떨어집니다 */
+  /* 물주기 연출 — 물뿌리개가 나무 위로 와서 기울고, 주둥이에서 물방울이 떨어집니다 */
+  const canEl = $i('#introCan');
   function rain() {
     if (reduce) return;
     const ir = intro.getBoundingClientRect();
     const tr = treeEl.getBoundingClientRect();
-    for (let i = 0; i < 10; i++) {
+
+    /* 그려진 나무의 실제 윗선 (씨앗·새싹은 박스 아래쪽에만 그려져 있음) */
+    let top = tr.top;
+    try { const bb = treeEl.querySelector('svg').getBBox(); top = tr.top + bb.y / 220 * tr.height; } catch (e) {}
+
+    const canW = canEl.getBoundingClientRect().width || 130;
+    const tipX = tr.left + tr.width * 0.5 + 8;             // 주둥이 끝: 수관 바로 위
+    const tipY = Math.max(ir.top + 150, top - 36);
+    canEl.style.left = (tipX - ir.left - canW * 0.08) + 'px';
+    canEl.style.top  = (tipY - ir.top - canW * 0.75 * 0.33) + 'px';
+    canEl.classList.remove('is-pouring');
+    void canEl.offsetWidth;
+    canEl.classList.add('is-pouring');
+
+    const fall = Math.max(70, tr.bottom - 16 - tipY);
+    for (let i = 0; i < 9; i++) {
       const d = document.createElement('span');
       d.className = 'intro-drop';
-      d.style.left = (tr.left - ir.left + Math.random() * tr.width) + 'px';
-      d.style.top  = Math.max(40, tr.top - ir.top - 60 + Math.random() * 30) + 'px';
-      d.style.animationDelay = (i * 45) + 'ms';
+      d.style.left = (tipX - ir.left - 5 + (Math.random() - 0.5) * 22) + 'px';
+      d.style.top  = (tipY - ir.top + 2) + 'px';
+      d.style.setProperty('--fall', fall + 'px');
+      d.style.setProperty('--dx', (-14 + Math.random() * 10) + 'px');
+      d.style.animationDelay = (230 + i * 65) + 'ms';
       intro.appendChild(d);
-      setTimeout(() => d.remove(), 1150 + i * 45);
+      setTimeout(() => d.remove(), 1050 + i * 65);
     }
   }
 
@@ -108,7 +126,7 @@
           btn.classList.add('is-harvest');
         }
         busy = false;
-      }, reduce ? 0 : 430);
+      }, reduce ? 0 : 820);
       return;
     }
 

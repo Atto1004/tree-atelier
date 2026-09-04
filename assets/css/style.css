@@ -926,16 +926,30 @@ html.intro-on .intro { --intro-ground: calc(172px + env(safe-area-inset-bottom))
   100% { box-shadow: 0 0 0 0 rgba(201,146,79,0), 0 10px 28px rgba(16,60,40,.35); }
 }
 
-/* 물방울 · 반짝임 */
+/* 물뿌리개 — 물 주기를 누르면 나무 위로 나타나 기울어졌다가 사라집니다. 회전축은 주둥이 끝. */
+.intro-can {
+  position: absolute; width: min(30vw, 130px); z-index: 4; pointer-events: none;
+  opacity: 0; transform-origin: 8% 33%;
+}
+.intro-can svg { display: block; width: 100%; height: auto; overflow: visible; filter: drop-shadow(0 6px 10px rgba(16,60,40,.25)); }
+.intro-can.is-pouring { animation: can-pour 1.2s var(--ease) forwards; }
+@keyframes can-pour {
+  0%   { opacity: 0; transform: translate(16px, -16px) rotate(0deg); }
+  18%  { opacity: 1; transform: translate(0, 0) rotate(-30deg); }
+  78%  { opacity: 1; transform: translate(0, 0) rotate(-30deg); }
+  100% { opacity: 0; transform: translate(16px, -16px) rotate(0deg); }
+}
+
+/* 물방울 · 반짝임 — 주둥이 끝에서 나무까지 떨어집니다 */
 .intro-drop {
-  position: absolute; width: 11px; height: 16px; z-index: 4; pointer-events: none;
+  position: absolute; width: 10px; height: 14px; z-index: 4; pointer-events: none;
   border-radius: 50% 50% 50% 50% / 62% 62% 38% 38%; background: #55B8E8; opacity: .95;
-  animation: intro-fall .9s cubic-bezier(.4,.1,.7,1) forwards;
+  animation: intro-fall .75s cubic-bezier(.45,.05,.75,1) forwards;
 }
 @keyframes intro-fall {
-  0% { transform: translateY(0) scale(1); opacity: 1; }
-  85% { opacity: 1; }
-  100% { transform: translateY(36vh) scale(.4); opacity: 0; }
+  0% { transform: translate(0, 0) scale(1); opacity: 1; }
+  80% { opacity: 1; }
+  100% { transform: translate(var(--dx, 0px), var(--fall, 36vh)) scale(.45); opacity: 0; }
 }
 
 /* 수확 연출 — 햇살 광선 */
@@ -1000,6 +1014,7 @@ html.intro-on .intro { --intro-ground: calc(172px + env(safe-area-inset-bottom))
 
 @media (prefers-reduced-motion: reduce) {
   .intro-rays { animation: none; }
+  .intro-can.is-pouring { animation: none; }
   .intro-down span { animation: none; }
   .intro-action.is-harvest { animation: none; }
 }
