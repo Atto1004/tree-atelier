@@ -4,3 +4,5 @@ design/
 *.psd
 Thumbs.db
 .DS_Store
+_shots/
+_tools/

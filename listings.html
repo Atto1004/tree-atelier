@@ -3,24 +3,62 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>나무 찾기 · Tree Atelier</title>
-<meta name="description" content="수종·규격·지역으로 나무를 찾고, 표시된 시세와 비교해 거래하세요.">
+<title>나무 목록 · 법원리농원</title>
+<meta name="description" content="법원리농원 적송 전체 목록. 근원직경·수형·구역으로 골라 관리번호를 담고 한꺼번에 문의합니다.">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@500;600;700&display=swap">
 <link rel="stylesheet" href="assets/css/style.css">
 <style>
-  .listing-layout { display: grid; grid-template-columns: 258px 1fr; gap: var(--sp-6); align-items: start; }
-  .filters { position: sticky; top: calc(var(--header-h) + 16px); }
-  .filter-group { padding: var(--sp-4) 0; border-bottom: 1px solid var(--line-2); }
-  .filter-group:last-child { border-bottom: 0; }
-  .filter-group h3 { font-size: 14.5px; margin-bottom: var(--sp-3); }
-  .chip-wrap { display: flex; flex-wrap: wrap; gap: 6px; }
-  .filter-toggle { display: none; }
-  @media (max-width: 900px) {
-    .listing-layout { grid-template-columns: 1fr; }
-    .filters { position: static; }
-    .filter-toggle { display: inline-flex; }
-    .filters[hidden] { display: none; }
+  .filters { display: grid; grid-template-columns: auto auto minmax(220px, 300px) auto; gap: 18px 32px; align-items: end;
+    padding: 22px 0; border-bottom: 1px solid var(--line); }
+  .f-group { display: flex; flex-direction: column; gap: 8px; min-width: 0; }
+  .f-label { font-size: 12.5px; font-weight: 700; letter-spacing: .08em; color: var(--ink-3); white-space: nowrap; }
+  .chips { display: flex; flex-wrap: wrap; gap: 6px; }
+  .chips .chip { min-height: 36px; padding: 0 13px; font-size: 14px; }
+  .f-sort .select { min-height: 40px; min-width: 150px; }
+  @media (max-width: 1040px) { .filters { grid-template-columns: 1fr 1fr; } }
+  @media (max-width: 560px)  { .filters { grid-template-columns: 1fr; gap: 16px; } }
+
+  .result-bar { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 16px 0; flex-wrap: wrap; }
+  .result-bar b { font-family: var(--serif); font-size: 20px; font-weight: 600; }
+
+  /* 목록 — 표처럼 정렬된 줄 */
+  .tlist { border-top: 1px solid var(--green-800); }
+  .trow { display: grid; grid-template-columns: 44px 120px 90px 120px 110px minmax(0, 1fr) 96px; align-items: center; gap: 12px;
+    padding: 14px 4px; border-bottom: 1px solid var(--line); transition: background-color .15s var(--ease); }
+  .trow:hover { background: #fff; }
+  .trow.head { font-size: 12.5px; font-weight: 700; letter-spacing: .06em; color: var(--ink-3); padding-block: 12px; }
+  .trow.head:hover { background: none; }
+  .trow .r { font-family: var(--serif); font-size: 19px; font-weight: 600; white-space: nowrap; }
+  .trow .b, .trow .form { font-size: 14.5px; color: var(--ink-2); white-space: nowrap; }
+  .trow .place { font-size: 13.5px; color: var(--ink-3); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .trow .go { justify-self: end; font-size: 14px; font-weight: 600; color: var(--green-700); white-space: nowrap; }
+  .trow .go:hover { text-decoration: underline; }
+  .pick { width: 22px; height: 22px; accent-color: var(--green-800); cursor: pointer; }
+  @media (max-width: 860px) {
+    .trow { grid-template-columns: 36px 1fr auto; grid-template-areas: "pick code r" "pick meta go"; gap: 4px 12px; padding: 14px 2px; }
+    .trow.head { display: none; }
+    .trow .c-pick { grid-area: pick; } .trow .c-code { grid-area: code; } .trow .r { grid-area: r; justify-self: end; }
+    .trow .b, .trow .place { display: none; }
+    .trow .form { grid-area: meta; font-size: 13.5px; color: var(--ink-3); }
+    .trow .go { grid-area: go; }
   }
+
+  .more-row { display: flex; justify-content: center; padding: 28px 0 8px; }
+
+  /* 담은 나무 바 */
+  .pickbar { position: fixed; left: 50%; bottom: 24px; transform: translate(-50%, 160%); z-index: 95;
+    display: flex; align-items: center; gap: 16px; padding: 10px 10px 10px 22px; border-radius: 999px;
+    background: var(--green-900); color: #fff; box-shadow: var(--sh-3); transition: transform .28s var(--ease); white-space: nowrap; }
+  .pickbar { visibility: hidden; }
+  .pickbar.on { transform: translate(-50%, 0); visibility: visible; }
+  .pickbar b { font-weight: 700; }
+  .pickbar .btn-ghost { color: rgba(255,255,255,.75); min-height: 40px; }
+  .pickbar .btn-ghost:hover { background: rgba(255,255,255,.08); color: #fff; }
+  .pickbar .btn-primary { background: #fff; color: var(--green-900); min-height: 42px; border-radius: 999px; }
+  .pickbar .btn-primary:hover { background: var(--green-50); }
+  @media (max-width: 760px) { .pickbar { bottom: 76px; gap: 8px; padding-left: 18px; } }
 </style>
 </head>
 <body>
@@ -28,301 +66,169 @@
 <div id="site-header"></div>
 
 <main id="main">
-  <div id="dealBanner"></div>
-
   <div class="wrap">
-    <nav class="breadcrumb" aria-label="현재 위치">
-      <a href="index.html">홈</a><span aria-hidden="true">›</span><span>나무 찾기</span>
-    </nav>
-
-    <header class="mb5">
-      <h1 class="h1">나무 찾기</h1>
-      <p class="lead mt2">
-        필요한 조건 — <b class="accent">수종 · 크기 · 수량 · 특징</b> — 을 고르면 맞는 나무만 남습니다.
-        나무마다 개체 코드가 있어 한 그루씩 확인할 수 있습니다.
-      </p>
+    <header class="page-head" style="margin-bottom:0">
+      <span class="eyebrow">나무 목록</span>
+      <h1 class="h1" id="pageTitle">법원리농원 적송</h1>
+      <p class="lead">마음에 드는 나무를 담아 두었다가 한꺼번에 문의하세요. 가격은 문의하시면 알려드립니다.</p>
     </header>
 
-    <button class="btn btn-secondary filter-toggle mb4" id="filterToggle" aria-expanded="false" aria-controls="filters">
-      필터 열기
-    </button>
-
-    <div class="listing-layout">
-
-      <!-- ========== 필터 ========== -->
-      <aside class="filters card card-pad" id="filters" aria-label="검색 필터">
-        <div class="row between mb3">
-          <h2 class="h3">필터</h2>
-          <button class="btn btn-ghost btn-sm" id="resetBtn" type="button">초기화</button>
-        </div>
-
-        <div class="filter-group">
-          <h3>수종</h3>
-          <div class="chip-wrap" id="fSpecies"></div>
-          <p class="hint mt2">지금 등록된 나무가 있는 수종만 보여드립니다.</p>
-        </div>
-
-        <div class="filter-group" id="gShape">
-          <h3>수형</h3>
-          <div class="shape-wrap" id="fShapes"></div>
-          <p class="hint mt2" id="shapeHint">수종을 고르면 그 수종에서 나오는 형태를 고를 수 있습니다.</p>
-        </div>
-
-        <div class="filter-group">
-          <h3>지역</h3>
-          <div class="field">
-            <label class="sr-only" for="fRegion">지역 선택</label>
-            <select class="select" id="fRegion">
-              <option value="">전체 지역</option>
-            </select>
-          </div>
-        </div>
-
-        <div class="filter-group">
-          <h3>규격</h3>
-          <div class="stack g3">
-            <div id="fR"></div>
-            <div id="fH"></div>
-          </div>
-          <p class="hint mt2">손잡이를 끌어 범위를 정합니다. 양 끝에 두면 그 조건은 적용되지 않습니다.</p>
-        </div>
-
-        <div class="filter-group">
-          <h3>필요 수량</h3>
-          <div class="field has-suffix">
-            <label class="sr-only" for="fQty">최소 수량</label>
-            <div class="input-group">
-              <input class="input" id="fQty" type="number" inputmode="numeric" placeholder="최소 수량" min="1">
-              <span class="input-suffix">주</span>
-            </div>
-          </div>
-          <p class="hint mt2">공사에 필요한 수량을 넣으면 그만큼 보유한 매물만 남습니다.</p>
-        </div>
-
-        <div class="filter-group">
-          <h3>특징</h3>
-          <div class="chip-wrap" id="fTags"></div>
-        </div>
-
-        <div class="filter-group">
-          <h3>검색어</h3>
-          <div class="field">
-            <label class="sr-only" for="fQ">검색어</label>
-            <input class="input" id="fQ" type="search" placeholder="제목·설명에서 찾기">
-          </div>
-        </div>
-
-        <div class="filter-group">
-          <h3>조건</h3>
-          <label class="check"><input type="checkbox" id="fVerified"><span>인증 농가만</span></label>
-          <label class="check"><input type="checkbox" id="fDug"><span>굴취 완료된 나무</span></label>
-        </div>
-      </aside>
-
-      <!-- ========== 결과 ========== -->
-      <div>
-        <div class="row between wrapf g3 mb4">
-          <p class="small muted" id="resultCount" role="status" aria-live="polite"></p>
-          <div class="field" style="max-width:200px">
-            <label class="sr-only" for="sortBy">정렬 기준</label>
-            <select class="select" id="sortBy">
-              <option value="new">최신 등록순</option>
-              <option value="size">규격 큰순</option>
-              <option value="qty">수량 많은순</option>
-              <option value="popular">인기순</option>
-            </select>
-          </div>
-        </div>
-
-        <div class="grid grid-auto" id="results"></div>
-
-        <div class="empty" id="emptyBox" hidden>
-          <p class="strong">조건에 맞는 나무가 없습니다.</p>
-          <p class="small mt2">필터를 넓혀 보시거나, 원하는 규격을 등록해 두면 새 매물이 올라올 때 알려드립니다.</p>
-          <button class="btn btn-secondary mt4" type="button" id="resetBtn2">필터 초기화</button>
-        </div>
-
-        <nav class="pagination" aria-label="페이지" id="pager">
-          <button type="button" disabled aria-label="이전 페이지">←</button>
-          <button type="button" aria-current="page">1</button>
-          <button type="button">2</button>
-          <button type="button">3</button>
-          <button type="button" aria-label="다음 페이지">→</button>
-        </nav>
+    <div class="filters">
+      <div class="f-group">
+        <span class="f-label">수형</span>
+        <div class="chips" id="fForm" role="group" aria-label="수형"></div>
       </div>
-
+      <div class="f-group">
+        <span class="f-label">구역</span>
+        <div class="chips" id="fZone" role="group" aria-label="구역"></div>
+      </div>
+      <div class="f-group" id="fR"></div>
+      <div class="f-group f-sort">
+        <label class="f-label" for="fSort">정렬</label>
+        <select class="select" id="fSort">
+          <option value="code">관리번호 순</option>
+          <option value="rdesc">굵은 나무부터</option>
+          <option value="rasc">가는 나무부터</option>
+        </select>
+      </div>
     </div>
+
+    <div class="result-bar">
+      <span><b class="num" id="count">0</b><span class="muted"> 그루</span></span>
+      <button class="btn btn-ghost btn-sm" type="button" id="resetBtn">조건 지우기</button>
+    </div>
+
+    <div class="tlist" id="tlist" role="list"></div>
+    <div class="more-row"><button class="btn btn-secondary" type="button" id="moreBtn" hidden>더 보기</button></div>
   </div>
 </main>
+
+<div class="pickbar" id="pickbar" aria-live="polite">
+  <span><b id="pickN">0</b>그루 담음</span>
+  <button class="btn btn-ghost btn-sm" type="button" id="pickClear">비우기</button>
+  <a class="btn btn-primary btn-sm" id="pickGo" href="inquiry.html">담은 나무 문의</a>
+</div>
 
 <div id="site-footer"></div>
 
 <script src="assets/js/data.js"></script>
 <script src="assets/js/farm-data.js"></script>
-<script src="assets/js/store.js"></script>
+<script src="assets/js/farm-map.js"></script>
+<script src="assets/js/farm-photos.js"></script>
 <script src="assets/js/app.js"></script>
 <script>
-const state = { q: '', species: new Set(), shapes: new Set(), region: '', rmin: null, rmax: null, hmin: null, hmax: null,
-                qty: null, tags: new Set(), verified: false, dug: false, sort: 'new' };
+const qs = new URLSearchParams(location.search);
+const ST = registryStats();
+const PAGE = 40;
+const zq = (qs.get('zone') || '').toUpperCase();
+const S = {
+  form: qs.get('form') || 'all',
+  zone: /^[A-D]$/.test(zq) ? zq : 'all',
+  rmin: qs.get('rmin') ? +qs.get('rmin') : null,
+  rmax: qs.get('rmax') ? +qs.get('rmax') : null,
+  sort: qs.get('sort') || 'code',
+  shown: PAGE,
+};
 
-/* 특징 필터 — 매물 태그에서 뽑은 구매자 관심 조건 */
-const FEATURES = ['수형우수', '대량보유', '규격균일', '현장확인가능', '즉시출하', '가로수규격', '내염성', '다간형'];
+document.getElementById('pageTitle').textContent = `법원리농원 적송 ${ST.count}주`;
 
-/* 필터 UI 채우기 */
-document.getElementById('fSpecies').innerHTML = speciesWithStock().map(s =>
-  `<button class="chip" type="button" data-sp="${s.id}" aria-pressed="false">${s.name}</button>`
-).join('');
-
-/* 수형 칩 — 고른 수종에 따라 다시 그립니다 */
-function renderShapes() {
-  const box = document.getElementById('fShapes'), hint = document.getElementById('shapeHint');
-  if (!state.species.size) { box.innerHTML = ''; state.shapes.clear(); hint.hidden = false; return; }
-  const list = shapesFor(state.species);
-  for (const id of [...state.shapes]) if (!list.some(x => x.id === id)) state.shapes.delete(id);
-  hint.hidden = true;
-  box.innerHTML = list.map(sh =>
-    `<button class="sp-shape" type="button" data-shape="${sh.id}" aria-pressed="${state.shapes.has(sh.id)}">${shapeIcon(sh.id)}<b>${sh.name}</b></button>`
-  ).join('');
+/* ---------- 필터 ---------- */
+const FORMS = [['all', '전체'], ['single', '단간'], ['multi', '다간'], ['bansong', '반송']];
+const ZONES = [['all', '전체'], ...['A', 'B', 'C', 'D'].map(z => [z, z + ' 구역'])];
+function chips(el, list, key) {
+  el.innerHTML = list.map(([v, l]) => `<button class="chip" type="button" data-v="${v}" aria-pressed="${S[key] === v}">${l}</button>`).join('');
+  el.addEventListener('click', e => {
+    const c = e.target.closest('.chip'); if (!c) return;
+    S[key] = c.dataset.v; S.shown = PAGE;
+    $$('.chip', el).forEach(x => x.setAttribute('aria-pressed', String(x === c)));
+    render();
+  });
 }
-document.getElementById('fShapes').addEventListener('click', e => {
-  const b = e.target.closest('[data-shape]'); if (!b) return;
-  state.shapes.has(b.dataset.shape) ? state.shapes.delete(b.dataset.shape) : state.shapes.add(b.dataset.shape);
-  b.setAttribute('aria-pressed', String(state.shapes.has(b.dataset.shape)));
+chips($('#fForm'), FORMS, 'form');
+chips($('#fZone'), ZONES, 'zone');
+const rs = rangeSlider($('#fR'), {
+  label: '근원직경 R', min: ST.rMin, max: ST.rMax, unit: 'cm', fmt: v => 'R' + v,
+  lo: S.rmin, hi: S.rmax,
+  onChange: ({ lo, hi }) => { S.rmin = lo; S.rmax = hi; S.shown = PAGE; render(); },
+});
+$('#fSort').value = S.sort;
+$('#fSort').addEventListener('change', e => { S.sort = e.target.value; render(); });
+$('#resetBtn').addEventListener('click', () => {
+  S.form = 'all'; S.zone = 'all'; S.rmin = S.rmax = null; S.sort = 'code'; S.shown = PAGE;
+  $$('#fForm .chip, #fZone .chip').forEach(x => x.setAttribute('aria-pressed', String(x.dataset.v === 'all')));
+  rs.reset(true); $('#fSort').value = 'code';
   render();
 });
 
-/* 규격 구간 슬라이더 */
-const sliderR = rangeSlider(document.getElementById('fR'), { min: 5, max: 40, step: 1, label: '근원직경 R', unit: 'cm', plus: true,
-  onChange: v => { state.rmin = v.lo; state.rmax = v.hi; render(); } });
-const sliderH = rangeSlider(document.getElementById('fH'), { min: 1, max: 10, step: 0.5, label: '수고 H', unit: 'm', plus: true,
-  fmt: v => Number(v).toFixed(1).replace(/\.0$/, ''),
-  onChange: v => { state.hmin = v.lo; state.hmax = v.hi; render(); } });
-document.getElementById('fTags').innerHTML = FEATURES.map(t =>
-  `<button class="chip" type="button" data-tag="${t}" aria-pressed="false">${t}</button>`
-).join('');
-document.getElementById('fRegion').insertAdjacentHTML('beforeend',
-  REGIONS.map(r => `<option value="${r}">${r}</option>`).join(''));
+/* ---------- 거르기 · 정렬 ---------- */
+const zoneOrder = { A: 0, B: 1, C: 2, D: 3 };
+const lineNum = l => (l === 'H' ? -1 : +l);
+function filtered() {
+  const list = FARM_TREES.filter(t => {
+    if (S.form === 'single' && (t.multi || t.note === '반송')) return false;
+    if (S.form === 'multi' && !t.multi) return false;
+    if (S.form === 'bansong' && t.note !== '반송') return false;
+    if (S.zone !== 'all' && t.zone !== S.zone) return false;
+    if (S.rmin != null && !(t.r >= S.rmin)) return false;
+    if (S.rmax != null && !(t.r <= S.rmax)) return false;
+    return true;
+  });
+  const byCode = (a, b) => zoneOrder[a.zone] - zoneOrder[b.zone] || lineNum(a.line) - lineNum(b.line) || a.seq - b.seq;
+  if (S.sort === 'rdesc') list.sort((a, b) => (b.r || 0) - (a.r || 0) || byCode(a, b));
+  else if (S.sort === 'rasc') list.sort((a, b) => (a.r || 999) - (b.r || 999) || byCode(a, b));
+  else list.sort(byCode);
+  return list;
+}
 
-/* 렌더 */
+/* ---------- 그리기 ---------- */
+function row(t) {
+  const on = Picks.has(t.code);
+  return `<div class="trow" role="listitem">
+    <span class="c-pick"><input class="pick" type="checkbox" data-code="${t.code}" ${on ? 'checked' : ''} aria-label="${t.code} 담기"></span>
+    <span class="c-code"><a class="tree-code" href="tree.html?code=${t.code}">${t.code}</a></span>
+    <span class="r num">${t.r != null ? 'R' + t.r : '—'}</span>
+    <span class="b num">${t.b != null ? 'B' + t.b : (t.stems ? 'B ' + t.stems.join('+') : '—')}</span>
+    <span class="form">${treeForm(t)}</span>
+    <span class="place">${farmPlaceText(t.code)}</span>
+    <a class="go" href="tree.html?code=${t.code}">자세히</a>
+  </div>`;
+}
 function render() {
-  let rows = Store.Listings.all().filter(l => matchListing(l, state));
-
-  const sizeOf = l => l.spec.R || l.spec.B || (l.spec.H ? l.spec.H * 4 : 0);
-  const sorters = {
-    new:     (a, b) => b.createdAt.localeCompare(a.createdAt),
-    size:    (a, b) => sizeOf(b) - sizeOf(a),
-    qty:     (a, b) => b.qty - a.qty,
-    popular: (a, b) => b.views - a.views,
-  };
-  rows.sort(sorters[state.sort]);
-
-  document.getElementById('results').innerHTML = rows.map(listingCard).join('');
-  document.getElementById('resultCount').textContent = `조건에 맞는 나무 ${rows.length}건`;
-  document.getElementById('emptyBox').hidden = rows.length > 0;
-  document.getElementById('pager').hidden = rows.length === 0;
+  const list = filtered();
+  $('#count').textContent = list.length;
+  $('#tlist').innerHTML = list.length
+    ? `<div class="trow head" aria-hidden="true"><span>담기</span><span>관리번호</span><span>근원직경</span><span>흉고직경</span><span>수형</span><span>자리</span><span></span></div>`
+      + list.slice(0, S.shown).map(row).join('')
+    : `<div class="empty" style="padding:48px 0"><p class="strong">조건에 맞는 나무가 없습니다.</p><p class="small muted mt2">범위를 넓히거나 조건을 지워 보세요.</p></div>`;
+  $('#moreBtn').hidden = list.length <= S.shown;
+  $('#moreBtn').textContent = `더 보기 (${list.length - S.shown}그루 남음)`;
+  const p = new URLSearchParams();
+  if (S.form !== 'all') p.set('form', S.form);
+  if (S.zone !== 'all') p.set('zone', S.zone);
+  if (S.rmin != null) p.set('rmin', S.rmin);
+  if (S.rmax != null) p.set('rmax', S.rmax);
+  if (S.sort !== 'code') p.set('sort', S.sort);
+  history.replaceState(null, '', 'listings.html' + (p.toString() ? '?' + p : ''));
 }
+$('#moreBtn').addEventListener('click', () => { S.shown += PAGE; render(); });
 
-/* 이벤트 */
-document.getElementById('fSpecies').addEventListener('click', e => {
-  const b = e.target.closest('[data-sp]'); if (!b) return;
-  const on = b.getAttribute('aria-pressed') === 'true';
-  b.setAttribute('aria-pressed', String(!on));
-  on ? state.species.delete(b.dataset.sp) : state.species.add(b.dataset.sp);
-  renderShapes();
-  render();
-  renderBanner();
+/* ---------- 담기 ---------- */
+function syncPicks() {
+  const list = Picks.all();
+  $('#pickN').textContent = list.length;
+  $('#pickbar').classList.toggle('on', list.length > 0);
+  $('#pickGo').href = 'inquiry.html' + (list.length ? '?codes=' + list.join(',') : '');
+}
+$('#tlist').addEventListener('change', e => {
+  const c = e.target.closest('.pick'); if (!c) return;
+  Picks.toggle(c.dataset.code); syncPicks();
 });
-
-const num = v => (v === '' ? null : Number(v));
-document.getElementById('fRegion').addEventListener('change', e => { state.region = e.target.value; render(); });
-document.getElementById('fQty').addEventListener('input', e => { state.qty = num(e.target.value); render(); });
-document.getElementById('fQ').addEventListener('input', e => { state.q = e.target.value; render(); });
-document.getElementById('fVerified').addEventListener('change', e => { state.verified = e.target.checked; render(); });
-document.getElementById('fDug').addEventListener('change', e => { state.dug = e.target.checked; render(); });
-document.getElementById('sortBy').addEventListener('change', e => { state.sort = e.target.value; render(); });
-
-document.getElementById('fTags').addEventListener('click', e => {
-  const b = e.target.closest('[data-tag]'); if (!b) return;
-  const on = b.getAttribute('aria-pressed') === 'true';
-  b.setAttribute('aria-pressed', String(!on));
-  on ? state.tags.delete(b.dataset.tag) : state.tags.add(b.dataset.tag);
-  render();
+$('#pickClear').addEventListener('click', () => {
+  Picks.clear(); $$('.pick').forEach(x => { x.checked = false; }); syncPicks();
 });
-
-function reset() {
-  state.q = ''; state.species.clear(); state.shapes.clear(); state.tags.clear();
-  state.region = ''; state.rmin = state.rmax = state.hmin = state.hmax = state.qty = null;
-  state.verified = state.dug = false; state.sort = 'new';
-  document.querySelectorAll('[data-sp],[data-tag]').forEach(b => b.setAttribute('aria-pressed', 'false'));
-  sliderR.reset(true); sliderH.reset(true); renderShapes();
-  ['fRegion','fQty','fQ','sortBy'].forEach(id => document.getElementById(id).value = id === 'sortBy' ? 'new' : '');
-  document.getElementById('fVerified').checked = false;
-  document.getElementById('fDug').checked = false;
-  render();
-}
-
-/* URL 파라미터로 들어온 구매 조건 반영 — 메인의 '필요한 나무' 폼과 헤더 검색이 이 주소로 옵니다 */
-(function applyParams() {
-  const P = new URLSearchParams(location.search);
-  if (P.get('q')) { state.q = P.get('q'); document.getElementById('fQ').value = state.q; }
-  if (P.get('species')) {
-    P.get('species').split(',').forEach(id => {
-      const b = document.querySelector(`[data-sp="${id}"]`);
-      if (b) { state.species.add(id); b.setAttribute('aria-pressed', 'true'); }
-    });
-  }
-  renderShapes();
-  if (P.get('shape')) {
-    P.get('shape').split(',').forEach(id => {
-      const b = document.querySelector(`[data-shape="${id}"]`);
-      if (b) { state.shapes.add(id); b.setAttribute('aria-pressed', 'true'); }
-    });
-  }
-  if (P.get('rmin') || P.get('rmax')) {
-    sliderR.set(P.get('rmin') ? Number(P.get('rmin')) : null, P.get('rmax') ? Number(P.get('rmax')) : null, true);
-    const r = sliderR.get(); state.rmin = r.lo; state.rmax = r.hi;
-  }
-  if (P.get('hmin') || P.get('hmax')) {
-    sliderH.set(P.get('hmin') ? Number(P.get('hmin')) : null, P.get('hmax') ? Number(P.get('hmax')) : null, true);
-    const h = sliderH.get(); state.hmin = h.lo; state.hmax = h.hi;
-  }
-  if (P.get('qty'))  { state.qty = Number(P.get('qty'));  document.getElementById('fQty').value = state.qty; }
-  if (P.get('tag')) {
-    P.get('tag').split(',').forEach(t => {
-      const b = document.querySelector(`[data-tag="${t}"]`);
-      if (b) { state.tags.add(t); b.setAttribute('aria-pressed', 'true'); }
-    });
-  }
-})();
-document.getElementById('resetBtn').addEventListener('click', reset);
-document.getElementById('resetBtn2').addEventListener('click', reset);
-
-/* 최근 실거래 배너 — 선택한 수종이 있으면 그 수종 거래만 보여줍니다 */
-function renderBanner() {
-  const deals = state.species.size
-    ? RECENT_DEALS.filter(d => state.species.has(d.species))
-    : RECENT_DEALS;
-  dealTicker(document.getElementById('dealBanner'), deals.length ? deals : RECENT_DEALS, { max: 8 });
-}
-
-/* 모바일 필터 토글 */
-const fToggle = document.getElementById('filterToggle'), fBox = document.getElementById('filters');
-function syncFilterVisibility() {
-  const mobile = matchMedia('(max-width: 900px)').matches;
-  if (mobile) { fBox.hidden = fToggle.getAttribute('aria-expanded') !== 'true'; }
-  else { fBox.hidden = false; }
-}
-fToggle.addEventListener('click', () => {
-  const on = fToggle.getAttribute('aria-expanded') === 'true';
-  fToggle.setAttribute('aria-expanded', String(!on));
-  fToggle.textContent = on ? '필터 열기' : '필터 닫기';
-  syncFilterVisibility();
-});
-matchMedia('(max-width: 900px)').addEventListener('change', syncFilterVisibility);
-syncFilterVisibility();
 
 render();
-renderBanner();
+syncPicks();
 </script>
 </body>
 </html>

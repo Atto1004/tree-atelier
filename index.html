@@ -3,9 +3,11 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Tree Atelier · 법원리농원 조경수 직거래</title>
-<meta name="description" content="법원리농원의 소나무를 한 그루 단위로 확인하고 구매 문의합니다. 개체 코드, 배치도, 실측 규격, 실거래 시세를 공개합니다.">
+<title>법원리농원 · 파주 적송 농원 직접 판매</title>
+<meta name="description" content="파주 법원리농원의 적송을 한 그루씩 사진과 실측 규격으로 확인하고 농원에 직접 구매 문의합니다.">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@500;600;700&display=swap">
 <link rel="stylesheet" href="assets/css/style.css">
 <script>
 /* 인트로 표시 여부를 첫 페인트 전에 결정 — 홈이 먼저 번쩍 보이지 않게 */
@@ -29,17 +31,17 @@
     background: linear-gradient(180deg, rgba(10,22,16,.18) 0%, rgba(10,22,16,.06) 35%, rgba(10,22,16,.62) 100%);
   }
   .home-hero .wrap { padding-block: clamp(40px, 7vw, 88px); }
-  .hero-kicker { font-size: 14px; font-weight: 700; letter-spacing: .08em; opacity: .9; }
-  .hero-title { font-size: clamp(32px, 5.4vw, 60px); line-height: 1.14; letter-spacing: -.035em; font-weight: 800; margin-top: 14px; max-width: 16ch; text-wrap: balance; text-shadow: 0 2px 20px rgba(0,0,0,.25); }
+  .hero-kicker { font-size: 13px; font-weight: 600; letter-spacing: .18em; opacity: .9; }
+  .hero-title { font-size: clamp(32px, 5vw, 58px); line-height: 1.22; letter-spacing: -.02em; font-weight: 600; margin-top: 14px; max-width: 20ch; text-wrap: balance; text-shadow: 0 2px 20px rgba(0,0,0,.25); }
   .hero-sub { font-size: clamp(16px, 1.7vw, 19px); line-height: 1.65; margin-top: 18px; max-width: 46ch; opacity: .94; text-wrap: pretty; }
   .hero-facts { display: flex; flex-wrap: wrap; gap: 8px 28px; margin-top: 26px; font-size: 14.5px; font-weight: 600; opacity: .95; }
   .hero-facts span { white-space: nowrap; }
 
   /* 행동 띠 (참고: 천리포수목원 예약 띠) */
-  .action-band { background: var(--green-800); color: #fff; }
+  .action-band { background: var(--green-900); color: #fff; }
   .action-band .wrap { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 16px 28px; padding-block: 18px; }
   .action-main { display: flex; flex-wrap: wrap; gap: 10px; }
-  .action-main .btn { min-height: 52px; padding: 0 26px; font-size: 16px; border-radius: var(--r); }
+  .action-main .btn { min-height: 50px; padding: 0 26px; font-size: 15.5px; border-radius: var(--r); }
   .action-main .btn-primary { background: #fff; color: var(--green-800); border-color: #fff; }
   .action-main .btn-primary:hover { background: var(--green-50); }
   .action-main .btn-secondary { background: transparent; color: #fff; border-color: rgba(255,255,255,.55); }
@@ -56,11 +58,11 @@
     color: #fff; font-size: 20px; font-weight: 800; letter-spacing: -.02em; background: linear-gradient(180deg, transparent, rgba(0,0,0,.55)); }
   .story-photo a span { white-space: nowrap; }
   .story-photo .arrow { width: 38px; height: 38px; border-radius: 50%; border: 1.5px solid rgba(255,255,255,.8); display: grid; place-items: center; font-size: 18px; flex: none; }
-  .story-copy h2 { font-size: clamp(26px, 3.2vw, 36px); letter-spacing: -.03em; font-weight: 800; color: var(--green-800); line-height: 1.25; }
+  .story-copy h2 { font-size: clamp(28px, 3.2vw, 38px); color: var(--green-800); line-height: 1.25; }
   .story-copy p { margin-top: 16px; font-size: 16.5px; line-height: 1.8; color: var(--ink-2); text-wrap: pretty; }
   .facts { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; margin-top: 26px; }
-  .fact { padding: 14px 16px; border: 1px solid var(--line); border-radius: var(--r); background: var(--bg); }
-  .fact b { display: block; font-size: 22px; font-weight: 800; letter-spacing: -.03em; white-space: nowrap; }
+  .fact { padding: 14px 0 0; border-top: 1px solid var(--line); }
+  .fact b { display: block; font-family: var(--serif); font-size: 24px; font-weight: 600; letter-spacing: -.01em; white-space: nowrap; }
   .fact span { font-size: 13px; color: var(--ink-3); font-weight: 600; white-space: nowrap; }
   @media (max-width: 900px) { .story { grid-template-columns: 1fr; } }
 
@@ -87,7 +89,7 @@
   .photo-card:hover img { transform: scale(1.03); }
   .photo-card .txt { position: absolute; inset: auto 0 0 0; padding: 24px 22px; background: linear-gradient(180deg, transparent, rgba(0,0,0,.6) 70%); }
   .photo-card .txt small { display: block; font-size: 13px; font-weight: 600; opacity: .9; margin-bottom: 6px; }
-  .photo-card .txt b { display: block; font-size: 21px; font-weight: 800; letter-spacing: -.02em; line-height: 1.3; text-wrap: balance; }
+  .photo-card .txt b { display: block; font-family: var(--serif); font-size: 21px; font-weight: 600; letter-spacing: -.01em; line-height: 1.4; text-wrap: balance; }
   .photo-card .go { position: absolute; right: 18px; top: 18px; width: 36px; height: 36px; border-radius: 50%; background: rgba(255,255,255,.92); color: var(--green-800); display: grid; place-items: center; font-size: 17px; }
   @media (max-width: 760px) {
     .rail { --edge: var(--sp-4); gap: 12px; }
@@ -134,15 +136,33 @@
   /* 마무리 — 사진 배경 (참고: 천리포 후원 섹션) */
   .closing { position: relative; color: #fff; isolation: isolate; overflow: hidden; }
   .closing img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; z-index: -2; }
-  .closing::after { content: ""; position: absolute; inset: 0; background: rgba(12, 32, 22, .68); z-index: -1; }
+  .closing::after { content: ""; position: absolute; inset: 0; background: rgba(16, 28, 21, .72); z-index: -1; }
   .closing .wrap { padding-block: clamp(56px, 9vw, 110px); max-width: 820px; text-align: center; }
-  .closing h2 { font-size: clamp(26px, 3.6vw, 40px); letter-spacing: -.03em; font-weight: 800; line-height: 1.28; text-wrap: balance; }
+  .closing h2 { font-size: clamp(26px, 3.4vw, 40px); line-height: 1.34; text-wrap: balance; }
   .closing p { margin-top: 18px; font-size: 17px; line-height: 1.8; opacity: .92; text-wrap: pretty; }
   .closing .btn-primary { background: #fff; color: var(--green-800); border-color: #fff; }
   .closing .btn-secondary { background: transparent; color: #fff; border-color: rgba(255,255,255,.6); }
   .closing .btn-secondary:hover { border-color: #fff; background: rgba(255,255,255,.08); }
 
   .section-head .btn { white-space: nowrap; }
+
+  /* 규격 묶음 */
+  .bands { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); border-top: 1px solid var(--line); border-left: 1px solid var(--line); }
+  .band { display: grid; grid-template-columns: 1fr auto; grid-template-rows: auto auto; gap: 4px 12px; padding: 26px 24px;
+    border-right: 1px solid var(--line); border-bottom: 1px solid var(--line); background: #fff; transition: background-color .18s var(--ease); }
+  .band:hover { background: var(--green-50); }
+  .band-k { grid-column: 1 / -1; font-size: 13px; color: var(--ink-3); font-weight: 600; white-space: nowrap; }
+  .band b { font-family: var(--serif); font-size: 24px; font-weight: 600; letter-spacing: -.01em; white-space: nowrap; }
+  .band-n { align-self: end; font-size: 15px; font-weight: 700; color: var(--green-700); white-space: nowrap; }
+  @media (max-width: 860px) { .bands { grid-template-columns: repeat(2, minmax(0, 1fr)); } .band { padding: 20px 18px; } .band b { font-size: 21px; } }
+
+  /* 구매 과정 */
+  .how3 { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: clamp(20px, 4vw, 48px); list-style: none; padding: 0; margin: 0; }
+  .how3 li { border-top: 1px solid var(--green-800); padding-top: 22px; }
+  .how3 i { display: block; font-style: normal; font-family: var(--serif); font-size: 15px; color: var(--brass); margin-bottom: 12px; }
+  .how3 h3 { font-size: 19px; }
+  .how3 p { margin-top: 10px; font-size: 15px; color: var(--ink-3); line-height: 1.75; }
+  @media (max-width: 760px) { .how3 { grid-template-columns: 1fr; } }
   .listings-row { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 14px; }
   @media (max-width: 1040px) { .listings-row { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
   @media (max-width: 560px) { .listings-row { grid-template-columns: 1fr; } }
@@ -188,9 +208,9 @@
   </div>
 
   <div class="intro-finale" id="introFinale" hidden>
-    <p class="intro-kicker">20년 키운 나무, 제값 받고 파는 곳</p>
-    <h2 class="intro-brand">Tree Atelier</h2>
-    <p class="intro-line">나무 거래와 구입은 <b>Tree Atelier</b>에서</p>
+    <p class="intro-kicker">파주 법원리에서 서른 해 넘게 기른 적송</p>
+    <h2 class="intro-brand">법원리농원</h2>
+    <p class="intro-line">한 그루씩 보고 고르는 <b>소나무 농원</b></p>
     <div class="intro-cta">
       <button class="btn btn-primary btn-lg" type="button" id="introBrowse">둘러보기</button>
       <a class="btn btn-secondary btn-lg" href="inquiry.html">구매 문의</a>
@@ -211,11 +231,11 @@
   <section class="home-hero">
     <img src="assets/img/home/hero.jpg" alt="법원리농원 소나무밭 전경" fetchpriority="high">
     <div class="wrap">
-      <p class="hero-kicker">법원리농원 · 조경수 직거래</p>
-      <h1 class="hero-title">한 그루마다 코드가 있는 소나무밭</h1>
+      <p class="hero-kicker">파주 법원리 · 적송 농원</p>
+      <h1 class="hero-title">한 그루마다 번호가 있는<br>소나무밭</h1>
       <p class="hero-sub">
-        30년 넘게 소나무만 길러 온 농원의 나무를, 사진과 실측 규격으로 한 그루씩 확인하고 문의합니다.
-        가격은 실거래가로 공개합니다.
+        30년 넘게 소나무만 길러 온 농원입니다. 나무마다 관리번호와 실측 규격을 붙여 두었습니다.
+        마음에 드는 나무를 골라 농원에 바로 문의하세요.
       </p>
       <div class="hero-facts" id="heroFacts"></div>
     </div>
@@ -229,11 +249,9 @@
         <a class="btn btn-secondary" href="farm.html">농원 배치도 보기</a>
       </div>
       <nav class="action-links" aria-label="빠른 이동">
-        <a href="listings.html">나무 찾기</a>
-        <a href="market.html">실거래 시세</a>
+        <a href="listings.html">나무 목록</a>
+        <a href="tree.html">관리번호로 찾기</a>
         <a href="guide.html">규격 안내</a>
-        <a href="movers.html">굴취·운반</a>
-        <a href="sell.html">농원 등록</a>
       </nav>
     </div>
   </section>
@@ -252,8 +270,8 @@
           한 그루씩 번호를 붙여 실측 규격과 사진을 등록했습니다.
         </p>
         <p>
-          구역, 줄, 자리 순서로 붙은 코드 하나가 나무 한 그루입니다. 배치도에서 자리를 확인하고,
-          개체 페이지에서 사진과 실측 규격을 봅니다.
+          구역, 줄, 자리 순서로 붙은 관리번호 하나가 나무 한 그루입니다. 배치도에서 자리를 확인하고,
+          나무마다 사진과 실측 규격을 봅니다.
         </p>
         <div class="facts" id="farmFacts"></div>
       </div>
@@ -280,12 +298,12 @@
           <a class="photo-card wide" href="farm.html">
             <img src="assets/img/home/card-map.jpg" alt="">
             <span class="go" aria-hidden="true">›</span>
-            <span class="txt"><small>배치도</small><b>구역을 누르면 나무 한 그루씩 코드가 열립니다</b></span>
+            <span class="txt"><small>배치도</small><b>구역을 누르면 나무 한 그루씩 관리번호가 열립니다</b></span>
           </a>
           <a class="photo-card" href="tree.html?code=A-H-1">
             <img src="assets/img/home/card-tree.jpg" alt="">
             <span class="go" aria-hidden="true">›</span>
-            <span class="txt"><small>개체 조회 · A-H-1</small><b>관리표와 함께 찍은 현장 사진, 실측 근원직경</b></span>
+            <span class="txt"><small>관리번호 A-H-1</small><b>관리표와 함께 찍은 현장 사진과 실측 근원직경</b></span>
           </a>
           <a class="photo-card" href="farm.html#C">
             <img src="assets/img/farm/farm-view-05.jpg" alt="">
@@ -307,147 +325,39 @@
             <span class="go" aria-hidden="true">›</span>
             <span class="txt"><small>D 구역</small><b>북측 산자락을 따라 올라가는 삼각지</b></span>
           </a>
-          <a class="photo-card" href="movers.html">
-            <img src="assets/img/farm/tree-unassigned-02.jpg" alt="">
-            <span class="go" aria-hidden="true">›</span>
-            <span class="txt"><small>굴취·운반</small><b>현장 인근 업체 견적을 한 번에 받습니다</b></span>
-          </a>
         </div>
       </div>
   </section>
 
-  <!-- ============ 조회 도구 ============ -->
+  <!-- ============ 규격별로 보기 ============ -->
   <section class="section">
-    <div class="wrap tools">
-
-      <div class="card card-pad stack g3">
-        <h2 class="h3">필요한 나무 조건으로 찾기</h2>
-        <p class="small muted">수종과 크기, 수량을 고르면 조건에 맞는 나무만 보여드립니다.</p>
-        <form class="stack g3" id="needForm">
-          <div class="grid grid-2" style="gap:10px">
-            <div class="field">
-              <label class="sr-only" for="needSpecies">수종</label>
-              <select class="select" id="needSpecies"><option value="">수종 전체</option></select>
-            </div>
-            <div class="field has-suffix">
-              <label class="sr-only" for="needR">최소 근원직경</label>
-              <div class="input-group">
-                <input class="input" id="needR" type="number" inputmode="numeric" min="1" placeholder="최소 R">
-                <span class="input-suffix">cm</span>
-              </div>
-            </div>
-            <div class="field has-suffix">
-              <label class="sr-only" for="needQty">필요 수량</label>
-              <div class="input-group">
-                <input class="input" id="needQty" type="number" inputmode="numeric" min="1" placeholder="필요 수량">
-                <span class="input-suffix">주</span>
-              </div>
-            </div>
-            <div class="field">
-              <label class="sr-only" for="needTag">특징</label>
-              <select class="select" id="needTag">
-                <option value="">특징 무관</option>
-                <option>수형우수</option>
-                <option>대량보유</option>
-                <option>규격균일</option>
-                <option>현장확인가능</option>
-                <option>즉시출하</option>
-              </select>
-            </div>
-          </div>
-          <button class="btn btn-primary btn-block" type="submit">조건에 맞는 나무 보기</button>
-        </form>
+    <div class="wrap">
+      <div class="section-head">
+        <div>
+          <span class="eyebrow">규격별로 보기</span>
+          <h2 class="h2">필요한 굵기부터 고르세요</h2>
+          <p class="lead mt2">근원직경(R) 기준으로 묶었습니다. 누르면 해당 나무 목록이 열립니다.</p>
+        </div>
+        <a class="btn btn-secondary" href="listings.html">전체 목록</a>
       </div>
-
-      <div class="card card-pad stack g3">
-        <h2 class="h3">자주 찾는 규격으로 바로 보기</h2>
-        <p class="small muted">조경 현장에서 많이 찾는 규격을 묶어 두었습니다. 누르면 해당 조건의 나무 목록으로 이동합니다.</p>
-        <div class="quick-specs" id="quickSpecs"></div>
-        <form class="free-search" id="freeForm">
-          <div class="field grow">
-            <label class="sr-only" for="freeQ">수종·규격·수량 검색</label>
-            <input class="input" id="freeQ" type="text" placeholder="예: 소나무 R20 30주" autocomplete="off">
-          </div>
-          <button class="btn btn-secondary" type="submit">검색</button>
-        </form>
-        <p class="hint">"반송 20-28", "느티나무 R15 이상 10주"처럼 말하듯 적어도 됩니다.</p>
-      </div>
+      <div class="bands" id="bands"></div>
     </div>
   </section>
 
-  <!-- ============ 시세 ============ -->
+  <!-- ============ 구매 과정 ============ -->
   <section class="section section-soft">
     <div class="wrap">
       <div class="section-head">
         <div>
-          <span class="eyebrow">실거래 시세</span>
-          <h2 class="h2">가격을 감추지 않습니다</h2>
-          <p class="lead mt2">실제 성사된 거래만 집계합니다. 호가는 넣지 않습니다.</p>
-        </div>
-        <a class="btn btn-secondary" href="market.html">전체 시세 보기</a>
-      </div>
-      <div class="price-row" id="priceStrip"></div>
-    </div>
-  </section>
-
-  <!-- ============ 진행 방식 ============ -->
-  <section class="section">
-    <div class="wrap">
-      <div class="section-head">
-        <div>
-          <h2 class="h2">거래는 이렇게 진행됩니다</h2>
-          <p class="lead mt2">문의부터 정산까지 플랫폼 안에서 끝납니다.</p>
+          <span class="eyebrow">구매 과정</span>
+          <h2 class="h2">농원과 직접 이야기합니다</h2>
         </div>
       </div>
-      <div class="how4">
-        <div class="how-step"><i>01</i><h3>나무 고르기</h3><p>배치도나 조건 검색으로 나무를 고르고 개체 코드를 확인합니다.</p></div>
-        <div class="how-step"><i>02</i><h3>구매 문의</h3><p>코드나 조건을 첨부해 문의하면 농원이 가능 여부와 견적을 답합니다.</p></div>
-        <div class="how-step"><i>03</i><h3>현장 확인과 굴취</h3><p>원하시면 현장에서 나무를 확인하고, 인근 굴취·운반 업체 견적을 함께 받습니다.</p></div>
-        <div class="how-step"><i>04</i><h3>안전 정산</h3><p>대금은 플랫폼이 보관했다가 인수 확인 후 정산합니다.</p></div>
-      </div>
-    </div>
-  </section>
-
-  <!-- ============ 추천 매물 ============ -->
-  <section class="section section-soft">
-    <div class="wrap">
-      <div class="section-head">
-        <div>
-          <span class="eyebrow">거래 가능</span>
-          <h2 class="h2">지금 거래할 수 있는 나무</h2>
-        </div>
-        <a class="btn btn-secondary" href="listings.html">전체 보기</a>
-      </div>
-      <div class="listings-row" id="featured"></div>
-    </div>
-  </section>
-
-  <!-- ============ 역할별 진입 ============ -->
-  <section class="section">
-    <div class="wrap">
-      <div class="section-head">
-        <div>
-          <h2 class="h2">어느 쪽이신가요?</h2>
-          <p class="lead mt2">나무를 사는 사람, 키우는 사람, 옮기는 사람이 한자리에 있습니다.</p>
-        </div>
-      </div>
-      <div class="roles">
-        <a class="role card-link" href="inquiry.html">
-          <h3>나무가 필요합니다</h3>
-          <p>조경, 건설, 정원. 수종과 규격으로 고르고 실거래 시세와 비교해 문의합니다.</p>
-          <span class="more">구매 문의하기 ›</span>
-        </a>
-        <a class="role card-link" href="sell.html">
-          <h3>나무를 키웁니다</h3>
-          <p>수종과 규격을 입력하면 개체 코드가 발급되고, 시세와 비교한 가격 제안을 받습니다.</p>
-          <span class="more">농원 등록하기 ›</span>
-        </a>
-        <a class="role card-link" href="movers.html">
-          <h3>굴취·운반을 합니다</h3>
-          <p>거래가 성사되면 굴취와 운반 일감이 생깁니다. 지역과 장비를 등록하고 요청을 받습니다.</p>
-          <span class="more">업체 등록하기 ›</span>
-        </a>
-      </div>
+      <ol class="how3">
+        <li><i>01</i><h3>나무 고르기</h3><p>배치도나 목록에서 나무를 고르고 관리번호를 확인합니다. 여러 그루를 한꺼번에 담을 수 있습니다.</p></li>
+        <li><i>02</i><h3>구매 문의</h3><p>관리번호와 수량, 현장 지역을 남기면 농원 판매 담당이 가격과 출하 일정을 알려드립니다.</p></li>
+        <li><i>03</i><h3>현장 확인과 출하</h3><p>원하시면 농원에서 나무를 직접 보고 정합니다. 굴취와 운반은 일정에 맞춰 함께 협의합니다.</p></li>
+      </ol>
     </div>
   </section>
 
@@ -456,9 +366,9 @@
     <img src="assets/img/home/closing.jpg" alt="">
     <div class="wrap">
       <h2>나무는 직접 보고 고르는 것이 맞습니다</h2>
-      <p>배치도에서 자리를 고르면 그 나무의 사진과 실측 규격이 나옵니다.</p>
+      <p>방문 전에 연락 주시면 고르신 관리번호의 나무부터 안내해 드립니다.</p>
       <div class="row g3 wrapf mt5" style="justify-content:center">
-        <a class="btn btn-primary btn-lg" href="farm.html">농원 보러 가기</a>
+        <a class="btn btn-primary btn-lg" href="farm.html">배치도 보기</a>
         <a class="btn btn-secondary btn-lg" href="inquiry.html">구매 문의</a>
       </div>
     </div>
@@ -470,7 +380,6 @@
 
 <script src="assets/js/data.js"></script>
 <script src="assets/js/farm-data.js"></script>
-<script src="assets/js/store.js"></script>
 <script src="assets/js/app.js"></script>
 <script src="assets/js/grow-game.js"></script>
 <script src="assets/js/intro.js"></script>
@@ -528,58 +437,21 @@
   rail.addEventListener('click', e => { if (moved) { e.preventDefault(); e.stopPropagation(); } }, true);
 })();
 
-/* 구매 조건 → 목록으로 */
-document.getElementById('needSpecies').insertAdjacentHTML('beforeend',
-  SPECIES.map(s => `<option value="${s.id}">${s.name}</option>`).join(''));
-document.getElementById('needForm').addEventListener('submit', e => {
-  e.preventDefault();
-  const p = new URLSearchParams();
-  const sp = document.getElementById('needSpecies').value;
-  const r = document.getElementById('needR').value;
-  const qy = document.getElementById('needQty').value;
-  const tg = document.getElementById('needTag').value;
-  if (sp) p.set('species', sp);
-  if (r)  p.set('rmin', r);
-  if (qy) p.set('qty', qy);
-  if (tg) p.set('tag', tg);
-  location.href = 'listings.html' + (p.toString() ? '?' + p.toString() : '');
-});
-
-/* 자주 찾는 규격 + 자유 검색 */
-document.getElementById('quickSpecs').innerHTML = [
-  ['소나무 R15–20', '가로수·단지 조경', 'species=sonamu&rmin=15&rmax=20'],
-  ['소나무 R20–28', '정원 주목수', 'species=sonamu&rmin=20&rmax=28'],
-  ['소나무 R28 이상', '대형 조형목', 'species=sonamu&rmin=28'],
-  ['반송 전체', '수형 중심', 'species=bansong'],
-  ['금강송 R20 이상', '상징목', 'species=geumgang&rmin=20'],
-  ['느티나무 R15 이상', '녹음수', 'species=neuti&rmin=15'],
-].map(([b, s, q]) => `<a class="quick-spec" href="listings.html?${q}"><b>${b}</b><span>${s}</span></a>`).join('');
-document.getElementById('freeForm').addEventListener('submit', e => {
-  e.preventDefault();
-  const v = document.getElementById('freeQ').value.trim();
-  if (v) location.href = 'listings.html?' + specQuery(v).toString();
-});
-
-/* 시세 */
+/* 규격 묶음 — 장부(FARM_TREES)에서 개수를 셉니다 */
 (function () {
-  const keys = ['sonamu', 'geumgang', 'ipap', 'neuti'];
-  document.getElementById('priceStrip').innerHTML = keys.map(k => {
-    const p = PRICE_INDEX[k];
-    const diff = p.now - p.prev;
-    const pct = ((diff / p.prev) * 100).toFixed(1);
-    const cls = diff > 0 ? 'up' : diff < 0 ? 'down' : 'flat';
-    const arrow = diff > 0 ? '▲' : diff < 0 ? '▼' : '—';
-    return `<a class="stat card-link" href="market.html">
-      <div class="stat-k">${speciesName(k)} <span class="muted">${p.unit}</span></div>
-      <div class="stat-v num">${won(p.now)}<span class="small muted" style="font-weight:600"> 원</span></div>
-      <div class="stat-d ${cls} num">${arrow} ${won(Math.abs(diff))}원 (${Math.abs(pct)}%)</div>
-    </a>`;
+  const bands = [
+    ['R25 미만', '소형 · 정원수', t => t.r && t.r < 25, 'rmax=24'],
+    ['R25 – 29', '중형', t => t.r >= 25 && t.r <= 29, 'rmin=25&rmax=29'],
+    ['R30 – 34', '대형', t => t.r >= 30 && t.r <= 34, 'rmin=30&rmax=34'],
+    ['R35 이상', '특대 · 상징목', t => t.r >= 35, 'rmin=35'],
+    ['다간', '줄기 여러 대', t => t.multi, 'form=multi'],
+    ['반송', '둥근 수형', t => t.note === '반송', 'form=bansong'],
+  ];
+  document.getElementById('bands').innerHTML = bands.map(([b, s, f, q]) => {
+    const n = FARM_TREES.filter(f).length;
+    return n ? `<a class="band" href="listings.html?${q}"><span class="band-k">${s}</span><b>${b}</b><span class="band-n num">${n}주</span></a>` : '';
   }).join('');
 })();
-
-/* 거래 가능 매물 4개 — 내가 등록한 매물이 있으면 맨 앞에 옵니다 */
-document.getElementById('featured').innerHTML =
-  Store.Listings.all().filter(l => l.status !== '거래완료').slice(0, 4).map(listingCard).join('');
 </script>
 </body>
 </html>

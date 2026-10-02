@@ -32,28 +32,35 @@ const ICON = {
   location: '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s7-5.6 7-11a7 7 0 1 0-14 0c0 5.4 7 11 7 11z"/><circle cx="12" cy="10" r="2.5"/></svg>',
   shield: '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l7 3v5.5c0 4.4-3 8.2-7 9.5-4-1.3-7-5.1-7-9.5V6z"/><path d="M9 12l2 2 4-4"/></svg>',
   arrow: '<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h13M12.5 6l6 6-6 6"/></svg>',
+  pin: '<svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s7-5.6 7-11a7 7 0 1 0-14 0c0 5.4 7 11 7 11z"/><circle cx="12" cy="10" r="2.5"/></svg>',
   ruler: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="8" width="20" height="8" rx="1.5"/><path d="M7 8v3M12 8v4M17 8v3"/></svg>',
 };
 
-/* ---------- 네비게이션 정의 ---------- */
+/* ---------- 네비게이션 정의 ----------
+   법원리농원 단독 판매 사이트 — 농원 · 나무 · 규격 · 문의 네 갈래만 둡니다. */
 const NAV = [
-  { href: 'listings.html',  label: '나무 찾기',   icon: 'grid'  },
-  { href: 'market.html',    label: '실거래 시세', icon: 'chart' },
-  { href: 'guide.html',     label: '규격 안내',   icon: 'ruler' },
-  { href: 'movers.html',    label: '굴취·운반',   icon: 'tree'  },
-  { href: 'community.html', label: '커뮤니티',    icon: 'chat'  },
+  { href: 'farm.html',     label: '농원 배치도', icon: 'pin' },
+  { href: 'listings.html', label: '나무 목록',   icon: 'grid'     },
+  { href: 'guide.html',    label: '규격 안내',   icon: 'ruler'    },
 ];
 
 const TABBAR = [
-  { href: 'index.html',     label: '홈',     icon: 'home'  },
-  { href: 'listings.html',  label: '나무',   icon: 'grid'  },
-  { href: 'inquiry.html',   label: '문의',   icon: 'chat'  },
-  { href: 'sell.html',      label: '등록',   icon: 'plus'  },
-  { href: 'market.html',    label: '시세',   icon: 'chart' },
-  { href: 'mypage.html',    label: '내정보', icon: 'user'  },
+  { href: 'index.html',    label: '홈',     icon: 'home'     },
+  { href: 'farm.html',     label: '배치도', icon: 'pin' },
+  { href: 'listings.html', label: '목록',   icon: 'grid'     },
+  { href: 'inquiry.html',  label: '문의',   icon: 'chat'     },
 ];
 
 const page = () => (location.pathname.split('/').pop() || 'index.html');
+
+/* 문의 받는 번호 — data.js FARM.contact 한 곳에서만 바꿉니다 */
+const CONTACT_PHONE = (typeof FARM !== 'undefined' && FARM.contact && FARM.contact.phone) || '';
+const telHref = () => 'tel:' + CONTACT_PHONE.replace(/[^\d+]/g, '');
+
+function brandHTML() {
+  return `<span class="logo-mark" aria-hidden="true">${ICON.tree}</span>
+    <span class="logo-text"><b>법원리농원</b><small>Tree Atelier</small></span>`;
+}
 
 /* ---------- 헤더 ---------- */
 function renderChrome() {
@@ -64,25 +71,12 @@ function renderChrome() {
 <a class="skip-link" href="#main">본문 바로가기</a>
 <header class="header">
   <div class="wrap header-in">
-    <a class="logo" href="index.html" aria-label="Tree Atelier 홈">
-      <span class="logo-mark" aria-hidden="true">${ICON.tree}</span>
-      <span>Tree Atelier</span>
-    </a>
+    <a class="logo" href="index.html" aria-label="법원리농원 홈">${brandHTML()}</a>
     <nav class="nav" aria-label="주요 메뉴">
       ${NAV.map(n => `<a href="${n.href}"${isCur(n.href)}>${n.label}</a>`).join('')}
     </nav>
     <div class="header-actions">
-      <form class="header-search" role="search" id="hsearchForm">
-        <label class="sr-only" for="hsearch">수종·규격·수량으로 검색</label>
-        <div class="input-group">
-          <span class="ig-icon" aria-hidden="true">${ICON.search}</span>
-          <input class="input" id="hsearch" type="search" placeholder="수종·규격으로 찾기" autocomplete="off">
-        </div>
-      </form>
-      <button class="btn btn-ghost btn-icon search-btn" id="searchBtn" type="button" aria-label="나무 검색" aria-expanded="false">${ICON.search}</button>
-      <a class="btn btn-secondary btn-sm hide-sm" href="login.html">로그인</a>
-      <a class="btn btn-secondary btn-sm hide-sm" href="inquiry.html"${isCur('inquiry.html')}>${ICON.chat}<span>구매 문의</span></a>
-      <a class="btn btn-primary btn-sm" href="sell.html">${ICON.plus}<span>농원 등록</span></a>
+      <a class="btn btn-primary btn-sm" href="inquiry.html"${isCur('inquiry.html')}>구매 문의</a>
       <button class="btn btn-ghost btn-icon hamburger" id="menuBtn" aria-label="메뉴 열기" aria-expanded="false">${ICON.menu}</button>
     </div>
   </div>
@@ -91,17 +85,14 @@ function renderChrome() {
 <div class="drawer-back" id="drawerBack" hidden></div>
 <aside class="drawer" id="drawer" role="dialog" aria-modal="true" aria-label="전체 메뉴" hidden>
   <div class="drawer-head">
-    <span class="strong">전체 메뉴</span>
+    <span class="strong">법원리농원</span>
     <button class="btn btn-ghost btn-icon" id="drawerClose" aria-label="메뉴 닫기">${ICON.close}</button>
   </div>
   <nav class="drawer-nav" aria-label="전체 메뉴">
     <a href="index.html"${isCur('index.html')}>홈</a>
     ${NAV.map(n => `<a href="${n.href}"${isCur(n.href)}>${n.label}</a>`).join('')}
+    <a href="tree.html"${isCur('tree.html')}>관리번호로 찾기</a>
     <a href="inquiry.html"${isCur('inquiry.html')}>구매 문의</a>
-    <a href="sell.html"${isCur('sell.html')}>농원 등록</a>
-    <a href="mypage.html"${isCur('mypage.html')}>마이페이지</a>
-    <div class="divider mt3 mb3"></div>
-    <a href="login.html"${isCur('login.html')}>로그인 · 회원가입</a>
   </nav>
 </aside>`;
 
@@ -115,51 +106,33 @@ function renderChrome() {
   <div class="wrap">
     <div class="footer-grid">
       <div>
-        <a class="logo mb3" href="index.html">
-          <span class="logo-mark" aria-hidden="true">${ICON.tree}</span><span>Tree Atelier</span>
-        </a>
-        <p class="small muted" style="max-width:34ch">
-          나무를 키운 사람이 제값을 받는 거래.<br>
-          재배자와 구매자를 직접 잇고, 모든 실거래가를 공개합니다.
-        </p>
-        <p class="tiny muted mt4">
-          가상의 서비스 프로토타입입니다. 게시된 시세·매물·업체 정보는 실제 데이터가 아닙니다.
+        <a class="logo mb3" href="index.html">${brandHTML()}</a>
+        <p class="small muted" style="max-width:36ch">
+          파주 법원리에서 ${FARM.years}년 동안 소나무를 길러 온 농원입니다.
+          나무마다 관리번호를 붙여 실측 규격과 자리를 공개합니다.
         </p>
       </div>
       <div>
-        <h4>거래</h4>
+        <h4>둘러보기</h4>
         <ul>
-          <li><a href="farm.html">농장 소개 · 지도</a></li>
-          <li><a href="listings.html">나무 찾기</a></li>
-          <li><a href="inquiry.html">구매 문의</a></li>
-          <li><a href="sell.html">농원 등록</a></li>
-          <li><a href="market.html">실거래 시세</a></li>
-          <li><a href="guide.html">나무 규격 안내</a></li>
-          <li><a href="movers.html">굴취·운반 견적</a></li>
+          <li><a href="farm.html">농원 배치도</a></li>
+          <li><a href="listings.html">나무 목록</a></li>
+          <li><a href="tree.html">관리번호로 찾기</a></li>
+          <li><a href="guide.html">규격 안내</a></li>
         </ul>
       </div>
       <div>
-        <h4>커뮤니티</h4>
+        <h4>구매 문의</h4>
         <ul>
-          <li><a href="community.html">재배 노하우</a></li>
-          <li><a href="community.html">거래 후기</a></li>
-          <li><a href="community.html">질문답변</a></li>
-          <li><a href="community.html">정책·지원 소식</a></li>
-        </ul>
-      </div>
-      <div>
-        <h4>고객지원</h4>
-        <ul>
-          <li><a href="#">이용안내</a></li>
-          <li><a href="#">수수료 정책</a></li>
-          <li><a href="#">분쟁 조정</a></li>
-          <li><a href="#">1:1 문의</a></li>
+          <li><a href="inquiry.html">문의 남기기</a></li>
+          ${CONTACT_PHONE ? `<li><a href="${telHref()}">${esc(CONTACT_PHONE)}</a></li>` : ''}
+          <li><span class="muted">${esc(FARM.addr)}</span></li>
         </ul>
       </div>
     </div>
     <div class="footer-bottom">
-      <span>© 2026 Tree Atelier · 프로토타입</span>
-      <span>거래 수수료 3% · 판매자 정산 D+2</span>
+      <span>© 2026 ${esc(FARM.name)}</span>
+      <span>가격은 문의 시 안내합니다</span>
     </div>
   </div>
 </footer>`;
@@ -192,24 +165,6 @@ function bindChrome() {
     setTimeout(() => { drawer.hidden = true; back.hidden = true; }, 260);
     if (lastFocus) lastFocus.focus();
   }
-  /* 헤더 검색 — 검색창을 누르면 조건 패널이 열리고, 문장 입력("소나무 R20 30주")도 조건으로 풉니다 */
-  const sForm = $('#hsearchForm'), sInput = $('#hsearch');
-  if (sForm && sInput) {
-    const sp = buildSearchPanel(sForm, sInput);
-    sForm.addEventListener('submit', e => {
-      e.preventDefault();
-      const p = sp.params();
-      location.href = 'listings.html' + (p.toString() ? '?' + p.toString() : '');
-    });
-    $('#searchBtn')?.addEventListener('click', e => {
-      e.stopPropagation();
-      if (sp.isOpen()) { sp.close(); return; }
-      sp.open();
-      $('#searchBtn').setAttribute('aria-expanded', 'true');
-      setTimeout(() => $('#spQ')?.focus(), 30);
-    });
-  }
-
   btn?.addEventListener('click', open);
   $('#drawerClose')?.addEventListener('click', close);
   back?.addEventListener('click', close);
@@ -687,4 +642,25 @@ function buildSearchPanel(form, input) {
   input.addEventListener('click', open);
   document.addEventListener('keydown', e => { if (e.key === 'Escape' && !panel.hidden) close(); });
   return { open, close, params, isOpen: () => !panel.hidden };
+}
+
+/* ---------- 문의 바구니 ----------
+   목록·개체 화면에서 고른 관리번호를 모아 두었다가 문의에 한꺼번에 붙입니다. */
+const Picks = {
+  key: 'beopwon:picks',
+  all() { try { return JSON.parse(localStorage.getItem(this.key)) || []; } catch (e) { return []; } },
+  save(list) { try { localStorage.setItem(this.key, JSON.stringify(list)); } catch (e) {} },
+  has(code) { return this.all().includes(code); },
+  toggle(code) {
+    const list = this.all(); const i = list.indexOf(code);
+    if (i >= 0) list.splice(i, 1); else list.push(code);
+    this.save(list); return i < 0;
+  },
+  clear() { this.save([]); },
+};
+
+/* 수형 이름 */
+function treeForm(t) {
+  if (t.note === '반송') return '반송';
+  return t.multi ? `다간 ${t.stems.length}간` : '단간';
 }

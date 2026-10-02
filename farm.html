@@ -3,10 +3,22 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>법원리농원 배치도 · Tree Atelier</title>
-<meta name="description" content="파주 법원리농원 — Tree Atelier 1호 농가. 항공뷰 배치도에서 구역을 누르고, 구역 안의 나무를 눌러 그 자리에 있는 나무의 사진과 규격을 확인합니다.">
+<title>법원리농원 배치도 · 법원리농원</title>
+<meta name="description" content="파주 법원리농원 배치도. 구역을 누르고 나무를 눌러 그 자리에 있는 나무의 사진과 규격을 확인합니다.">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@500;600;700&display=swap">
 <link rel="stylesheet" href="assets/css/style.css">
+<style>
+  .farm-stats { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 0 28px; }
+  .farm-stats > div { border-top: 1px solid var(--line); padding-top: 12px; display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+  .farm-stats span { font-size: 13px; color: var(--ink-3); font-weight: 600; white-space: nowrap; }
+  .farm-stats b { font-family: var(--serif); font-size: 21px; font-weight: 600; white-space: nowrap; }
+  @media (max-width: 760px) { .farm-stats { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px 20px; } .farm-stats b { font-size: 18px; } }
+  .visit { display: flex; justify-content: space-between; align-items: flex-end; gap: 24px 40px; flex-wrap: wrap;
+    padding: clamp(28px, 4vw, 44px); background: var(--bg-soft); border-radius: var(--r-lg); }
+  .visit .h2 { margin-top: 2px; }
+</style>
 </head>
 <body>
 
@@ -15,24 +27,15 @@
 <main id="main">
   <div class="wrap">
     <nav class="breadcrumb" aria-label="현재 위치">
-      <a href="index.html">홈</a><span aria-hidden="true">›</span><span>농장 배치도</span>
+      <a href="index.html">홈</a><span aria-hidden="true">›</span><span>농원 배치도</span>
     </nav>
 
     <!-- 농장 헤더 -->
-    <header class="card card-pad mb6">
-      <div class="row g4 wrapf">
-        <span class="avatar avatar-lg" aria-hidden="true" id="farmInit"></span>
-        <div class="grow">
-          <div class="row g2 wrapf">
-            <h1 class="h1" id="farmName"></h1>
-            <span class="badge badge-green">인증 농가 1호</span>
-          </div>
-          <p class="small muted mt1" id="farmMeta"></p>
-        </div>
-        <a class="btn btn-primary" href="#map">배치도 보기</a>
-      </div>
-      <p class="lead mt4" id="farmStory" style="max-width:64ch"></p>
-      <div class="grid grid-4 mt5" id="farmStats"></div>
+    <header class="page-head">
+      <span class="eyebrow" id="farmMeta"></span>
+      <h1 class="h1" id="farmName"></h1>
+      <p class="lead" id="farmStory"></p>
+      <div class="farm-stats mt5" id="farmStats"></div>
     </header>
 
     <!-- ============ 항공뷰 배치도 ============ -->
@@ -66,31 +69,18 @@
       <p class="small muted mt3">※ 배치도는 손그림 배치도를 옮긴 개념도로 축척과 방위는 실제와 다를 수 있습니다.</p>
     </section>
 
-    <!-- 매물(로트) -->
-    <section class="section-sm">
-      <div class="section-head">
-        <div>
-          <h2 class="h2">이 농장의 매물 로트</h2>
-          <p class="small muted mt1">묶음 단위로 올라온 매물입니다. 목록으로도 보실 수 있습니다.</p>
-        </div>
-        <a class="btn btn-secondary btn-sm" href="listings.html">조건으로 찾기</a>
-      </div>
-      <div class="grid grid-auto" id="farmListings"></div>
-    </section>
-
     <!-- 오시는 길 -->
     <section class="section-sm">
-      <div class="grid grid-2 g4">
-        <div class="card card-pad stack g3">
-          <h2 class="h3">현장 확인 환영합니다</h2>
-          <p class="small muted" id="farmAddr"></p>
-          <p class="small muted">방문 전에 연락 주시면 구역별로 안내해 드립니다. 관리번호를 미리 적어 오시면 그 나무부터 보여드립니다.</p>
-          <a class="btn btn-secondary btn-block" href="tel:1600-0000">1600-0000 방문 예약</a>
+      <div class="visit">
+        <div>
+          <span class="eyebrow">현장 방문</span>
+          <h2 class="h2">나무는 직접 보고 고르셔도 됩니다</h2>
+          <p class="muted mt2" id="farmAddr"></p>
+          <p class="muted mt1">방문 전에 연락 주시면 구역별로 안내해 드립니다. 관리번호를 적어 오시면 그 나무부터 보여드립니다.</p>
         </div>
-        <div class="card card-pad stack g3">
-          <h2 class="h3">재배자이신가요?</h2>
-          <p class="small muted">수종과 규격을 등록하면 나무마다 개체 코드가 발급되고 배치도가 만들어집니다.</p>
-          <a class="btn btn-secondary btn-block" href="login.html">입점 문의하기</a>
+        <div class="row g3 wrapf">
+          <a class="btn btn-primary btn-lg" href="inquiry.html">방문·구매 문의</a>
+          <a class="btn btn-secondary btn-lg" href="listings.html">나무 목록</a>
         </div>
       </div>
     </section>
@@ -111,22 +101,17 @@
 <script src="assets/js/farm-data.js"></script>
 <script src="assets/js/farm-map.js"></script>
 <script src="assets/js/farm-photos.js"></script>
-<script src="assets/js/store.js"></script>
 <script src="assets/js/app.js"></script>
 <script>
 /* ---------- 농장 정보 ---------- */
 const ST = registryStats();
-document.getElementById('farmInit').textContent = FARM.init;
 document.getElementById('farmName').textContent = FARM.name;
-document.getElementById('farmMeta').textContent = `${FARM.addr} · 재배 경력 ${FARM.years}년`;
+document.getElementById('farmMeta').textContent = `${FARM.addr} · ${FARM.years}년`;
 document.getElementById('farmStory').textContent = FARM.story;
 document.getElementById('farmAddr').textContent = FARM.addr;
-document.getElementById('farmStats').innerHTML = `
-  <div class="stat"><div class="stat-k">재배 면적</div><div class="stat-v" style="font-size:19px">${FARM.area}</div></div>
-  <div class="stat"><div class="stat-k">실측 수목</div><div class="stat-v num" style="font-size:19px">${ST.count}주</div></div>
-  <div class="stat"><div class="stat-k">근원직경</div><div class="stat-v num" style="font-size:19px">R${ST.rMin}–${ST.rMax}</div></div>
-  <div class="stat"><div class="stat-k">구역</div><div class="stat-v" style="font-size:19px">4구역 · 반송 ${ST.bansong}주</div></div>`;
-document.getElementById('farmListings').innerHTML = LISTINGS.map(listingCard).join('');
+document.getElementById('farmStats').innerHTML = [
+  ['재배 면적', FARM.area], ['실측 적송', `${ST.count}주`], ['근원직경', `R${ST.rMin}–${ST.rMax}`], ['구역', `4구역 · 반송 ${ST.bansong}주`],
+].map(([k, v]) => `<div><span>${k}</span><b class="num">${v}</b></div>`).join('');
 
 /* ---------- 상태 ---------- */
 const NS = 'http://www.w3.org/2000/svg';
