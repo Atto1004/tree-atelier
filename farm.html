@@ -3,20 +3,18 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>법원리농원 배치도 · 법원리농원</title>
-<meta name="description" content="파주 법원리농원 배치도. 구역을 누르고 나무를 눌러 그 자리에 있는 나무의 사진과 규격을 확인합니다.">
+<title>농원 지도 · 법원리농원</title>
+<meta name="description" content="법원리농원 지도. 구역을 누르고 나무를 누르면 그 나무를 볼 수 있어요.">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@500;600;700&display=swap">
 <link rel="stylesheet" href="assets/css/style.css">
 <style>
-  .farm-stats { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 0 28px; }
-  .farm-stats > div { border-top: 1px solid var(--line); padding-top: 12px; display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+  .farm-stats { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; }
+  .farm-stats > div { padding: 16px; border-radius: 16px; background: var(--bg-soft); display: flex; flex-direction: column; gap: 4px; min-width: 0; }
   .farm-stats span { font-size: 13px; color: var(--ink-3); font-weight: 600; white-space: nowrap; }
-  .farm-stats b { font-family: var(--serif); font-size: 21px; font-weight: 600; white-space: nowrap; }
+  .farm-stats b { font-size: 21px; font-weight: 700; letter-spacing: -.02em; white-space: nowrap; }
   @media (max-width: 760px) { .farm-stats { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px 20px; } .farm-stats b { font-size: 18px; } }
   .visit { display: flex; justify-content: space-between; align-items: flex-end; gap: 24px 40px; flex-wrap: wrap;
-    padding: clamp(28px, 4vw, 44px); background: var(--bg-soft); border-radius: var(--r-lg); }
+    padding: clamp(24px, 4vw, 40px); background: var(--bg-soft); border-radius: 20px; }
   .visit .h2 { margin-top: 2px; }
 </style>
 </head>
@@ -27,7 +25,7 @@
 <main id="main">
   <div class="wrap">
     <nav class="breadcrumb" aria-label="현재 위치">
-      <a href="index.html">홈</a><span aria-hidden="true">›</span><span>농원 배치도</span>
+      <a href="index.html">홈</a><span aria-hidden="true">›</span><span>농원 지도</span>
     </nav>
 
     <!-- 농장 헤더 -->
@@ -42,9 +40,9 @@
     <section id="map" class="mb6">
       <div class="section-head">
         <div>
-          <span class="eyebrow">항공뷰 배치도</span>
-          <h2 class="h2">나무가 서 있는 자리 그대로</h2>
-          <p class="small muted mt1">구역을 누르면 그 구역으로 확대되고, 확대된 화면에서 나무 한 그루를 누르면 그 자리에 있는 나무의 사진과 규격이 뜹니다.</p>
+
+          <h2 class="h2">농원 지도</h2>
+          <p class="lead mt1">구역을 누르면 크게 보여요. 점 하나가 나무 한 그루예요.</p>
         </div>
         <div class="row g2">
           <button class="btn btn-secondary btn-sm" type="button" id="btnAll" hidden>← 전체 농장</button>
@@ -53,34 +51,33 @@
 
       <div class="farm-layout">
         <div class="aerial-wrap">
-          <div class="aerial" id="aerial" role="group" aria-label="법원리농원 항공뷰 배치도"></div>
+          <div class="aerial" id="aerial" role="group" aria-label="법원리농원 지도"></div>
           <div class="aerial-crumb" id="aerialCrumb" aria-live="polite"></div>
           <div class="aerial-tip" id="aerialTip" hidden></div>
           <div class="aerial-legend">
-            <span><i class="lg lg-tree"></i>적송</span>
+            <span><i class="lg lg-tree"></i>소나무</span>
             <span><i class="lg lg-bansong"></i>반송</span>
-            <span><i class="lg lg-multi"></i>다간</span>
-            <span><i class="lg lg-gone"></i>결주(빈 자리)</span>
-            <span class="muted">원 크기 = 근원직경 R</span>
+            <span><i class="lg lg-multi"></i>여러 줄기</span>
+            <span><i class="lg lg-gone"></i>빈 자리</span>
+            <span class="muted">점이 클수록 굵은 나무</span>
           </div>
         </div>
         <aside class="zone-panel card card-pad" id="zonePanel" aria-live="polite"></aside>
       </div>
-      <p class="small muted mt3">※ 배치도는 손그림 배치도를 옮긴 개념도로 축척과 방위는 실제와 다를 수 있습니다.</p>
+      <p class="small muted mt3">손으로 그린 농원 지도를 옮긴 거라 실제 거리·방향과 조금 다를 수 있어요.</p>
     </section>
 
     <!-- 오시는 길 -->
     <section class="section-sm">
       <div class="visit">
         <div>
-          <span class="eyebrow">현장 방문</span>
-          <h2 class="h2">나무는 직접 보고 고르셔도 됩니다</h2>
+          <h2 class="h2">직접 와서 봐도 돼요</h2>
           <p class="muted mt2" id="farmAddr"></p>
-          <p class="muted mt1">방문 전에 연락 주시면 구역별로 안내해 드립니다. 관리번호를 적어 오시면 그 나무부터 보여드립니다.</p>
+          <p class="muted mt1">미리 연락 주시면 고른 나무 앞으로 안내해 드려요.</p>
         </div>
         <div class="row g3 wrapf">
-          <a class="btn btn-primary btn-lg" href="inquiry.html">방문·구매 문의</a>
-          <a class="btn btn-secondary btn-lg" href="listings.html">나무 목록</a>
+          <a class="btn btn-primary btn-lg" href="inquiry.html">방문 문의하기</a>
+          <a class="btn btn-secondary btn-lg" href="listings.html">나무 고르기</a>
         </div>
       </div>
     </section>
@@ -106,11 +103,11 @@
 /* ---------- 농장 정보 ---------- */
 const ST = registryStats();
 document.getElementById('farmName').textContent = FARM.name;
-document.getElementById('farmMeta').textContent = `${FARM.addr} · ${FARM.years}년`;
-document.getElementById('farmStory').textContent = FARM.story;
+document.getElementById('farmMeta').textContent = `${FARM.addr}`;
+document.getElementById('farmStory').textContent = `${FARM.years}년째 소나무만 키우는 농원이에요. 나무마다 번호표를 달고 굵기를 재 뒀어요.`;
 document.getElementById('farmAddr').textContent = FARM.addr;
 document.getElementById('farmStats').innerHTML = [
-  ['재배 면적', FARM.area], ['실측 적송', `${ST.count}주`], ['근원직경', `R${ST.rMin}–${ST.rMax}`], ['구역', `4구역 · 반송 ${ST.bansong}주`],
+  ['넓이', FARM.area], ['소나무', `${ST.count}그루`], ['밑동 굵기', `${ST.rMin}~${ST.rMax}cm`], ['구역', '4구역'],
 ].map(([k, v]) => `<div><span>${k}</span><b class="num">${v}</b></div>`).join('');
 
 /* ---------- 상태 ---------- */
@@ -269,7 +266,7 @@ for (const id of FARM_ZONE_ORDER) {
   const g = document.createElementNS(NS, 'g');
   g.setAttribute('class', 'ae-zl'); g.dataset.zone = id;
   g.innerHTML = `<rect x="${x - 42}" y="${y - 14}" width="84" height="28" rx="14"/>
-    <text x="${x}" y="${y + 1}" text-anchor="middle" dominant-baseline="middle"><tspan class="z">${id}</tspan><tspan class="n" dx="6">${n}주</tspan></text>`;
+    <text x="${x}" y="${y + 1}" text-anchor="middle" dominant-baseline="middle"><tspan class="z">${id}</tspan><tspan class="n" dx="6">${n}그루</tspan></text>`;
   g.addEventListener('click', () => selectZone(id));
   gZL.appendChild(g);
 }
@@ -328,7 +325,7 @@ function renderCrumb() {
 /* ---------- 툴팁 ---------- */
 const tip = document.getElementById('aerialTip');
 function showTip(e, T) {
-  tip.innerHTML = `<b class="tree-code">${T.code}</b> R${T.r}${T.b ? ` · B${T.b}` : ''}${T.multi ? ` · ${T.stems.length}간` : ''}${T.note ? ` · ${T.note}` : ''}`;
+  tip.innerHTML = `<b class="tree-code">${T.code}</b> ${(sizeOf(T.r) || {}).label || ''} 나무 · 밑동 ${T.r}cm · ${treeForm(T)}`;
   tip.hidden = false; moveTip(e);
 }
 function moveTip(e) {
@@ -354,9 +351,8 @@ function zoneStatLine(id) {
 
 function renderPanelOverview() {
   panel.innerHTML = `
-    <span class="eyebrow">전체 농장</span>
-    <h3 class="h3 mt1">${FARM.name} 실측 ${ST.count}주</h3>
-    <p class="small muted mt1">적송 · R${ST.rMin}–${ST.rMax} (평균 R${ST.rAvg}) · 다간 ${ST.multi}주 · 반송 ${ST.bansong}주</p>
+    <h3 class="h3">소나무 ${ST.count}그루</h3>
+    <p class="small muted mt1">구역을 골라 보세요</p>
     <div class="zone-list mt4">
       ${FARM_ZONE_ORDER.map(id => {
         const Z = zoneOf(id), n = treesOfZone(id).length;
@@ -364,23 +360,23 @@ function renderPanelOverview() {
           <span class="zone-item-id">${id}</span>
           <span class="grow">
             <span class="zone-item-name">${Z.name} <span class="muted">· ${Z.sub}</span></span>
-            <span class="zone-item-meta">${n}주 · ${zoneStatLine(id)}</span>
+            <span class="zone-item-meta">${n}그루</span>
           </span>
           <span class="zone-item-arrow" aria-hidden="true">›</span>
         </button>`;
       }).join('')}
     </div>
     <div class="divider mt4"></div>
-    <p class="small muted mt3">관리번호 = <b>구역-줄-번호</b> (예: A-3-6). 나무마다 붙어 있는 관리표와 같은 번호입니다.</p>
+    <p class="small muted mt3">나무에 달린 번호표로 바로 찾을 수 있어요</p>
     <form class="row g2 mt2" id="codeJump">
-      <input class="input" style="flex:1" placeholder="관리번호로 바로 가기 (A-H-1)" aria-label="관리번호">
+      <input class="input" style="flex:1" placeholder="예: A-H-1" aria-label="번호표">
       <button class="btn btn-secondary" type="submit">이동</button>
     </form>`;
   panel.querySelectorAll('.zone-item').forEach(b => b.addEventListener('click', () => selectZone(b.dataset.zone)));
   panel.querySelector('#codeJump').addEventListener('submit', e => {
     e.preventDefault();
     const T = registryByCode(e.target.querySelector('input').value);
-    if (T) selectTree(T.code); else toast('해당 관리번호가 없습니다');
+    if (T) selectTree(T.code); else toast('그 번호의 나무가 없어요');
   });
 }
 
@@ -394,9 +390,9 @@ function renderPanelZone(id) {
     <button class="btn-link small" type="button" id="backAll">← 전체 농장</button>
     <div class="row g2 wrapf mt2">
       <h3 class="h3">${Z.name}</h3>
-      <span class="badge badge-green">${trees.length}주</span>
+      <span class="badge badge-green">${trees.length}그루</span>
     </div>
-    <p class="small muted mt1">${Z.sub} · ${zoneStatLine(id)}</p>
+    <p class="small muted mt1">${Z.sub}</p>
     <p class="small muted mt1">줄 = ${Z.lineAxis} · 번호 = ${Z.posAxis}${Z.axisNote ? `<br><span class="warn">${Z.axisNote}</span>` : ''}</p>
     <p class="small muted mt3">지도 위의 나무를 누르거나 아래 번호를 누르세요.</p>
     <div class="line-list mt2">
@@ -456,9 +452,8 @@ function treeDetailHTML(code, inPanel) {
     </div>
     ${photos.length > 1 || tags.length ? `<div class="thumbs">${[...photos, ...tags].map(p => `<img src="${p.file}" alt="${p.kind === 'tag' ? '관리표' : '사진'}" data-src="${p.file}" loading="lazy">`).join('')}</div>` : ''}
     <div class="row g2 wrapf mt3">
-      <span class="badge badge-gray">${T.note === '반송' ? '반송' : '적송'}</span>
-      ${T.multi ? `<span class="badge badge-green">다간 ${T.stems.length}간</span>` : '<span class="badge badge-gray">단간</span>'}
-      ${tags.length ? '<span class="badge badge-green">관리표 확인</span>' : ''}
+      <span class="badge badge-green">${(sizeOf(T.r) || {}).label || ''} 나무</span>
+      <span class="badge badge-gray">${treeForm(T)}</span>
     </div>
     <h3 class="h3 mt2" id="modalTitle"><span class="tree-code" style="font-size:19px">${T.code}</span></h3>
     <p class="small muted mt1">${farmPlaceText(T.code)}</p>
@@ -469,16 +464,12 @@ function treeDetailHTML(code, inPanel) {
       <button class="btn btn-ghost btn-sm" type="button" data-act="next" ${nb.next ? '' : 'disabled'}>${nb.next ? nb.next : '다음'} →</button>
     </div>`; })()}
     <div class="modal-specs">
-      <div class="cell"><div class="k">근원직경 R</div><div class="v num">${T.r != null ? T.r + ' cm' : '—'}</div></div>
-      <div class="cell"><div class="k">흉고직경 B</div><div class="v num">${T.b != null ? T.b + ' cm' : (stems ? '환산 전' : '—')}</div></div>
-      ${stems ? `<div class="cell"><div class="k">줄기별 흉고</div><div class="v num" style="font-size:14.5px">${stems}</div></div>` : ''}
-      <div class="cell"><div class="k">약제 처리량</div><div class="v num">${T.dose != null ? T.dose : '—'}</div></div>
+      <div class="cell"><div class="k">밑동 굵기</div><div class="v num">${T.r != null ? T.r + 'cm' : '—'}</div></div>
+      <div class="cell"><div class="k">모양</div><div class="v">${treeForm(T)}</div></div>
     </div>
-    ${T.note && T.note !== '반송' ? `<p class="small muted mt2">비고: ${T.note}</p>` : ''}
-    <p class="small muted mt2">2026.09 농원 장부 기준 실측값</p>
     <div class="row g2 mt4">
-      <a class="btn btn-secondary" style="flex:1" href="tree.html?code=${T.code}">개체 페이지</a>
-      <a class="btn btn-primary" style="flex:1" href="inquiry.html?code=${T.code}">구매 문의</a>
+      <a class="btn btn-secondary" style="flex:1" href="tree.html?code=${T.code}">자세히 보기</a>
+      <a class="btn btn-primary" style="flex:1" href="inquiry.html?code=${T.code}">가격 물어보기</a>
     </div>`;
 }
 function bindDetail(root) {

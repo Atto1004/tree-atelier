@@ -39,15 +39,15 @@ const ICON = {
 /* ---------- 네비게이션 정의 ----------
    법원리농원 단독 판매 사이트 — 농원 · 나무 · 규격 · 문의 네 갈래만 둡니다. */
 const NAV = [
-  { href: 'farm.html',     label: '농원 배치도', icon: 'pin' },
-  { href: 'listings.html', label: '나무 목록',   icon: 'grid'     },
-  { href: 'guide.html',    label: '규격 안내',   icon: 'ruler'    },
+  { href: 'listings.html', label: '나무 고르기',   icon: 'grid'  },
+  { href: 'farm.html',     label: '농원 지도',     icon: 'pin'   },
+  { href: 'guide.html',    label: '처음 사는 분께', icon: 'ruler' },
 ];
 
 const TABBAR = [
   { href: 'index.html',    label: '홈',     icon: 'home'     },
-  { href: 'farm.html',     label: '배치도', icon: 'pin' },
-  { href: 'listings.html', label: '목록',   icon: 'grid'     },
+  { href: 'listings.html', label: '나무',   icon: 'grid' },
+  { href: 'farm.html',     label: '지도',   icon: 'pin'  },
   { href: 'inquiry.html',  label: '문의',   icon: 'chat'     },
 ];
 
@@ -76,7 +76,7 @@ function renderChrome() {
       ${NAV.map(n => `<a href="${n.href}"${isCur(n.href)}>${n.label}</a>`).join('')}
     </nav>
     <div class="header-actions">
-      <a class="btn btn-primary btn-sm" href="inquiry.html"${isCur('inquiry.html')}>구매 문의</a>
+      <a class="btn btn-primary btn-sm" href="inquiry.html"${isCur('inquiry.html')}>문의하기</a>
       <button class="btn btn-ghost btn-icon hamburger" id="menuBtn" aria-label="메뉴 열기" aria-expanded="false">${ICON.menu}</button>
     </div>
   </div>
@@ -91,8 +91,8 @@ function renderChrome() {
   <nav class="drawer-nav" aria-label="전체 메뉴">
     <a href="index.html"${isCur('index.html')}>홈</a>
     ${NAV.map(n => `<a href="${n.href}"${isCur(n.href)}>${n.label}</a>`).join('')}
-    <a href="tree.html"${isCur('tree.html')}>관리번호로 찾기</a>
-    <a href="inquiry.html"${isCur('inquiry.html')}>구매 문의</a>
+    <a href="tree.html"${isCur('tree.html')}>번호표로 찾기</a>
+    <a href="inquiry.html"${isCur('inquiry.html')}>문의하기</a>
   </nav>
 </aside>`;
 
@@ -108,23 +108,22 @@ function renderChrome() {
       <div>
         <a class="logo mb3" href="index.html">${brandHTML()}</a>
         <p class="small muted" style="max-width:36ch">
-          파주 법원리에서 ${FARM.years}년 동안 소나무를 길러 온 농원입니다.
-          나무마다 관리번호를 붙여 실측 규격과 자리를 공개합니다.
+          파주 법원리에서 ${FARM.years}년째 소나무를 키우고 있어요.
         </p>
       </div>
       <div>
         <h4>둘러보기</h4>
         <ul>
-          <li><a href="farm.html">농원 배치도</a></li>
-          <li><a href="listings.html">나무 목록</a></li>
-          <li><a href="tree.html">관리번호로 찾기</a></li>
-          <li><a href="guide.html">규격 안내</a></li>
+          <li><a href="listings.html">나무 고르기</a></li>
+          <li><a href="farm.html">농원 지도</a></li>
+          <li><a href="tree.html">번호표로 찾기</a></li>
+          <li><a href="guide.html">처음 사는 분께</a></li>
         </ul>
       </div>
       <div>
-        <h4>구매 문의</h4>
+        <h4>문의</h4>
         <ul>
-          <li><a href="inquiry.html">문의 남기기</a></li>
+          <li><a href="inquiry.html">문의하기</a></li>
           ${CONTACT_PHONE ? `<li><a href="${telHref()}">${esc(CONTACT_PHONE)}</a></li>` : ''}
           <li><span class="muted">${esc(FARM.addr)}</span></li>
         </ul>
@@ -132,7 +131,7 @@ function renderChrome() {
     </div>
     <div class="footer-bottom">
       <span>© 2026 ${esc(FARM.name)}</span>
-      <span>가격은 문의 시 안내합니다</span>
+      <span>가격은 문의하면 알려드려요</span>
     </div>
   </div>
 </footer>`;
@@ -659,8 +658,21 @@ const Picks = {
   clear() { this.save([]); },
 };
 
-/* 수형 이름 */
+/* 모양 — 처음 보는 사람도 알 수 있는 말로 */
 function treeForm(t) {
-  if (t.note === '반송') return '반송';
-  return t.multi ? `다간 ${t.stems.length}간` : '단간';
+  if (t.note === '반송') return '둥근 반송';
+  return t.multi ? `줄기 ${t.stems.length}개` : '한 줄기';
+}
+
+/* 크기 — 밑동 굵기(R)를 농원 안에서 4단계로 나눠 말로 */
+const SIZES = [
+  { id: 's',  label: '아담한',  lo: 0,  hi: 21, note: '밑동 21cm 이하' },
+  { id: 'm',  label: '보통',    lo: 22, hi: 24, note: '밑동 22~24cm' },
+  { id: 'l',  label: '큰',      lo: 25, hi: 28, note: '밑동 25~28cm' },
+  { id: 'xl', label: '아주 큰', lo: 29, hi: 99, note: '밑동 29cm 이상' },
+];
+function sizeOf(r) { return r == null ? null : SIZES.find(z => r >= z.lo && r <= z.hi); }
+function sizeDots(r) {
+  const i = SIZES.indexOf(sizeOf(r));
+  return `<span class="size-dot" aria-hidden="true">${SIZES.map((_, k) => `<i class="${k <= i ? 'on' : ''}"></i>`).join('')}</span>`;
 }

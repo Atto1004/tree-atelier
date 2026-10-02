@@ -3,26 +3,24 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>구매 문의 · 법원리농원</title>
-<meta name="description" content="고른 나무의 관리번호와 수량, 현장 지역을 적어 법원리농원 판매 담당에게 바로 문의합니다.">
+<title>문의하기 · 법원리농원</title>
+<meta name="description" content="필요한 나무를 적어 주시면 법원리농원이 가격과 날짜를 문자로 알려드려요.">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@500;600;700&display=swap">
 <link rel="stylesheet" href="assets/css/style.css">
 <style>
   .inq-layout { display: grid; grid-template-columns: minmax(0, 1fr) 340px; gap: clamp(28px, 5vw, 64px); align-items: start; }
   .inq-side { position: sticky; top: calc(var(--header-h) + 24px); }
   @media (max-width: 940px) { .inq-layout { grid-template-columns: 1fr; } .inq-side { position: static; } }
 
-  .block { padding-bottom: 32px; margin-bottom: 32px; border-bottom: 1px solid var(--line); }
+  .block { padding-bottom: 32px; margin-bottom: 32px; border-bottom: 1px solid var(--line-2); }
   .block:last-of-type { border-bottom: 0; }
   .block-h { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; margin-bottom: 18px; flex-wrap: wrap; }
-  .block-h h2 { font-family: var(--serif); font-size: 21px; font-weight: 600; }
-  .block-h h2 i { font-style: normal; color: var(--brass); margin-right: 10px; font-size: 16px; }
+  .block-h h2 { font-size: 20px; font-weight: 700; letter-spacing: -.03em; }
 
-  .picked { border-top: 1px solid var(--green-800); }
-  .pk { display: grid; grid-template-columns: 110px 70px minmax(0, 1fr) auto; gap: 12px; align-items: center; padding: 12px 2px; border-bottom: 1px solid var(--line); }
-  .pk .r { font-family: var(--serif); font-size: 18px; font-weight: 600; white-space: nowrap; }
+  .picked { display: grid; gap: 8px; }
+  .pk { display: grid; grid-template-columns: 90px 150px minmax(0, 1fr) auto; gap: 12px; align-items: center; padding: 12px 14px; border-radius: 14px; background: var(--bg-soft); }
+  .pk .r { font-size: 15.5px; font-weight: 700; white-space: nowrap; }
+  @media (max-width: 560px) { .pk { grid-template-columns: 1fr auto; } .pk .tree-code, .pk .m { display: none; } }
   .pk .m { font-size: 14px; color: var(--ink-3); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   .pk button { border: 0; background: none; color: var(--ink-3); font-size: 13.5px; cursor: pointer; padding: 6px 8px; white-space: nowrap; }
   .pk button:hover { color: var(--danger); }
@@ -31,15 +29,15 @@
   .chips { display: flex; flex-wrap: wrap; gap: 8px; }
   .range { display: grid; grid-template-columns: 1fr auto 1fr; gap: 8px; align-items: center; }
 
-  .preview { white-space: pre-wrap; font-size: 14.5px; line-height: 1.75; padding: 18px 20px; background: #fff; border: 1px solid var(--line); border-radius: var(--r); color: var(--ink-2); }
+  .preview { white-space: pre-wrap; font-size: 15px; line-height: 1.75; padding: 18px 20px; background: var(--bg-soft); border-radius: 16px; color: var(--ink-2); }
   .send { display: flex; gap: 10px; flex-wrap: wrap; }
 
-  .side-card { padding: 26px 24px; background: var(--bg-soft); border-radius: var(--r-lg); }
+  .side-card { padding: 24px 22px; background: var(--bg-soft); border-radius: 20px; }
   .side-card + .side-card { margin-top: 14px; }
-  .side-card h3 { font-family: var(--serif); font-size: 18px; font-weight: 600; margin-bottom: 14px; }
+  .side-card h3 { font-size: 17px; font-weight: 700; margin-bottom: 14px; }
   .steps { display: grid; gap: 14px; counter-reset: s; }
   .steps li { display: grid; grid-template-columns: 26px 1fr; gap: 10px; font-size: 14.5px; line-height: 1.6; color: var(--ink-2); }
-  .steps li::before { counter-increment: s; content: counter(s, decimal-leading-zero); font-family: var(--serif); color: var(--brass); font-size: 14px; }
+  .steps li::before { counter-increment: s; content: counter(s); display: grid; place-items: center; width: 22px; height: 22px; border-radius: 50%; background: var(--green-700); color: #fff; font-size: 12.5px; font-weight: 700; }
 </style>
 </head>
 <body>
@@ -49,9 +47,8 @@
 <main id="main">
   <div class="wrap">
     <header class="page-head">
-      <span class="eyebrow">구매 문의</span>
-      <h1 class="h1">농원에 직접 문의하기</h1>
-      <p class="lead">고르신 나무와 필요한 수량, 현장 지역을 적어 주세요. 판매 담당이 가격과 출하 일정을 알려드립니다.</p>
+      <h1 class="h1">어떤 나무가 필요하세요?</h1>
+      <p class="lead">적어 주시면 가격이랑 보낼 수 있는 날짜를 문자로 알려드려요.</p>
     </header>
 
     <div class="inq-layout">
@@ -59,89 +56,83 @@
 
         <section class="block">
           <div class="block-h">
-            <h2><i>01</i>문의할 나무</h2>
-            <a class="btn btn-ghost btn-sm" href="listings.html">목록에서 더 담기</a>
+            <h2>고른 나무</h2>
+            <a class="btn btn-secondary btn-sm" href="listings.html">더 고르기</a>
           </div>
           <div id="picked"></div>
           <div id="condBox" class="stack g4 mt4">
             <div class="field">
-              <span class="label">원하는 근원직경 R (cm)</span>
-              <div class="range">
-                <input class="input" id="rMin" type="number" inputmode="numeric" min="10" max="60" placeholder="최소" aria-label="근원직경 최소">
-                <span class="muted">~</span>
-                <input class="input" id="rMax" type="number" inputmode="numeric" min="10" max="60" placeholder="최대" aria-label="근원직경 최대">
-              </div>
-              <div class="chips mt2" id="rChips" role="group" aria-label="규격 빠른 선택">
-                <button class="chip" type="button" data-r="20-24">R20–24</button>
-                <button class="chip" type="button" data-r="25-29">R25–29</button>
-                <button class="chip" type="button" data-r="30-40">R30 이상</button>
-              </div>
+              <span class="label">원하는 크기</span>
+              <div class="chips" id="sizeChips" role="group" aria-label="크기"></div>
               <p class="hint" id="matchHint"></p>
             </div>
+            <div class="field">
+              <span class="label">원하는 모양</span>
+              <div class="chips" id="formChips" role="group" aria-label="모양"></div>
+            </div>
             <div class="field" style="max-width:220px">
-              <label class="label" for="qty">수량 (주)</label>
+              <label class="label" for="qty">몇 그루</label>
               <input class="input" id="qty" type="number" inputmode="numeric" min="1" value="1">
             </div>
           </div>
         </section>
 
         <section class="block">
-          <div class="block-h"><h2><i>02</i>현장과 일정</h2></div>
+          <div class="block-h"><h2>심을 곳</h2></div>
           <div class="grid grid-2">
             <div class="field">
-              <label class="label" for="purpose">용도</label>
+              <label class="label" for="purpose">어디에 심으세요?</label>
               <select class="select" id="purpose">
-                <option value="">선택</option>
-                <option>조경 공사 (아파트·단지)</option>
-                <option>주택·전원주택 정원</option>
-                <option>관공서·학교·공원</option>
-                <option>골프장·리조트</option>
-                <option>기타</option>
+                <option value="">고르기</option>
+                <option value="garden">집 마당·정원</option>
+                <option value="front">가게·건물 앞</option>
+                <option value="site">아파트·공원·조경 현장</option>
+                <option value="etc">기타</option>
               </select>
             </div>
             <div class="field">
-              <label class="label" for="when">희망 시기</label>
+              <label class="label" for="when">언제 필요하세요?</label>
               <select class="select" id="when">
-                <option value="">선택</option>
-                <option>가능한 빨리</option>
-                <option>1개월 이내</option>
-                <option>3개월 이내</option>
-                <option>내년 봄 식재기 (3~4월)</option>
-                <option>아직 미정 · 가격만 문의</option>
+                <option value="">고르기</option>
+                <option>되도록 빨리</option>
+                <option>1달 안에</option>
+                <option>3달 안에</option>
+                <option>내년 봄</option>
+                <option>아직 몰라요 · 가격만 궁금해요</option>
               </select>
             </div>
           </div>
           <div class="field mt4">
-            <label class="label" for="site">현장 지역</label>
+            <label class="label" for="site">심을 곳 주소 (동네까지만)</label>
             <input class="input" id="site" type="text" placeholder="예: 경기 파주시 운정동">
           </div>
           <label class="check mt4">
             <input type="checkbox" id="wantMove" checked>
-            <span>굴취·운반도 함께 상담받겠습니다.</span>
+            <span>나무 옮기는 것도 같이 상담받을게요</span>
           </label>
         </section>
 
         <section class="block">
-          <div class="block-h"><h2><i>03</i>보내는 분</h2></div>
+          <div class="block-h"><h2>보내는 분</h2></div>
           <div class="grid grid-2">
             <div class="field">
-              <label class="label" for="name">성함 <span class="req" aria-hidden="true">*</span></label>
+              <label class="label" for="name">이름</label>
               <input class="input" id="name" type="text" autocomplete="name" required>
             </div>
             <div class="field">
-              <label class="label" for="org">회사·소속</label>
+              <label class="label" for="org">회사 (있으면)</label>
               <input class="input" id="org" type="text" autocomplete="organization" placeholder="예: OO조경, 개인">
             </div>
           </div>
           <div class="field mt4">
-            <label class="label" for="memo">요청 사항</label>
-            <textarea class="textarea" id="memo" maxlength="600" placeholder="수형 선호, 현장 진입로 사정, 예산 범위 등을 적어 주세요."></textarea>
+            <label class="label" for="memo">더 하고 싶은 말</label>
+            <textarea class="textarea" id="memo" maxlength="600" placeholder="예: 차가 좁은 길로 들어가야 해요, 예산은 이 정도예요"></textarea>
           </div>
         </section>
 
         <section class="block">
-          <div class="block-h"><h2><i>04</i>보내기</h2></div>
-          <p class="small muted mb3">아래 내용이 그대로 판매 담당에게 전달됩니다.</p>
+          <div class="block-h"><h2>보낼 내용</h2></div>
+          <p class="small muted mb3">이 내용이 그대로 농원에 가요.</p>
           <div class="preview" id="preview"></div>
           <div class="send mt4" id="sendBox"></div>
         </section>
@@ -149,18 +140,17 @@
 
       <aside class="inq-side">
         <div class="side-card">
-          <h3>문의 후 진행</h3>
+          <h3>보내면 이렇게 돼요</h3>
           <ol class="steps">
-            <li><span>판매 담당이 내용을 확인하고 연락드립니다.</span></li>
-            <li><span>고르신 나무의 가격과 출하 가능 시기를 안내합니다.</span></li>
-            <li><span>원하시면 농원에서 나무를 직접 보고 정합니다.</span></li>
-            <li><span>굴취·운반 일정을 맞춰 출하합니다.</span></li>
+            <li><span>농원에서 내용을 보고 연락드려요</span></li>
+            <li><span>가격과 보낼 수 있는 날짜를 알려드려요</span></li>
+            <li><span>원하면 농원에 와서 직접 보고 정해요</span></li>
           </ol>
         </div>
         <div class="side-card">
           <h3>농원 위치</h3>
           <p class="small" id="farmAddr"></p>
-          <p class="small muted mt2">방문 전에 연락 주시면 고르신 나무부터 안내해 드립니다.</p>
+          <p class="small muted mt2">미리 연락 주시면 고른 나무 앞으로 안내해 드려요.</p>
         </div>
       </aside>
     </div>
@@ -183,6 +173,28 @@ const qs = new URLSearchParams(location.search);
 
 $('#farmAddr').textContent = FARM.addr;
 
+/* 홈 3문항·목록에서 넘어온 답 채우기 */
+const PRE = { size: (qs.get('size') || '').split(',').filter(Boolean), form: qs.get('form') || '', qty: qs.get('qty'), place: qs.get('place') };
+if (PRE.qty) $('#qty').value = PRE.qty;
+if (PRE.place && $(`#purpose option[value="${PRE.place}"]`)) $('#purpose').value = PRE.place;
+const C = { size: PRE.size, form: PRE.form };
+$('#sizeChips').innerHTML = SIZES.map(z => `<button class="chip" type="button" data-v="${z.id}" aria-pressed="${C.size.includes(z.id)}">${z.label}</button>`).join('');
+$('#formChips').innerHTML = [['single', '한 줄기'], ['multi', '여러 줄기'], ['bansong', '둥근 반송']]
+  .map(([v, l]) => `<button class="chip" type="button" data-v="${v}" aria-pressed="${C.form === v}">${l}</button>`).join('');
+$('#sizeChips').addEventListener('click', e => {
+  const c = e.target.closest('.chip'); if (!c) return;
+  const v = c.dataset.v;
+  C.size = C.size.includes(v) ? C.size.filter(x => x !== v) : [...C.size, v];
+  c.setAttribute('aria-pressed', String(C.size.includes(v)));
+  renderMatch(); compose();
+});
+$('#formChips').addEventListener('click', e => {
+  const c = e.target.closest('.chip'); if (!c) return;
+  C.form = C.form === c.dataset.v ? '' : c.dataset.v;
+  $$('#formChips .chip').forEach(x => x.setAttribute('aria-pressed', String(x.dataset.v === C.form)));
+  renderMatch(); compose();
+});
+
 function picked() { return Picks.all().map(c => registryByCode(c)).filter(Boolean); }
 
 function renderPicked() {
@@ -191,11 +203,11 @@ function renderPicked() {
     ? `<div class="picked">${list.map(t => `
         <div class="pk">
           <a class="tree-code" href="tree.html?code=${t.code}">${t.code}</a>
-          <span class="r num">${t.r != null ? 'R' + t.r : '—'}</span>
+          <span class="r">${(sizeOf(t.r) || {}).label || ''} 나무 · ${t.r}cm</span>
           <span class="m">${treeForm(t)} · ${farmPlaceText(t.code)}</span>
           <button type="button" data-rm="${t.code}" aria-label="${t.code} 빼기">빼기</button>
         </div>`).join('')}</div>`
-    : `<p class="none">고른 나무가 없습니다. 원하는 규격과 수량만 적어 주셔도 맞는 나무를 추천해 드립니다.</p>`;
+    : `<p class="none">아직 고른 나무가 없어요. 크기랑 그루 수만 알려 주셔도 맞는 나무를 골라 드려요.</p>`;
   $('#condBox').hidden = list.length > 0;
   compose();
 }
@@ -204,19 +216,21 @@ $('#picked').addEventListener('click', e => {
   Picks.toggle(b.dataset.rm); renderPicked();
 });
 
-/* 규격 조건 — 장부에서 맞는 나무 수 */
-function renderMatch() {
-  const lo = +$('#rMin').value || 0, hi = +$('#rMax').value || 999;
-  if (!lo && hi === 999) { $('#matchHint').textContent = ''; return; }
-  const n = FARM_TREES.filter(t => t.r >= lo && t.r <= hi).length;
-  $('#matchHint').textContent = n ? `이 범위의 나무가 농원에 ${n}그루 있습니다.` : '이 범위의 나무는 지금 농원에 없습니다.';
+/* 조건 — 장부에서 맞는 나무 수 */
+function condTrees() {
+  return FARM_TREES.filter(t => {
+    if (C.size.length && !C.size.includes((sizeOf(t.r) || {}).id)) return false;
+    if (C.form === 'single' && (t.multi || t.note === '반송')) return false;
+    if (C.form === 'multi' && !t.multi) return false;
+    if (C.form === 'bansong' && t.note !== '반송') return false;
+    return true;
+  });
 }
-$$('#rChips .chip').forEach(c => c.addEventListener('click', () => {
-  const [a, b] = c.dataset.r.split('-');
-  $('#rMin').value = a; $('#rMax').value = b;
-  $$('#rChips .chip').forEach(x => x.setAttribute('aria-pressed', String(x === c)));
-  renderMatch(); compose();
-}));
+function renderMatch() {
+  if (!C.size.length && !C.form) { $('#matchHint').textContent = ''; return; }
+  const n = condTrees().length;
+  $('#matchHint').textContent = n ? `맞는 나무가 ${n}그루 있어요` : '맞는 나무가 없어요. 하나를 빼 보세요';
+}
 
 /* 보낼 문장 만들기 */
 function message() {
@@ -226,15 +240,16 @@ function message() {
   if (list.length) {
     lines.push(`나무 ${list.length}그루: ` + list.map(t => `${t.code}(R${t.r != null ? t.r : '-'})`).join(', '));
   } else {
-    const lo = v('rMin'), hi = v('rMax');
-    lines.push(`규격: ${lo || hi ? `R${lo || '~'}–${hi || '~'}` : '추천 요청'} · 수량 ${v('qty') || 1}주`);
+    const sz = SIZES.filter(z => C.size.includes(z.id)).map(z => `${z.label}(${z.note})`).join(', ');
+    const fm = { single: '한 줄기', multi: '여러 줄기', bansong: '둥근 반송' }[C.form];
+    lines.push(`크기: ${sz || '추천해 주세요'}${fm ? ' · 모양: ' + fm : ''} · ${v('qty') || 1}그루`);
   }
-  if (v('purpose')) lines.push('용도: ' + v('purpose'));
-  if (v('when')) lines.push('희망 시기: ' + v('when'));
-  if (v('site')) lines.push('현장: ' + v('site'));
-  if ($('#wantMove').checked) lines.push('굴취·운반 상담 희망');
-  if (v('memo')) lines.push('요청: ' + v('memo'));
-  lines.push('보내는 분: ' + (v('name') || '(성함)') + (v('org') ? ` · ${v('org')}` : ''));
+  if (v('purpose')) lines.push('심을 곳: ' + $('#purpose').selectedOptions[0].textContent);
+  if (v('when')) lines.push('필요한 때: ' + v('when'));
+  if (v('site')) lines.push('주소: ' + v('site'));
+  if ($('#wantMove').checked) lines.push('옮기는 것도 상담 원해요');
+  if (v('memo')) lines.push('메모: ' + v('memo'));
+  lines.push('보내는 분: ' + (v('name') || '(이름)') + (v('org') ? ` · ${v('org')}` : ''));
   return lines.join('\n');
 }
 function compose() { $('#preview').textContent = message(); }
@@ -246,11 +261,11 @@ const smsSep = /iPhone|iPad|iPod/.test(navigator.userAgent) ? '&' : '?';
 $('#sendBox').innerHTML = (CONTACT_PHONE ? `
   <button class="btn btn-primary btn-lg" type="button" id="smsBtn">문자로 보내기</button>
   <a class="btn btn-secondary btn-lg" href="${telHref()}">전화하기 ${esc(CONTACT_PHONE)}</a>` : '') + `
-  <button class="btn ${CONTACT_PHONE ? 'btn-ghost' : 'btn-primary'} btn-lg" type="button" id="copyBtn">내용 복사</button>`;
+  <button class="btn ${CONTACT_PHONE ? 'btn-ghost' : 'btn-primary'} btn-lg" type="button" id="copyBtn">내용 복사하기</button>`;
 
 function ready() {
   if ($('#name').value.trim().length < 2) {
-    setError($('#name'), '성함을 적어 주세요.'); $('#name').focus(); return false;
+    setError($('#name'), '이름을 적어 주세요'); $('#name').focus(); return false;
   }
   setError($('#name'), ''); return true;
 }
@@ -260,8 +275,8 @@ $('#smsBtn')?.addEventListener('click', () => {
 });
 $('#copyBtn').addEventListener('click', async () => {
   if (!ready()) return;
-  try { await navigator.clipboard.writeText(message()); toast('문의 내용을 복사했습니다.', 'ok'); }
-  catch (e) { toast('복사하지 못했습니다. 위 내용을 직접 선택해 주세요.', 'bad'); }
+  try { await navigator.clipboard.writeText(message()); toast('복사했어요', 'ok'); }
+  catch (e) { toast('복사가 안 됐어요. 위 내용을 길게 눌러 복사해 주세요', 'bad'); }
 });
 
 renderPicked();

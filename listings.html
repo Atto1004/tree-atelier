@@ -3,44 +3,44 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>나무 목록 · 법원리농원</title>
-<meta name="description" content="법원리농원 적송 전체 목록. 근원직경·수형·구역으로 골라 관리번호를 담고 한꺼번에 문의합니다.">
+<title>나무 고르기 · 법원리농원</title>
+<meta name="description" content="법원리농원 소나무를 크기와 모양으로 골라 담고 한 번에 가격을 물어볼 수 있어요.">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@500;600;700&display=swap">
 <link rel="stylesheet" href="assets/css/style.css">
 <style>
-  .filters { display: grid; grid-template-columns: auto auto minmax(220px, 300px) auto; gap: 18px 32px; align-items: end;
-    padding: 22px 0; border-bottom: 1px solid var(--line); }
+  .filters { display: grid; grid-template-columns: auto auto 1fr; gap: 18px 32px; align-items: end; padding: 8px 0 20px; }
+  .f-sort { justify-self: end; }
   .f-group { display: flex; flex-direction: column; gap: 8px; min-width: 0; }
-  .f-label { font-size: 12.5px; font-weight: 700; letter-spacing: .08em; color: var(--ink-3); white-space: nowrap; }
+  .f-label { font-size: 14px; font-weight: 600; color: var(--ink-3); white-space: nowrap; }
   .chips { display: flex; flex-wrap: wrap; gap: 6px; }
   .chips .chip { min-height: 36px; padding: 0 13px; font-size: 14px; }
   .f-sort .select { min-height: 40px; min-width: 150px; }
-  @media (max-width: 1040px) { .filters { grid-template-columns: 1fr 1fr; } }
+  @media (max-width: 1040px) { .filters { grid-template-columns: 1fr; } .f-sort { justify-self: start; } }
   @media (max-width: 560px)  { .filters { grid-template-columns: 1fr; gap: 16px; } }
 
   .result-bar { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 16px 0; flex-wrap: wrap; }
-  .result-bar b { font-family: var(--serif); font-size: 20px; font-weight: 600; }
+  .result-bar b { font-size: 20px; font-weight: 700; }
 
   /* 목록 — 표처럼 정렬된 줄 */
-  .tlist { border-top: 1px solid var(--green-800); }
-  .trow { display: grid; grid-template-columns: 44px 120px 90px 120px 110px minmax(0, 1fr) 96px; align-items: center; gap: 12px;
-    padding: 14px 4px; border-bottom: 1px solid var(--line); transition: background-color .15s var(--ease); }
-  .trow:hover { background: #fff; }
-  .trow.head { font-size: 12.5px; font-weight: 700; letter-spacing: .06em; color: var(--ink-3); padding-block: 12px; }
+  .tlist { border-top: 1px solid var(--line-2); }
+  .trow { display: grid; grid-template-columns: 44px 96px 220px 110px minmax(0, 1fr) 70px; align-items: center; gap: 12px;
+    padding: 14px 8px; border-bottom: 1px solid var(--line-2); transition: background-color .15s var(--ease); }
+  .trow:hover { background: var(--bg-soft); }
+  .trow.head { font-size: 13.5px; font-weight: 600; color: var(--ink-4); padding-block: 12px; }
   .trow.head:hover { background: none; }
-  .trow .r { font-family: var(--serif); font-size: 19px; font-weight: 600; white-space: nowrap; }
-  .trow .b, .trow .form { font-size: 14.5px; color: var(--ink-2); white-space: nowrap; }
+  .trow .r { display: flex; align-items: center; gap: 10px; white-space: nowrap; }
+  .trow .r b { font-size: 16.5px; font-weight: 700; }
+  .trow .r small { font-size: 13.5px; color: var(--ink-3); }
+  .trow .form { font-size: 15px; color: var(--ink-2); white-space: nowrap; }
   .trow .place { font-size: 13.5px; color: var(--ink-3); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   .trow .go { justify-self: end; font-size: 14px; font-weight: 600; color: var(--green-700); white-space: nowrap; }
   .trow .go:hover { text-decoration: underline; }
   .pick { width: 22px; height: 22px; accent-color: var(--green-800); cursor: pointer; }
   @media (max-width: 860px) {
-    .trow { grid-template-columns: 36px 1fr auto; grid-template-areas: "pick code r" "pick meta go"; gap: 4px 12px; padding: 14px 2px; }
+    .trow { grid-template-columns: 36px 1fr auto; grid-template-areas: "pick r go" "pick meta go"; gap: 4px 12px; padding: 14px 4px; }
     .trow.head { display: none; }
-    .trow .c-pick { grid-area: pick; } .trow .c-code { grid-area: code; } .trow .r { grid-area: r; justify-self: end; }
-    .trow .b, .trow .place { display: none; }
+    .trow .c-pick { grid-area: pick; } .trow .r { grid-area: r; }
+    .trow .c-code, .trow .place { display: none; }
     .trow .form { grid-area: meta; font-size: 13.5px; color: var(--ink-3); }
     .trow .go { grid-area: go; }
   }
@@ -68,27 +68,25 @@
 <main id="main">
   <div class="wrap">
     <header class="page-head" style="margin-bottom:0">
-      <span class="eyebrow">나무 목록</span>
-      <h1 class="h1" id="pageTitle">법원리농원 적송</h1>
-      <p class="lead">마음에 드는 나무를 담아 두었다가 한꺼번에 문의하세요. 가격은 문의하시면 알려드립니다.</p>
+      <h1 class="h1" id="pageTitle">나무 고르기</h1>
+      <p class="lead">마음에 드는 나무를 담아서 한 번에 물어볼 수 있어요.</p>
     </header>
 
     <div class="filters">
       <div class="f-group">
-        <span class="f-label">수형</span>
-        <div class="chips" id="fForm" role="group" aria-label="수형"></div>
+        <span class="f-label">크기</span>
+        <div class="chips" id="fSize" role="group" aria-label="크기"></div>
       </div>
       <div class="f-group">
-        <span class="f-label">구역</span>
-        <div class="chips" id="fZone" role="group" aria-label="구역"></div>
+        <span class="f-label">모양</span>
+        <div class="chips" id="fForm" role="group" aria-label="모양"></div>
       </div>
-      <div class="f-group" id="fR"></div>
       <div class="f-group f-sort">
-        <label class="f-label" for="fSort">정렬</label>
+        <label class="f-label" for="fSort">순서</label>
         <select class="select" id="fSort">
-          <option value="code">관리번호 순</option>
-          <option value="rdesc">굵은 나무부터</option>
-          <option value="rasc">가는 나무부터</option>
+          <option value="code">번호 순</option>
+          <option value="rdesc">큰 나무부터</option>
+          <option value="rasc">작은 나무부터</option>
         </select>
       </div>
     </div>
@@ -104,9 +102,9 @@
 </main>
 
 <div class="pickbar" id="pickbar" aria-live="polite">
-  <span><b id="pickN">0</b>그루 담음</span>
+  <span><b id="pickN">0</b>그루 담았어요</span>
   <button class="btn btn-ghost btn-sm" type="button" id="pickClear">비우기</button>
-  <a class="btn btn-primary btn-sm" id="pickGo" href="inquiry.html">담은 나무 문의</a>
+  <a class="btn btn-primary btn-sm" id="pickGo" href="inquiry.html">가격 물어보기</a>
 </div>
 
 <div id="site-footer"></div>
@@ -122,6 +120,7 @@ const ST = registryStats();
 const PAGE = 40;
 const zq = (qs.get('zone') || '').toUpperCase();
 const S = {
+  size: (qs.get('size') || '').split(',').filter(x => SIZES.some(z => z.id === x)),
   form: qs.get('form') || 'all',
   zone: /^[A-D]$/.test(zq) ? zq : 'all',
   rmin: qs.get('rmin') ? +qs.get('rmin') : null,
@@ -130,11 +129,10 @@ const S = {
   shown: PAGE,
 };
 
-document.getElementById('pageTitle').textContent = `법원리농원 적송 ${ST.count}주`;
+const QTY = qs.get('qty');
 
 /* ---------- 필터 ---------- */
-const FORMS = [['all', '전체'], ['single', '단간'], ['multi', '다간'], ['bansong', '반송']];
-const ZONES = [['all', '전체'], ...['A', 'B', 'C', 'D'].map(z => [z, z + ' 구역'])];
+const FORMS = [['all', '전체'], ['single', '한 줄기'], ['multi', '여러 줄기'], ['bansong', '둥근 반송']];
 function chips(el, list, key) {
   el.innerHTML = list.map(([v, l]) => `<button class="chip" type="button" data-v="${v}" aria-pressed="${S[key] === v}">${l}</button>`).join('');
   el.addEventListener('click', e => {
@@ -145,18 +143,24 @@ function chips(el, list, key) {
   });
 }
 chips($('#fForm'), FORMS, 'form');
-chips($('#fZone'), ZONES, 'zone');
-const rs = rangeSlider($('#fR'), {
-  label: '근원직경 R', min: ST.rMin, max: ST.rMax, unit: 'cm', fmt: v => 'R' + v,
-  lo: S.rmin, hi: S.rmax,
-  onChange: ({ lo, hi }) => { S.rmin = lo; S.rmax = hi; S.shown = PAGE; render(); },
+/* 크기는 여러 개 고를 수 있음 */
+$('#fSize').innerHTML = `<button class="chip" type="button" data-v="all" aria-pressed="${!S.size.length}">전체</button>` +
+  SIZES.map(z => `<button class="chip" type="button" data-v="${z.id}" aria-pressed="${S.size.includes(z.id)}" title="${z.note}">${z.label}</button>`).join('');
+$('#fSize').addEventListener('click', e => {
+  const c = e.target.closest('.chip'); if (!c) return;
+  const v = c.dataset.v;
+  if (v === 'all') S.size = [];
+  else S.size = S.size.includes(v) ? S.size.filter(x => x !== v) : [...S.size, v];
+  S.rmin = S.rmax = null; S.shown = PAGE;
+  $$('#fSize .chip').forEach(x => x.setAttribute('aria-pressed', String(x.dataset.v === 'all' ? !S.size.length : S.size.includes(x.dataset.v))));
+  render();
 });
 $('#fSort').value = S.sort;
 $('#fSort').addEventListener('change', e => { S.sort = e.target.value; render(); });
 $('#resetBtn').addEventListener('click', () => {
-  S.form = 'all'; S.zone = 'all'; S.rmin = S.rmax = null; S.sort = 'code'; S.shown = PAGE;
-  $$('#fForm .chip, #fZone .chip').forEach(x => x.setAttribute('aria-pressed', String(x.dataset.v === 'all')));
-  rs.reset(true); $('#fSort').value = 'code';
+  S.form = 'all'; S.zone = 'all'; S.size = []; S.rmin = S.rmax = null; S.sort = 'code'; S.shown = PAGE;
+  $$('#fForm .chip, #fSize .chip').forEach(x => x.setAttribute('aria-pressed', String(x.dataset.v === 'all')));
+  $('#fSort').value = 'code';
   render();
 });
 
@@ -169,6 +173,7 @@ function filtered() {
     if (S.form === 'multi' && !t.multi) return false;
     if (S.form === 'bansong' && t.note !== '반송') return false;
     if (S.zone !== 'all' && t.zone !== S.zone) return false;
+    if (S.size.length && !S.size.includes((sizeOf(t.r) || {}).id)) return false;
     if (S.rmin != null && !(t.r >= S.rmin)) return false;
     if (S.rmax != null && !(t.r <= S.rmax)) return false;
     return true;
@@ -186,25 +191,26 @@ function row(t) {
   return `<div class="trow" role="listitem">
     <span class="c-pick"><input class="pick" type="checkbox" data-code="${t.code}" ${on ? 'checked' : ''} aria-label="${t.code} 담기"></span>
     <span class="c-code"><a class="tree-code" href="tree.html?code=${t.code}">${t.code}</a></span>
-    <span class="r num">${t.r != null ? 'R' + t.r : '—'}</span>
-    <span class="b num">${t.b != null ? 'B' + t.b : (t.stems ? 'B ' + t.stems.join('+') : '—')}</span>
+    <span class="r">${sizeDots(t.r)}<b>${(sizeOf(t.r) || {}).label || '—'} 나무</b><small class="num">밑동 ${t.r}cm</small></span>
     <span class="form">${treeForm(t)}</span>
     <span class="place">${farmPlaceText(t.code)}</span>
-    <a class="go" href="tree.html?code=${t.code}">자세히</a>
+    <a class="go" href="tree.html?code=${t.code}">보기</a>
   </div>`;
 }
 function render() {
   const list = filtered();
   $('#count').textContent = list.length;
   $('#tlist').innerHTML = list.length
-    ? `<div class="trow head" aria-hidden="true"><span>담기</span><span>관리번호</span><span>근원직경</span><span>흉고직경</span><span>수형</span><span>자리</span><span></span></div>`
+    ? `<div class="trow head" aria-hidden="true"><span>담기</span><span>번호표</span><span>크기</span><span>모양</span><span>자리</span><span></span></div>`
       + list.slice(0, S.shown).map(row).join('')
-    : `<div class="empty" style="padding:48px 0"><p class="strong">조건에 맞는 나무가 없습니다.</p><p class="small muted mt2">범위를 넓히거나 조건을 지워 보세요.</p></div>`;
+    : `<div class="empty" style="padding:48px 0"><p class="strong">맞는 나무가 없어요</p><p class="small muted mt2">조건을 하나 빼 보세요.</p></div>`;
   $('#moreBtn').hidden = list.length <= S.shown;
-  $('#moreBtn').textContent = `더 보기 (${list.length - S.shown}그루 남음)`;
+  $('#moreBtn').textContent = `${list.length - S.shown}그루 더 보기`;
   const p = new URLSearchParams();
   if (S.form !== 'all') p.set('form', S.form);
   if (S.zone !== 'all') p.set('zone', S.zone);
+  if (S.size.length) p.set('size', S.size.join(','));
+  if (QTY) p.set('qty', QTY);
   if (S.rmin != null) p.set('rmin', S.rmin);
   if (S.rmax != null) p.set('rmax', S.rmax);
   if (S.sort !== 'code') p.set('sort', S.sort);
